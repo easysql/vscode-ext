@@ -1,0 +1,21 @@
+{
+  "name": "easysql",
+  "displayName": "Easy SQL",
+  "description": "Language support for ETLs developed in Easy SQL. Includes syntax highlighting, code completion, usage doc, file jumpping and so on.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.72.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "grammars": [
+      {
+        "language": "easysql",
+        "scopeName": "source.easysql",
+        "path": "./syntaxes/easysql.tmLanguage.json"
+      }
+    ]
+  }
+}
