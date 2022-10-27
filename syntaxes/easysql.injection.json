@@ -1,7 +1,13 @@
 {
   "scopeName": "easysql.injection",
   "injectionSelector": "L:source.sql",
-  "patterns": [{ "include": "#target-invalid" }, { "include": "#target" }],
+  "patterns": [
+    { "include": "#target-invalid" },
+    { "include": "#target" },
+    { "include": "#var-reference-in-body" },
+    { "include": "#var-reference-func-in-body" },
+    { "include": "#var-reference-in-body-invalid" }
+  ],
   "repository": {
     "target-invalid": {
       "match": "(^-- )(target)(=)((?!variables|list_variables|template|log|check|action|temp|cache|broadcast|output|func).*)",
@@ -229,6 +235,41 @@
       "end": "(?=\\n)",
       "patterns": [{ "include": "#if" }]
     },
+    "var-reference-in-body": {
+      "name": "meta.var-reference.body.easysql",
+      "match": "(?<!--.*)(\\${)(\\w+)(})",
+      "captures": {
+        "1": { "name": "punctuation.definition.var-reference.begin.easysql" },
+        "2": { "name": "variable.parameter.name.easysql" },
+        "3": { "name": "punctuation.definition.var-reference.end.easysql" }
+      }
+    },
+    "var-reference-func-in-body": {
+      "name": "meta.var-reference.func.body.easysql",
+      "begin": "(?<!--.*)(\\${)\\s*(?=\\w+\\s*\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.var-reference.func.begin.easysql"
+        }
+      },
+      "end": "(?<=\\)\\s*)(})",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.var-reference.func.end.easysql" }
+      },
+      "patterns": [
+        { "include": "#func-call" },
+        { "include": "#func-call-invalid" }
+      ]
+    },
+    "var-reference-in-body-invalid": {
+      "name": "meta.var-reference.body.easysql",
+      "match": "(?<!--.*)(\\${)(.*)(})",
+      "captures": {
+        "1": { "name": "punctuation.definition.var-reference.begin.easysql" },
+        "2": { "name": "invalid.illegal.word.easysql" },
+        "3": { "name": "punctuation.definition.var-reference.end.easysql" }
+      }
+    },
     "full-table-name": {
       "captures": {
         "1": {
@@ -289,18 +330,9 @@
         { "include": "#func-call-invalid" }
       ]
     },
-    "func-call-invalid": {
-      "name": "invalid.illegal.function.easysql",
-      "match": "(?<=\\.|=)(.*)",
-      "captures": {
-        "1": {
-          "name": "invalid.illegal.word.easysql"
-        }
-      }
-    },
     "func-call": {
       "name": "meta.function.easysql",
-      "begin": "(?<=\\.|=)(\\w+)(\\()",
+      "begin": "(?<=\\.|=|{)(\\w+)(\\()",
       "beginCaptures": {
         "1": {
           "name": "entity.name.function"
@@ -309,7 +341,7 @@
           "name": "punctuation.definition.parameters.begin.easysql"
         }
       },
-      "end": "(?<=[^)]+)(\\))([^,]*)(?=\\n|,)",
+      "end": "(?<=[^)]+)(\\))([^,]*?)(?=}|,|\\n)",
       "endCaptures": {
         "1": {
           "name": "punctuation.definition.parameters.end.easysql"
@@ -323,8 +355,8 @@
           "name": "punctuation.separator.arguments.easysql",
           "match": "(,)"
         },
-        { "include": "#var-reference-invalid" },
-        { "include": "#var-reference" },
+        { "include": "#var-reference-in-func-invalid" },
+        { "include": "#var-reference-in-func" },
         {
           "match": "(?<=[,(])\\s*([^,)]+)(?=[,)])",
           "captures": {
@@ -335,7 +367,16 @@
         }
       ]
     },
-    "var-reference": {
+    "func-call-invalid": {
+      "name": "invalid.illegal.function.easysql",
+      "match": "(?<=\\.|=)(.*)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "var-reference-in-func": {
       "name": "meta.var-reference.easysql",
       "match": "(?<=[,(])\\s*(\\${)\\s*(\\w+)\\s*(})",
       "captures": {
@@ -350,7 +391,7 @@
         }
       }
     },
-    "var-reference-invalid": {
+    "var-reference-in-func-invalid": {
       "name": "meta.var-reference.easysql",
       "match": "(?<=[,(])\\s*(\\${)\\s*(\\w*[^\\w]\\w*)\\s*(})",
       "captures": {
