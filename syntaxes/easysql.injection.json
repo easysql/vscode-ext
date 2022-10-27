@@ -162,11 +162,11 @@
               "name": "keyword.operator.dot.easysql"
             }
           },
-          "end": "(?=\\n)",
+          "end": "(?=(,\\s*if=)|\\n)",
           "patterns": [
             { "include": "#func-call" },
             {
-              "match": "(?<=check.)(\\w+)\\s*(.*)(?=\\n)",
+              "match": "(?<=check.)(\\w+)\\b\\s*([^,]*)(?=\\n|,)",
               "captures": {
                 "1": {
                   "name": "constant.other.step-name.easysql"
@@ -177,6 +177,18 @@
               }
             }
           ]
+        },
+        {
+          "name": "meta.check.easysql",
+          "begin": "(?<==check[^,]+)(?=,\\s*if=)",
+          "end": "(?=\\n)",
+          "patterns": [{ "include": "#if" }]
+        },
+        {
+          "name": "meta.check.easysql",
+          "begin": "(?<==check.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
+          "end": "(?=\\n)",
+          "patterns": [{ "include": "#if" }]
         },
         {
           "begin": "(?<==)\\b(func)(\\.)",
@@ -278,7 +290,7 @@
           "name": "punctuation.definition.parameters.begin.easysql"
         }
       },
-      "end": "(?<=[^)]+)(\\))(.*)(?=\\n)",
+      "end": "(?<=[^)]+)(\\))([^,]*)(?=\\n|,)",
       "endCaptures": {
         "1": {
           "name": "punctuation.definition.parameters.end.easysql"
