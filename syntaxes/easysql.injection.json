@@ -1,8 +1,9 @@
 {
   "scopeName": "easysql.injection",
   "injectionSelector": "L:source.sql",
-  "patterns": [
-    {
+  "patterns": [{ "include": "#target-invalid" }, { "include": "#target" }],
+  "repository": {
+    "target-invalid": {
       "match": "(^-- )(target)(=)((?!variables|list_variables|template|log|check|action|temp|cache|broadcast|output|func).*)",
       "captures": {
         "1": {
@@ -19,7 +20,7 @@
         }
       }
     },
-    {
+    "target": {
       "name": "meta.step.easysql",
       "begin": "(^-- )(target)(=)",
       "beginCaptures": {
@@ -35,188 +36,199 @@
       },
       "end": "(?=\\n)",
       "patterns": [
-        {
-          "name": "meta.variables.easysql",
-          "begin": "(?<==)\\b(variables|list_variables)\\b(?=,\\s*if=)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.variables.easysql"
-            }
-          },
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
+        { "include": "#target-variables" },
+        { "include": "#target-variables-invalid" },
+        { "include": "#target-other" },
+        { "include": "#target-other-invalid" },
+        { "include": "#target-table" },
+        { "include": "#target-table-invalid" },
+        { "include": "#target-output" },
+        { "include": "#target-output-if" },
+        { "include": "#target-check" },
+        { "include": "#target-check-if" },
+        { "include": "#target-check-func-if" },
+        { "include": "#target-func" },
+        { "include": "#target-func-if" }
+      ]
+    },
+    "target-variables": {
+      "name": "meta.variables.easysql",
+      "begin": "(?<==)\\b(variables|list_variables)\\b(?=,\\s*if=)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.variables.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-variables-invalid": {
+      "name": "meta.variables.easysql",
+      "match": "(?<==)\\b(variables|list_variables)\\b(.*)",
+      "captures": {
+        "1": {
+          "name": "keyword.target.type.variables.easysql"
         },
+        "2": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "target-other": {
+      "name": "meta.other.easysql",
+      "begin": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(?=,\\s*if=)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.other.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        },
+        "3": {
+          "name": "constant.other.step-name.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-other-invalid": {
+      "name": "meta.other.easysql",
+      "match": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(.*)(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.target.type.other.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        },
+        "3": {
+          "name": "constant.other.step-name.easysql"
+        },
+        "4": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "target-table": {
+      "name": "meta.table.easysql",
+      "begin": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(?=,\\s*if=)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.table.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        },
+        "3": {
+          "name": "constant.other.table-name.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-table-invalid": {
+      "name": "meta.table.easysql",
+      "match": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(.*)(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.target.type.table.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        },
+        "3": {
+          "name": "constant.other.table-name.easysql"
+        },
+        "4": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "target-output": {
+      "name": "meta.output.easysql",
+      "begin": "(?<==)\\b(output)(\\.)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.output.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        }
+      },
+      "end": "(?=\\n|,)",
+      "patterns": [
+        { "include": "#full-table-name-with-schema" },
+        { "include": "#full-table-name" }
+      ]
+    },
+    "target-output-if": {
+      "name": "meta.output.easysql",
+      "begin": "(?<==\\boutput[^,]+)(?=,\\s*if=)",
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-check": {
+      "name": "meta.check.easysql",
+      "begin": "(?<==)\\b(check)(\\.)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.check.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        }
+      },
+      "end": "(?=(,\\s*if=)|\\n)",
+      "patterns": [
+        { "include": "#func-call" },
         {
-          "name": "meta.variables.easysql",
-          "match": "(?<==)\\b(variables|list_variables)\\b(.*)",
+          "match": "(?<=check.)(\\w+)\\b\\s*([^,]*)(?=\\n|,)",
           "captures": {
             "1": {
-              "name": "keyword.target.type.variables.easysql"
-            },
-            "2": {
-              "name": "invalid.illegal.word.easysql"
-            }
-          }
-        },
-        {
-          "name": "meta.other.easysql",
-          "begin": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(?=,\\s*if=)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.other.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            },
-            "3": {
               "name": "constant.other.step-name.easysql"
-            }
-          },
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "name": "meta.other.easysql",
-          "match": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(.*)(?=\\n)",
-          "captures": {
-            "1": {
-              "name": "keyword.target.type.other.easysql"
             },
             "2": {
-              "name": "keyword.operator.dot.easysql"
-            },
-            "3": {
-              "name": "constant.other.step-name.easysql"
-            },
-            "4": {
               "name": "invalid.illegal.word.easysql"
             }
           }
-        },
-        {
-          "name": "meta.table.easysql",
-          "begin": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(?=,\\s*if=)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.table.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            },
-            "3": {
-              "name": "constant.other.table-name.easysql"
-            }
-          },
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "name": "meta.table.easysql",
-          "match": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(.*)(?=\\n)",
-          "captures": {
-            "1": {
-              "name": "keyword.target.type.table.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            },
-            "3": {
-              "name": "constant.other.table-name.easysql"
-            },
-            "4": {
-              "name": "invalid.illegal.word.easysql"
-            }
-          }
-        },
-        {
-          "name": "meta.output.easysql",
-          "begin": "(?<==)\\b(output)(\\.)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.output.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            }
-          },
-          "end": "(?=\\n|,)",
-          "patterns": [
-            { "include": "#full-table-name-with-schema" },
-            { "include": "#full-table-name" }
-          ]
-        },
-        {
-          "name": "meta.output.easysql",
-          "begin": "(?<==\\boutput[^,]+)(?=,\\s*if=)",
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "name": "meta.check.easysql",
-          "begin": "(?<==)\\b(check)(\\.)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.check.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            }
-          },
-          "end": "(?=(,\\s*if=)|\\n)",
-          "patterns": [
-            { "include": "#func-call" },
-            {
-              "match": "(?<=check.)(\\w+)\\b\\s*([^,]*)(?=\\n|,)",
-              "captures": {
-                "1": {
-                  "name": "constant.other.step-name.easysql"
-                },
-                "2": {
-                  "name": "invalid.illegal.word.easysql"
-                }
-              }
-            }
-          ]
-        },
-        {
-          "name": "meta.check.easysql",
-          "begin": "(?<==check[^,]+)(?=,\\s*if=)",
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "name": "meta.check.easysql",
-          "begin": "(?<==check.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "name": "meta.func.easysql",
-          "begin": "(?<==)\\b(func)(\\.)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.func.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            }
-          },
-          "end": "(?=(,\\s*if=)|\\n)",
-          "patterns": [
-            { "include": "#func-call" },
-            { "include": "#func-call-invalid" }
-          ]
-        },
-        {
-          "name": "meta.func.easysql",
-          "begin": "(?<==func.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
         }
       ]
-    }
-  ],
-  "repository": {
+    },
+    "target-check-if": {
+      "name": "meta.check.easysql",
+      "begin": "(?<==check[^,]+)(?=,\\s*if=)",
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-check-func-if": {
+      "name": "meta.check.easysql",
+      "begin": "(?<==check.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
+    "target-func": {
+      "name": "meta.func.easysql",
+      "begin": "(?<==)\\b(func)(\\.)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.target.type.func.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.dot.easysql"
+        }
+      },
+      "end": "(?=(,\\s*if=)|\\n)",
+      "patterns": [
+        { "include": "#func-call" },
+        { "include": "#func-call-invalid" }
+      ]
+    },
+    "target-func-if": {
+      "name": "meta.func.easysql",
+      "begin": "(?<==func.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
+      "end": "(?=\\n)",
+      "patterns": [{ "include": "#if" }]
+    },
     "full-table-name": {
       "captures": {
         "1": {
