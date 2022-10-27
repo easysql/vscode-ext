@@ -36,6 +36,28 @@
       "end": "(?=\\n)",
       "patterns": [
         {
+          "begin": "(?<==)\\b(variables|list_variables)\\b(,)\\s*(if)(=)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.easysql.target.variables.easysql"
+            },
+            "2": {
+              "name": "punctuation.separator.if.easysql"
+            },
+            "3": {
+              "name": "keyword.if.easysql"
+            },
+            "4": {
+              "name": "keyword.operator.assignment.easysql"
+            }
+          },
+          "end": "(?=\\n)",
+          "patterns": [
+            { "include": "#func-call" },
+            { "include": "#func-call-invalid" }
+          ]
+        },
+        {
           "match": "(?<==)\\b(variables|list_variables)\\b(.*)",
           "captures": {
             "1": {
@@ -133,7 +155,10 @@
             }
           },
           "end": "(?=\\n)",
-          "patterns": [{ "include": "#func-call" }]
+          "patterns": [
+            { "include": "#func-call" },
+            { "include": "#func-call-invalid" }
+          ]
         }
       ]
     }
@@ -179,8 +204,18 @@
       },
       "match": "(\\w+)(\\.)(\\w+)(\\.)(\\w+)\\s*(.*)(?=\\n)"
     },
+    "func-call-invalid": {
+      "name": "invalid.illegal.function.easysql",
+      "match": "(?<=\\.|=)(.*)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
     "func-call": {
-      "begin": "(?<=\\.)(\\w+)(\\()",
+      "name": "meta.function.easysql",
+      "begin": "(?<=\\.|=)(\\w+)(\\()",
       "beginCaptures": {
         "1": {
           "name": "entity.name.function"
@@ -189,10 +224,13 @@
           "name": "punctuation.definition.parameters.begin.easysql"
         }
       },
-      "end": "(?<=[^)]+)(\\))",
+      "end": "(?<=[^)]+)(\\))(.*)(?=\\n)",
       "endCaptures": {
         "1": {
           "name": "punctuation.definition.parameters.end.easysql"
+        },
+        "2": {
+          "name": "invalid.illegal.function.easysql"
         }
       },
       "patterns": [
@@ -200,6 +238,7 @@
           "name": "punctuation.separator.arguments.easysql",
           "match": "(,)"
         },
+        { "include": "#var-reference-invalid" },
         { "include": "#var-reference" },
         {
           "match": "(?<=[,(])\\s*([^,)]+)(?=[,)])",
@@ -212,6 +251,7 @@
       ]
     },
     "var-reference": {
+      "name": "meta.var-reference.easysql",
       "match": "(?<=[,(])\\s*(\\${)\\s*(\\w+)\\s*(})",
       "captures": {
         "1": {
@@ -219,6 +259,21 @@
         },
         "2": {
           "name": "variable.parameter.name.easysql"
+        },
+        "3": {
+          "name": "punctuation.definition.var-reference.end.easysql"
+        }
+      }
+    },
+    "var-reference-invalid": {
+      "name": "meta.var-reference.easysql",
+      "match": "(?<=[,(])\\s*(\\${)\\s*(\\w*[^\\w]\\w*)\\s*(})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.var-reference.begin.easysql"
+        },
+        "2": {
+          "name": "invalid.illegal.word.easysql"
         },
         "3": {
           "name": "punctuation.definition.var-reference.end.easysql"

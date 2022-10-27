@@ -23,6 +23,20 @@ select 1 as a, 2 as b
 -- 'xx xx' should be illegal word
 -- target=variables xx xx
 
+-- ',' should be separator.if
+-- 'if' should be keyword
+-- '=' should be operator
+-- 'func' should be function name
+-- 'a' should be a literal
+-- 'b' should be a literal
+-- '${cd}' should be variable reference, and 'ab' should be variable name
+-- target=variables, if=func(a, b, ${cd})
+
+-- 'cd?abc' should be illegal
+-- 'xx abc' should be illegal
+-- target=variables, if=func(a, b, ${cd?abc}) xx abc
+-- target=variables, if=func(a, b, ${cd?abc}) xx abc
+
 -----------variables|list_variables end-----------
 
 -----------template|log|check|action start-----------
@@ -104,7 +118,6 @@ select 1 as a, 2 as b
 -----------func start----------
 
 -- 'xx xxa' should be an unrecognized word
--- TODO: 'xxa' better be illegal words
 -- target=func.xx xxa
 
 -- 'func' should be a keyword
@@ -115,3 +128,4 @@ select 1 as a, 2 as b
 -- target=func.func_name(${ab}, cc$123-.ab?c, ${D_abc_890})
 
 -----------func end----------
+
