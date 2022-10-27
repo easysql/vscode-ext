@@ -36,6 +36,7 @@
       "end": "(?=\\n)",
       "patterns": [
         {
+          "name": "meta.variables.easysql",
           "begin": "(?<==)\\b(variables|list_variables)\\b(?=,\\s*if=)",
           "beginCaptures": {
             "1": {
@@ -46,6 +47,7 @@
           "patterns": [{ "include": "#if" }]
         },
         {
+          "name": "meta.variables.easysql",
           "match": "(?<==)\\b(variables|list_variables)\\b(.*)",
           "captures": {
             "1": {
@@ -57,6 +59,7 @@
           }
         },
         {
+          "name": "meta.other.easysql",
           "begin": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(?=,\\s*if=)",
           "beginCaptures": {
             "1": {
@@ -73,6 +76,7 @@
           "patterns": [{ "include": "#if" }]
         },
         {
+          "name": "meta.other.easysql",
           "match": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(.*)(?=\\n)",
           "captures": {
             "1": {
@@ -90,6 +94,7 @@
           }
         },
         {
+          "name": "meta.table.easysql",
           "begin": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(?=,\\s*if=)",
           "beginCaptures": {
             "1": {
@@ -106,6 +111,7 @@
           "patterns": [{ "include": "#if" }]
         },
         {
+          "name": "meta.table.easysql",
           "match": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(.*)(?=\\n)",
           "captures": {
             "1": {
@@ -123,23 +129,7 @@
           }
         },
         {
-          "begin": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(?=,\\s*if=)",
-          "beginCaptures": {
-            "1": {
-              "name": "keyword.target.type.table.easysql"
-            },
-            "2": {
-              "name": "keyword.operator.dot.easysql"
-            },
-            "3": {
-              "name": "constant.other.table-name.easysql"
-            }
-          },
-          "end": "(?=\\n)",
-          "patterns": [{ "include": "#if" }]
-        },
-        {
-          "meta": "meta.output.easysql",
+          "name": "meta.output.easysql",
           "begin": "(?<==)\\b(output)(\\.)",
           "beginCaptures": {
             "1": {
@@ -156,12 +146,13 @@
           ]
         },
         {
-          "meta": "meta.output.easysql",
+          "name": "meta.output.easysql",
           "begin": "(?<==\\boutput[^,]+)(?=,\\s*if=)",
           "end": "(?=\\n)",
           "patterns": [{ "include": "#if" }]
         },
         {
+          "name": "meta.check.easysql",
           "begin": "(?<==)\\b(check)(\\.)",
           "beginCaptures": {
             "1": {
