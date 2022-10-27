@@ -12,9 +12,11 @@
   "contributes": {
     "grammars": [
       {
-        "language": "easysql",
-        "scopeName": "source.easysql",
-        "path": "./syntaxes/easysql.tmLanguage.json"
+        "scopeName": "easysql.injection",
+        "path": "./syntaxes/easysql.injection.json",
+        "injectTo": [
+          "source.sql"
+        ]
       }
     ]
   }

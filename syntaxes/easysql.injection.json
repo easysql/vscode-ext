@@ -1,0 +1,229 @@
+{
+  "scopeName": "easysql.injection",
+  "injectionSelector": "L:source.sql",
+  "patterns": [
+    {
+      "match": "(^-- )(target)(=)((?!variables|list_variables|template|log|check|action|temp|cache|broadcast|output|func).*)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.target.easysql"
+        },
+        "3": {
+          "name": "keyword.operator.assignment.easysql"
+        },
+        "4": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    {
+      "name": "meta.step.easysql",
+      "begin": "(^-- )(target)(=)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.target.easysql"
+        },
+        "3": {
+          "name": "keyword.operator.assignment.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [
+        {
+          "match": "(?<==)\\b(variables|list_variables)\\b(.*)",
+          "captures": {
+            "1": {
+              "name": "keyword.easysql.target.variables.easysql"
+            },
+            "2": {
+              "name": "invalid.illegal.word.easysql"
+            }
+          }
+        },
+        {
+          "match": "(?<==)\\b(template|log|action)(\\.)(\\w+)\\s*(.*)(?=\\n)",
+          "captures": {
+            "1": {
+              "name": "keyword.target.type.other.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.dot.easysql"
+            },
+            "3": {
+              "name": "constant.other.step-name.easysql"
+            },
+            "4": {
+              "name": "invalid.illegal.word.easysql"
+            }
+          }
+        },
+        {
+          "match": "(?<==)\\b(temp|cache|broadcast)(\\.)(\\w+)\\s*(.*)(?=\\n)",
+          "captures": {
+            "1": {
+              "name": "keyword.target.type.table.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.dot.easysql"
+            },
+            "3": {
+              "name": "constant.other.table-name.easysql"
+            },
+            "4": {
+              "name": "invalid.illegal.word.easysql"
+            }
+          }
+        },
+        {
+          "begin": "(?<==)\\b(output)(\\.)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.target.type.output.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.dot.easysql"
+            }
+          },
+          "end": "(?=\\n)",
+          "patterns": [
+            { "include": "#full-table-name-with-schema" },
+            { "include": "#full-table-name" }
+          ]
+        },
+        {
+          "begin": "(?<==)\\b(check)(\\.)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.target.type.check.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.dot.easysql"
+            }
+          },
+          "end": "(?=\\n)",
+          "patterns": [
+            { "include": "#func-call" },
+            {
+              "match": "(?<=check.)(\\w+)\\s*(.*)(?=\\n)",
+              "captures": {
+                "1": {
+                  "name": "constant.other.step-name.easysql"
+                },
+                "2": {
+                  "name": "invalid.illegal.word.easysql"
+                }
+              }
+            }
+          ]
+        },
+        {
+          "begin": "(?<==)\\b(func)(\\.)",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.target.type.func.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.dot.easysql"
+            }
+          },
+          "end": "(?=\\n)",
+          "patterns": [{ "include": "#func-call" }]
+        }
+      ]
+    }
+  ],
+  "repository": {
+    "full-table-name": {
+      "captures": {
+        "1": {
+          "name": "constant.other.db-name.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.comparison.easysql"
+        },
+        "3": {
+          "name": "constant.other.table-name.easysql"
+        },
+        "4": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      },
+      "match": "(\\w+)(\\.)(\\w+)\\s*(.*)(?=\\n)"
+    },
+    "full-table-name-with-schema": {
+      "captures": {
+        "1": {
+          "name": "constant.other.db-name.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.comparison.easysql"
+        },
+        "3": {
+          "name": "constant.other.schema-name.easysql"
+        },
+        "4": {
+          "name": "keyword.operator.comparison.easysql"
+        },
+        "5": {
+          "name": "constant.other.table-name.easysql"
+        },
+        "6": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      },
+      "match": "(\\w+)(\\.)(\\w+)(\\.)(\\w+)\\s*(.*)(?=\\n)"
+    },
+    "func-call": {
+      "begin": "(?<=\\.)(\\w+)(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.function"
+        },
+        "2": {
+          "name": "punctuation.definition.parameters.begin.easysql"
+        }
+      },
+      "end": "(?<=[^)]+)(\\))",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.definition.parameters.end.easysql"
+        }
+      },
+      "patterns": [
+        {
+          "name": "punctuation.separator.arguments.easysql",
+          "match": "(,)"
+        },
+        { "include": "#var-reference" },
+        {
+          "match": "(?<=[,(])\\s*([^,)]+)(?=[,)])",
+          "captures": {
+            "1": {
+              "name": "constant.other.literal.easysql"
+            }
+          }
+        }
+      ]
+    },
+    "var-reference": {
+      "match": "(?<=[,(])\\s*(\\${)\\s*(\\w+)\\s*(})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.var-reference.begin.easysql"
+        },
+        "2": {
+          "name": "variable.parameter.name.easysql"
+        },
+        "3": {
+          "name": "punctuation.definition.var-reference.end.easysql"
+        }
+      }
+    }
+  }
+}
