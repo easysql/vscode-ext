@@ -191,6 +191,7 @@
           "patterns": [{ "include": "#if" }]
         },
         {
+          "name": "meta.func.easysql",
           "begin": "(?<==)\\b(func)(\\.)",
           "beginCaptures": {
             "1": {
@@ -200,11 +201,17 @@
               "name": "keyword.operator.dot.easysql"
             }
           },
-          "end": "(?=\\n)",
+          "end": "(?=(,\\s*if=)|\\n)",
           "patterns": [
             { "include": "#func-call" },
             { "include": "#func-call-invalid" }
           ]
+        },
+        {
+          "name": "meta.func.easysql",
+          "begin": "(?<==func.+\\([^)]+\\)\\s*)(?=,\\s*if=)",
+          "end": "(?=\\n)",
+          "patterns": [{ "include": "#if" }]
         }
       ]
     }
