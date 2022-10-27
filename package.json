@@ -19,5 +19,8 @@
         ]
       }
     ]
+  },
+  "devDependencies": {
+    "looks-same": "^8.0.1"
   }
 }

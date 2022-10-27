@@ -35,7 +35,6 @@ select 1 as a, 2 as b
 -- 'cd?abc' should be illegal
 -- 'xx abc' should be illegal
 -- target=variables, if=func(a, b, ${cd?abc}) xx abc
--- target=variables, if=func(a, b, ${cd?abc}) xx abc
 
 -----------variables|list_variables end-----------
 
@@ -51,6 +50,12 @@ select 1 as a, 2 as b
 -- '.xx bb' should be illegal word
 -- target=template.abc.xx bb
 
+-- '.xx bb' should be illegal word
+-- target=template.abc.xx bb
+
+-- should be the same as variables with if
+-- target=template.abc, if=func(a, b, ${cd?abc}) xx abc
+
 -----------template|log|action end-----------
 
 -----------temp|cache|broadcast start----------
@@ -64,6 +69,9 @@ select 1 as a, 2 as b
 
 -- '.xx bb' should be illegal word
 -- target=temp.abc.xx bb
+
+-- should be the same as variables with if
+-- target=cache.abc, if=func(a, b, ${cd?abc}) xx abc
 
 -----------temp|cache|broadcast end----------
 
@@ -79,7 +87,7 @@ select 1 as a, 2 as b
 -- 'output' should be a keyword
 -- 'db' should be a db-name constant
 -- 'table' should be a table-name constant
--- target=output.db.table
+-- target=output.db.table xx
 
 -- 'output' should be a keyword
 -- 'db' should be a db-name constant
@@ -89,6 +97,12 @@ select 1 as a, 2 as b
 
 -- '.xx xx' should be illegal word
 -- target=output.db.schema.table.xx xx
+
+-- should be the same as variables with if
+-- target=output.db.table, if=func(a, b, ${cd?abc}) xx abc
+
+-- should be the same as variables with if
+-- target=output.db.schema.table, if=func(a, b, ${cd?abc}) xx abc
 
 -----------output end----------
 
@@ -113,6 +127,13 @@ select 1 as a, 2 as b
 -- 'func1' should be function name
 -- target=check.func1()
 
+-- should be the same as variables with if
+-- target=check.check_name, if=func(a, b, ${cd?abc}) xx abc
+
+-- should be the same as variables with if
+-- target=check.func(${ab}, cc$123-.ab?c, ${D_abc_890}), if=func(a, b, ${cd?abc}) xx abc
+
+
 -----------check end----------
 
 -----------func start----------
@@ -127,5 +148,7 @@ select 1 as a, 2 as b
 -- '${D_abc_890}' should be variable reference, and 'D_abc_890' should be variable name
 -- target=func.func_name(${ab}, cc$123-.ab?c, ${D_abc_890})
 
------------func end----------
+-- should be the same as variables with if
+-- target=func.func_name(${ab}, cc$123-.ab?c, ${D_abc_890}), if=func(a, b, ${cd?abc}) xx abc
 
+-----------func end----------
