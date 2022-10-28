@@ -2,11 +2,12 @@
   "name": "easysql",
   "displayName": "Easy SQL",
   "description": "Language support for ETLs developed in Easy SQL. Includes syntax highlighting, code completion, usage doc, file jumpping and so on.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.72.0"
   },
   "publisher": "EasySQL",
+  "icon": "icon/icon_black_256x256.png",
   "repository": {
     "type": "git",
     "url": "https://github.com/easysql/vscode-ext.git"
