@@ -2,3 +2,4 @@ node_modules
 *.vsix
 test/code.1.png
 test/code.diff.png
+Makefile
