@@ -6,7 +6,12 @@
     { "include": "#target" },
     { "include": "#var-reference-in-body" },
     { "include": "#var-reference-func-in-body" },
-    { "include": "#var-reference-in-body-invalid" }
+    { "include": "#var-reference-in-body-invalid" },
+    { "include": "#tpl-var-reference-in-body" },
+    { "include": "#tpl-var-reference-in-body-invalid" },
+    { "include": "#tpl-reference-in-body" },
+    { "include": "#tpl-reference-func-in-body" },
+    { "include": "#tpl-reference-in-body-invalid" }
   ],
   "repository": {
     "target-invalid": {
@@ -270,6 +275,63 @@
         "3": { "name": "punctuation.definition.var-reference.end.easysql" }
       }
     },
+    "tpl-var-reference-in-body": {
+      "name": "meta.tpl-var-reference.body.easysql",
+      "match": "(?<!--.*)(\\#{)(\\w+)(})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tpl-var-reference.begin.easysql"
+        },
+        "2": { "name": "variable.parameter.name.easysql" },
+        "3": { "name": "punctuation.definition.tpl-var-reference.end.easysql" }
+      }
+    },
+    "tpl-var-reference-in-body-invalid": {
+      "name": "meta.tpl-var-reference.body.easysql",
+      "match": "(?<!--.*)(\\#{)([^}]*)(})",
+      "captures": {
+        "1": {
+          "name": "punctuation.definition.tpl-var-reference.begin.easysql"
+        },
+        "2": { "name": "invalid.illegal.word.easysql" },
+        "3": { "name": "punctuation.definition.tpl-var-reference.end.easysql" }
+      }
+    },
+    "tpl-reference-in-body": {
+      "name": "meta.tpl-reference.body.easysql",
+      "match": "(?<!--.*)(\\@{)(\\w+)(})",
+      "captures": {
+        "1": { "name": "punctuation.definition.tpl-reference.begin.easysql" },
+        "2": { "name": "entity.name.function.tpl.easysql" },
+        "3": { "name": "punctuation.definition.tpl-reference.end.easysql" }
+      }
+    },
+    "tpl-reference-func-in-body": {
+      "name": "meta.tpl-reference.func.body.easysql",
+      "begin": "(?<!--.*)(\\@{)\\s*(?=\\w+\\s*\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "punctuation.definition.tpl-reference.func.begin.easysql"
+        }
+      },
+      "end": "(?<=\\)\\s*)(})",
+      "endCaptures": {
+        "1": { "name": "punctuation.definition.tpl-reference.func.end.easysql" }
+      },
+      "patterns": [
+        { "include": "#tpl-call" },
+        { "include": "#tpl-call-invalid" }
+      ]
+    },
+    "tpl-reference-in-body-invalid": {
+      "name": "meta.tpl-reference.body.easysql",
+      "match": "(?<!--.*)(\\@{)([^}]*)(})",
+      "captures": {
+        "1": { "name": "punctuation.definition.tpl-reference.begin.easysql" },
+        "2": { "name": "invalid.illegal.word.easysql" },
+        "3": { "name": "punctuation.definition.tpl-reference.end.easysql" }
+      }
+    },
     "full-table-name": {
       "captures": {
         "1": {
@@ -402,6 +464,105 @@
           "name": "invalid.illegal.word.easysql"
         },
         "3": {
+          "name": "punctuation.definition.var-reference.end.easysql"
+        }
+      }
+    },
+    "tpl-call": {
+      "name": "meta.function.tpl.easysql",
+      "begin": "(?<=@{)(\\w+)(\\()",
+      "beginCaptures": {
+        "1": {
+          "name": "entity.name.function.tpl.easysql"
+        },
+        "2": {
+          "name": "punctuation.reference.tpl.begin.easysql"
+        }
+      },
+      "end": "(?<=[^)]+)(\\))",
+      "endCaptures": {
+        "1": {
+          "name": "punctuation.reference.tpl.end.easysql"
+        }
+      },
+      "patterns": [
+        {
+          "name": "punctuation.separator.arguments.easysql",
+          "match": "(,)"
+        },
+        { "include": "#var-reference-in-tpl" },
+        { "include": "#var-reference-in-tpl-invalid" },
+        {
+          "match": "(?<=[,(]|^)\\s*(\\w+)\\s*(=)\\s*([^,)]*)(?=[,)\\n])",
+          "captures": {
+            "1": {
+              "name": "variable.parameter.name.tpl.easysql"
+            },
+            "2": {
+              "name": "keyword.operator.assignment.easysql"
+            },
+            "3": {
+              "name": "constant.other.literal.easysql"
+            }
+          }
+        },
+        {
+          "match": "(?<=[,(\\n])\\s*([^=,)]+)(?=[,)])",
+          "captures": {
+            "1": {
+              "name": "invalid.illegal.word.easysql"
+            }
+          }
+        }
+      ]
+    },
+    "tpl-call-invalid": {
+      "name": "invalid.illegal.function.tpl.easysql",
+      "match": "(?<=@{)(.*)",
+      "captures": {
+        "1": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "var-reference-in-tpl": {
+      "name": "meta.tpl-var.easysql",
+      "match": "(?<=[,(]|^)\\s*(\\w+)\\s*(=)\\s*(\\${)\\s*(\\w+)\\s*(})",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.name.tpl.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.assignment.easysql"
+        },
+        "3": {
+          "name": "punctuation.definition.var-reference.begin.easysql"
+        },
+        "4": {
+          "name": "variable.parameter.name.easysql"
+        },
+        "5": {
+          "name": "punctuation.definition.var-reference.end.easysql"
+        }
+      }
+    },
+    "var-reference-in-tpl-invalid": {
+      "name": "meta.tpl-var.easysql",
+      "match": "(?<=[,(])\\s*(\\w+)\\s*(=)\\s*(\\${)\\s*(.*)\\s*(})",
+      "captures": {
+        "1": {
+          "name": "variable.parameter.name.tpl.easysql"
+        },
+        "2": {
+          "name": "keyword.operator.assignment.easysql"
+        },
+        "3": {
+          "name": "punctuation.definition.var-reference.begin.easysql"
+        },
+        "4": {
+          "name": "invalid.illegal.word.easysql"
+        },
+        "5": {
           "name": "punctuation.definition.var-reference.end.easysql"
         }
       }

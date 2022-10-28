@@ -116,7 +116,7 @@ select 1 as a, 2 as b
 -- target=check.check_name
 
 -- '.xx xx' should be illegal word
--- target=check.check_name.xx xx
+-- target=check.check_name.xx xx , xx
 
 -- 'func' should be function name
 -- '${ab}' should be variable reference, and 'ab' should be variable name
@@ -152,3 +152,66 @@ select 1 as a, 2 as b
 -- target=func.func_name(${ab}, cc$123-.ab?c, ${D_abc_890}), if=func(a, b, ${cd?abc}) xx abc
 
 -----------func end----------
+
+
+-----------var-reference-in-body start----------
+
+-- '${a}' '${a,bc}' should be var reference in all cases
+-- '${fn(a,bc)}', '${fn()}' should be var reference func in all cases
+-- TODO: '${fnx()}' should be var reference func
+-- TODO: var reference inside string should be var reference
+-- target=variables
+select
+    ${a} as a
+    , ${a,bc} as abc
+    , ${fn(a,bc)} as abc
+    , ${fn()} as abc
+    'a--bc' as b, ${fnx()} as abc
+    , 'a${a,bc}' as abcd
+    , "a${a,bc}d" as abcde
+    , `${a,bc}d` as abcde
+    , `${fn(a,bc)}d` as abcde
+
+-----------var-reference-in-body end----------
+
+-----------template-definition start----------
+
+-- '#{right_table}' '#{a}' should be template variable reference
+-- '${abc}', '${f(abc)}' should be variable reference
+-- '${abc,}' should be illegal variable reference
+-- TODO: teplate var inside string should be template var reference
+-- target=template.abc
+a=#{right_table}.abc and '#{a}' > 1
+or ${abc} = 1 or ${f(abc)} = 1 and  ${abc,} = 1
+
+-----------template-definition start----------
+
+-----------template-reference-in-body start----------
+
+-- '@{a}' '@{a,bc}' should be template reference in all cases
+-- '@{t1(a=1,bc=${xx})}' should be template reference
+-- '@{t1(a=1,asdf=,bc=${x})}' should be template reference
+-- '@{t1(a=1,asdf=,bc=${f(x)})}' should be template reference, 'f(x)' within it should be invalid word
+-- '@{t1(xx\nxx)}' should be multi-line template reference
+-- TODO: teplate var inside string should be template var reference
+-- target=variables
+select
+    @{t1(a=1, b=2)} as a
+    , @{a} as abc, @{a, bc} as abc
+    --, @{a, bc} as abc
+    , @{a, bc} as abc
+    , @{t1(a=1,bc=${xx})} as abcde
+    , @{t1(a=1,
+        asdf=
+        ,bc=${x})} as abcde
+    ,@{abc(a=1, b=2, c=1,d=2)}
+    -- , @{t1(a=1,asdf=,bc=${f(x)})} as abcde -- comment out this line, since it will affect the highlighting of content below
+    , 'a@{a,bc}' as abcd
+    , "a@{a,bc}d" as abcde
+    , `@{a,bc}d` as abcde
+    , `@{t1(a,bc)}d` as abcde
+    , `@{t1(a=1,bc=${xx})}d` as abcde
+    , `@{t1(a=1,bc=${xx)})}d` as abcde
+
+
+-----------template-reference-in-body end----------

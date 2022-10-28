@@ -2,8 +2,8 @@ var looksSame = require("looks-same");
 
 looksSame.createDiff(
   {
-    reference: "test/code.png",
-    current: "test/code.1.png",
+    reference: "test/code.1.png",
+    current: "test/code.png",
     diff: "test/code.diff.png",
     highlightColor: "#90ee90", // color to highlight the differences
     strict: false, // strict comparsion
