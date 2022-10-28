@@ -15,6 +15,8 @@ select 1 as a, 2 as b
 -- target=variables, if=func(a, b, ${cd})
 select 1 as a, 2 as b
 
+-- 'cd?abc' is not a valid variable name, will be an invalid word
+-- ' xx abc' should not exist, will be invalid word
 -- target=template.abc, if=func(a, b, ${cd?abc}) xx abc
 a=#{right_table}.abc and '#{a}' > 1
 
