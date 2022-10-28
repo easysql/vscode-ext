@@ -215,3 +215,47 @@ select
 
 
 -----------template-reference-in-body end----------
+
+----------- config start--------------
+
+-- 'backend' should be keyword
+-- 'spark' should be constant
+-- backend: spark
+
+-- 'owner' should be keyword
+-- abc', 'bcd' should be constant
+-- '!?asdfasdf, asdf' should be invalid
+-- owner: abc, bdc!?asdfasdf, asdf
+
+-- 'schedule' should be keyword
+-- 'asdf(day=asdf)' should be constant
+-- schedule: asdf(day=asdf)
+
+-- 'config' should be keyword
+-- 'easy_sql.abc' should be constant
+-- '=' should be operator
+-- 'abc=bcdasdf' should be constant
+-- config: easy_sql.abc=abc=bcdasdf
+
+-- 'abc' should be constant
+-- config: dataplat.abc=abc
+
+-- 'inputs' should be keyword
+-- 'a' should be db-name constant
+-- '.' should be operator
+-- 'bc' should be table-name
+-- inputs: a.bc,c.d
+
+-- 'd' should be schema-name
+-- outputs: a.bc, c.de, c.d.e
+
+-- 'prepare-sql' should be keyword
+-- 'drop database if exists sample cascade' should be sql
+-- prepare-sql: create table sample.test as select 1 as id, '1' as val
+
+----------- config end--------------
+
+
+----------- include start--------------
+-- include=/a/bc.sql
+----------- include end--------------
