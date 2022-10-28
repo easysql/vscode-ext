@@ -3,3 +3,4 @@ node_modules
 test/code.1.png
 test/code.diff.png
 Makefile
+out/

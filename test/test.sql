@@ -157,7 +157,7 @@ select 1 as a, 2 as b
 -----------var-reference-in-body start----------
 
 -- '${a}' '${a,bc}' should be var reference in all cases
--- '${fn(a,bc)}', '${fn()}' should be var reference func in all cases
+-- '${fn(a,bc)}', '${fn()}', '${fn(a,${bc})}' should be var reference func in all cases
 -- TODO: '${fnx()}' should be var reference func
 -- TODO: var reference inside string should be var reference
 -- target=variables
@@ -166,6 +166,7 @@ select
     , ${a,bc} as abc
     , ${fn(a,bc)} as abc
     , ${fn()} as abc
+    , ${fn(a,${bc})} as abc
     'a--bc' as b, ${fnx()} as abc
     , 'a${a,bc}' as abcd
     , "a${a,bc}d" as abcde
