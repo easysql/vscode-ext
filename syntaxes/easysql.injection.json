@@ -7,6 +7,7 @@
     { "include": "#config-owner" },
     { "include": "#config-schedule" },
     { "include": "#config-inout" },
+    { "include": "#include" },
     { "include": "#target-invalid" },
     { "include": "#target" },
     { "include": "#var-reference-in-body" },
@@ -124,6 +125,23 @@
         { "include": "#full-table-name-with-schema" },
         { "include": "#full-table-name" }
       ]
+    },
+    "include": {
+      "match": "(^-- )(include)(=)(.*)(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.include.easysql"
+        },
+        "3": {
+          "name": "keyword.operator.assignment.easysql"
+        },
+        "4": {
+          "name": "constant.include.value.easysql"
+        }
+      }
     },
     "target-invalid": {
       "match": "(^-- )(target)(=)((?!variables|list_variables|template|log|check|action|temp|cache|broadcast|output|func).*)",
