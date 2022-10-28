@@ -7,6 +7,7 @@
     { "include": "#config-owner" },
     { "include": "#config-schedule" },
     { "include": "#config-inout" },
+    { "include": "#config-prepare-sql" },
     { "include": "#include" },
     { "include": "#target-invalid" },
     { "include": "#target" },
@@ -125,6 +126,20 @@
         { "include": "#full-table-name-with-schema" },
         { "include": "#full-table-name" }
       ]
+    },
+    "config-prepare-sql": {
+      "match": "(^-- )(prepare-sql)(:)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.prepare-sql.easysql"
+        },
+        "3": {
+          "name": "keyword.operator.assignment.easysql"
+        }
+      }
     },
     "include": {
       "match": "(^-- )(include)(=)(.*)(?=\\n)",
