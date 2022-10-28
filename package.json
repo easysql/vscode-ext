@@ -6,6 +6,10 @@
   "engines": {
     "vscode": "^1.72.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/easysql/vscode-ext.git"
+  },
   "categories": [
     "Programming Languages"
   ],
