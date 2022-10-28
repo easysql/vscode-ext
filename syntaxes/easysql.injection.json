@@ -2,6 +2,8 @@
   "scopeName": "easysql.injection",
   "injectionSelector": "L:source.sql",
   "patterns": [
+    { "include": "#config" },
+    { "include": "#config-inout" },
     { "include": "#target-invalid" },
     { "include": "#target" },
     { "include": "#var-reference-in-body" },
@@ -14,6 +16,49 @@
     { "include": "#tpl-reference-in-body-invalid" }
   ],
   "repository": {
+    "config": {
+      "match": "(^-- )(config|backend)(:)\\s*([^=]*)(=)?(.*)(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.config.easysql"
+        },
+        "3": {
+          "name": "punctuation.separator.config.easysql"
+        },
+        "4": {
+          "name": "constant.config.name.easysql"
+        },
+        "5": {
+          "name": "keyword.operator.assignment.easysql"
+        },
+        "6": {
+          "name": "constant.config.value.easysql"
+        }
+      }
+    },
+    "config-inout": {
+      "begin": "(^-- )(inputs|outputs)(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.config.inout.easysql"
+        },
+        "3": {
+          "name": "punctuation.separator.config.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [
+        { "match": ",", "name": "punctuation.separator.inout.easysql" },
+        { "include": "#full-table-name-with-schema" },
+        { "include": "#full-table-name" }
+      ]
+    },
     "target-invalid": {
       "match": "(^-- )(target)(=)((?!variables|list_variables|template|log|check|action|temp|cache|broadcast|output|func).*)",
       "captures": {
@@ -338,7 +383,7 @@
           "name": "constant.other.db-name.easysql"
         },
         "2": {
-          "name": "keyword.operator.comparison.easysql"
+          "name": "keyword.operator.dot.easysql"
         },
         "3": {
           "name": "constant.other.table-name.easysql"
@@ -355,13 +400,13 @@
           "name": "constant.other.db-name.easysql"
         },
         "2": {
-          "name": "keyword.operator.comparison.easysql"
+          "name": "keyword.operator.dot.easysql"
         },
         "3": {
           "name": "constant.other.schema-name.easysql"
         },
         "4": {
-          "name": "keyword.operator.comparison.easysql"
+          "name": "keyword.operator.dot.easysql"
         },
         "5": {
           "name": "constant.other.table-name.easysql"
