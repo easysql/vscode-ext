@@ -3,6 +3,9 @@
   "injectionSelector": "L:source.sql",
   "patterns": [
     { "include": "#config" },
+    { "include": "#config-backend" },
+    { "include": "#config-owner" },
+    { "include": "#config-schedule" },
     { "include": "#config-inout" },
     { "include": "#target-invalid" },
     { "include": "#target" },
@@ -17,7 +20,7 @@
   ],
   "repository": {
     "config": {
-      "match": "(^-- )(config|backend)(:)\\s*([^=]*)(=)?(.*)(?=\\n)",
+      "match": "(^-- )(config)(:)\\s*([^=]*)(=)?(.*)(?=\\n)",
       "captures": {
         "1": {
           "name": "keyword.start.easysql"
@@ -38,6 +41,69 @@
           "name": "constant.config.value.easysql"
         }
       }
+    },
+    "config-backend": {
+      "match": "(^-- )(backend)(:)\\s*(\\w*)\\s*(.*)?(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.config.backend.easysql"
+        },
+        "3": {
+          "name": "punctuation.separator.config.easysql"
+        },
+        "4": {
+          "name": "constant.backend.name.easysql"
+        },
+        "5": {
+          "name": "invalid.illegal.word.easysql"
+        }
+      }
+    },
+    "config-schedule": {
+      "match": "(^-- )(schedule)(:)(.*)(?=\\n)",
+      "captures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.config.schedule.easysql"
+        },
+        "3": {
+          "name": "punctuation.separator.config.easysql"
+        },
+        "4": {
+          "name": "constant.schedule.value.easysql"
+        }
+      }
+    },
+    "config-owner": {
+      "begin": "(^-- )(owner)(:)",
+      "beginCaptures": {
+        "1": {
+          "name": "keyword.start.easysql"
+        },
+        "2": {
+          "name": "keyword.config.simple.easysql"
+        },
+        "3": {
+          "name": "punctuation.separator.config.easysql"
+        }
+      },
+      "end": "(?=\\n)",
+      "patterns": [
+        { "match": ",", "name": "punctuation.separator.owner.easysql" },
+        {
+          "match": "(?<=:|,)\\s*\\w+\\b",
+          "name": "constant.owner.id.easysql"
+        },
+        {
+          "match": ".*",
+          "name": "invalid.illegal.word.easysql"
+        }
+      ]
     },
     "config-inout": {
       "begin": "(^-- )(inputs|outputs)(:)",
