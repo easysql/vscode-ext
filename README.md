@@ -10,6 +10,28 @@ An example of hightlight screenshot is as below:
 
 ![Highlight screenshot](test/sample.png)
 
+In order to make EasySQL related keyword more obvious, we can customize the colors a little. A recommended settings is as below:
+
+```json
+{
+  ...
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "keyword.target, keyword.config, keyword.prepare-sql, keyword.include",
+        "settings": {
+          "fontStyle": "bold"
+        }
+      }
+    ]
+  }
+  ...
+}
+```
+
+We can add this configuration to user settings.json to make it work. (Open command palette, search for `Open User Settings json`, add the content above to the opened `settings.json` file.)
+This will make the keyword bold.
+
 ## Features
 
 - Hightlight keywords, function calls, variable reference, templates variables, template reference, conditional targets and other items in ETL.
