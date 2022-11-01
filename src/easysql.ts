@@ -390,22 +390,18 @@ export class Parser {
     }
 
     public findCommentStart(content: string): number {
+        // backslash is backslash in sql, it's not used to escape characters.
+        // If we need to insert a quote inside string, just use double quotes. e.g. '''' is for single quote in string.
         const quoteChars = '\'"`';
         let quoteOpen = '';
-        let hasLeadingBackslash = false;
         for (let i = 0; i < content.length; i++) {
             const ch = content.charAt(i);
-            if (ch === '\\') {
-                hasLeadingBackslash = !hasLeadingBackslash;
-                continue;
-            }
             if (quoteChars.includes(ch)) {
-                if (quoteOpen === ch && !hasLeadingBackslash) {
+                if (quoteOpen === ch) {
                     quoteOpen = '';
-                } else if (!quoteOpen && !hasLeadingBackslash) {
+                } else if (!quoteOpen) {
                     quoteOpen = ch;
                 }
-                hasLeadingBackslash = false;
             } else if (ch === '-' && content.charAt(i + 1) === '-' && !quoteOpen) {
                 return i;
             }

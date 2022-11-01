@@ -59,18 +59,18 @@ describe('parser', () => {
     it('should test', () => {
         expect(1).to.eq(1);
     });
-    it('should find comment start', () => {
+    it.only('should find comment start', () => {
         expect(new Parser().findCommentStart('--')).to.eq(0);
         expect(new Parser().findCommentStart('123--')).to.eq(3);
         expect(new Parser().findCommentStart('""--')).to.eq(2);
         expect(new Parser().findCommentStart('"--')).to.eq(-1);
         expect(new Parser().findCommentStart('"\'"--')).to.eq(3);
         expect(new Parser().findCommentStart('"\'"\'--')).to.eq(-1);
-        expect(new Parser().findCommentStart('"\\""--')).to.eq(4);
-        expect(new Parser().findCommentStart('`\\``--')).to.eq(4);
-        expect(new Parser().findCommentStart("'\\''--")).to.eq(4);
-        expect(new Parser().findCommentStart("'\\\\''--")).to.eq(-1);
-        expect(new Parser().findCommentStart("'\\\\\\''--")).to.eq(6);
+        expect(new Parser().findCommentStart('""""--')).to.eq(4);
+        expect(new Parser().findCommentStart('````--')).to.eq(4);
+        expect(new Parser().findCommentStart("''''--")).to.eq(4);
+        expect(new Parser().findCommentStart("'''''--")).to.eq(-1);
+        expect(new Parser().findCommentStart("''''''--")).to.eq(6);
     });
 
     describe('should parse var reference', () => {
