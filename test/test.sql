@@ -251,7 +251,7 @@ select
 -- outputs: a.bc, c.de, c.d.e
 
 -- 'prepare-sql' should be keyword
--- 'drop database if exists sample cascade' should be sql
+-- `create table sample.test as select 1 as id, '1' as val` should be sql
 -- prepare-sql: create table sample.test as select 1 as id, '1' as val
 
 ----------- config end--------------

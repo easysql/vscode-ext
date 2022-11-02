@@ -2,6 +2,7 @@ node_modules
 *.vsix
 test/code.1.png
 test/code.diff.png
+test/test1.sql
 Makefile
 out/
 coverage/
