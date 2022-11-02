@@ -45,8 +45,11 @@ const t = (text: string, type?: TokType) => {
             case ',':
                 tokType = Tok.TYPES.comma;
                 break;
+            case '=':
+                tokType = Tok.TYPES.assignment;
+                break;
             default:
-                throw new Error('unknown tok type!');
+                throw new Error('unknown tok type ' + tokType + ' for text: ' + text);
         }
     }
 
@@ -59,18 +62,31 @@ describe('parser', () => {
     it('should test', () => {
         expect(1).to.eq(1);
     });
-    it.only('should find comment start', () => {
-        expect(new Parser().findCommentStart('--')).to.eq(0);
-        expect(new Parser().findCommentStart('123--')).to.eq(3);
-        expect(new Parser().findCommentStart('""--')).to.eq(2);
-        expect(new Parser().findCommentStart('"--')).to.eq(-1);
-        expect(new Parser().findCommentStart('"\'"--')).to.eq(3);
-        expect(new Parser().findCommentStart('"\'"\'--')).to.eq(-1);
-        expect(new Parser().findCommentStart('""""--')).to.eq(4);
-        expect(new Parser().findCommentStart('````--')).to.eq(4);
-        expect(new Parser().findCommentStart("''''--")).to.eq(4);
-        expect(new Parser().findCommentStart("'''''--")).to.eq(-1);
-        expect(new Parser().findCommentStart("''''''--")).to.eq(6);
+    it('should find comment start', () => {
+        expect(new Parser().findCommentStartInCurrentLine('--')).to.eq(0);
+        expect(new Parser().findCommentStartInCurrentLine('123--')).to.eq(3);
+        expect(new Parser().findCommentStartInCurrentLine('""--')).to.eq(2);
+        expect(new Parser().findCommentStartInCurrentLine('"--')).to.eq(-1);
+        expect(new Parser().findCommentStartInCurrentLine('"\'"--')).to.eq(3);
+        expect(new Parser().findCommentStartInCurrentLine('"\'"\'--')).to.eq(-1);
+        expect(new Parser().findCommentStartInCurrentLine('""""--')).to.eq(4);
+        expect(new Parser().findCommentStartInCurrentLine('````--')).to.eq(4);
+        expect(new Parser().findCommentStartInCurrentLine("''''--")).to.eq(4);
+        expect(new Parser().findCommentStartInCurrentLine("'''''--")).to.eq(-1);
+        expect(new Parser().findCommentStartInCurrentLine("''''''--")).to.eq(6);
+        expect(new Parser().findCommentStartInCurrentLine('\n--')).to.eq(-1);
+        expect(new Parser().findCommentStartInCurrentLine('abc\n--')).to.eq(-1);
+    });
+
+    it('should find open quote in the current line', () => {
+        expect(new Parser().findOpenQuoteInCurrentLine('')).to.eq(-1);
+        expect(new Parser().findOpenQuoteInCurrentLine('"')).to.eq(0);
+        expect(new Parser().findOpenQuoteInCurrentLine('""\'')).to.eq(2);
+        expect(new Parser().findOpenQuoteInCurrentLine('""\n\'')).to.eq(-1);
+        expect(new Parser().findOpenQuoteInCurrentLine('"\'"\'')).to.eq(3);
+        expect(new Parser().findOpenQuoteInCurrentLine("'''")).to.eq(2);
+        expect(new Parser().findOpenQuoteInCurrentLine("''''")).to.eq(-1);
+        expect(new Parser().findOpenQuoteInCurrentLine("''''\"")).to.eq(4);
     });
 
     describe('should parse var reference', () => {
@@ -123,6 +139,19 @@ describe('parser', () => {
                     new Sentinel([t('${'), t(' ', Tok.TYPES.whiteSpace)]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' ', Tok.TYPES.whiteSpace), t('}')])
+                )
+            );
+        });
+
+        it('var with line break', () => {
+            const parser = new Parser();
+            content = '${\n a\n }';
+            pos = 0;
+            expect(parser.parseSingleVar(content)).to.deep.eq(
+                new VarReference(
+                    new Sentinel([t('${'), t('\n ', Tok.TYPES.whiteSpace)]),
+                    new Name(t('a', Tok.TYPES.name)),
+                    new Sentinel([t('\n ', Tok.TYPES.whiteSpace), t('}')])
                 )
             );
         });
@@ -184,6 +213,46 @@ describe('parser', () => {
                     new Name(t('func', Tok.TYPES.name)),
                     new Sentinel([t('(')]),
                     [],
+                    new Sentinel([t(')'), t('}')])
+                )
+            );
+        });
+
+        it('func with line break', () => {
+            const parser = new Parser();
+            content = '${ \tfunc(\n)}';
+            pos = 0;
+            expect(parser.parseSingleFuncCall(content)).to.deep.eq(
+                new VarFuncCall(
+                    new Sentinel([t('${'), t(' \t', Tok.TYPES.whiteSpace)]),
+                    new Name(t('func', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [new Sentinel([t('\n', Tok.TYPES.whiteSpace)])],
+                    new Sentinel([t(')'), t('}')])
+                )
+            );
+        });
+
+        it('func with line break between args', () => {
+            const parser = new Parser();
+            content = '${ \tfunc(a\nb,\nb,\n, ${!!}, )}';
+            pos = 0;
+            expect(parser.parseSingleFuncCall(content)).to.deep.eq(
+                new VarFuncCall(
+                    new Sentinel([t('${'), t(' \t', Tok.TYPES.whiteSpace)]),
+                    new Name(t('func', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [
+                        new Lit(t('a\nb', Tok.TYPES.nameWide)),
+                        new Sentinel([t(','), t('\n', Tok.TYPES.whiteSpace)]),
+                        new Lit(t('b', Tok.TYPES.nameWide)),
+                        new Sentinel([t(','), t('\n', Tok.TYPES.whiteSpace)]),
+                        new Lit(t('', Tok.TYPES.nameWide)),
+                        new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                        new VarReference(new Sentinel([t('${')]), new Name(t('!!', Tok.TYPES.name)), new Sentinel([t('}')])),
+                        new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                        new Lit(t('', Tok.TYPES.nameWide))
+                    ],
                     new Sentinel([t(')'), t('}')])
                 )
             );
@@ -317,11 +386,102 @@ describe('parser', () => {
                 new VarReference(new Sentinel([t('${')]), new Name(t('lit', Tok.TYPES.name)), new Sentinel([t('}')]))
             ]);
         });
+
+        it('multi line tpl call', () => {
+            const parser = new Parser();
+
+            content = '--abc@{tpl(a=lit,\nb=${abc})}';
+            pos = 0;
+            expect(parser.parse(content, true)).to.deep.eq([
+                new Any(t('--abc', Tok.TYPES.any)),
+                new TplFuncCall(
+                    new Sentinel([t('@{')]),
+                    new Name(t('tpl', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [
+                        new TplFuncArg(
+                            new Sentinel([]),
+                            new Name(t('a', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new Lit(t('lit', Tok.TYPES.nameWide)),
+                            new Sentinel([])
+                        ),
+                        new Sentinel([t(',')]),
+                        new TplFuncArg(
+                            new Sentinel([t('\n', Tok.TYPES.whiteSpace)]),
+                            new Name(t('b', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new VarReference(new Sentinel([t('${')]), new Name(t('abc', Tok.TYPES.name)), new Sentinel([t('}')])),
+                            new Sentinel([])
+                        )
+                    ],
+                    new Sentinel([t(')'), t('}')])
+                )
+            ]);
+        });
+
+        it('double multi line tpl call', () => {
+            const parser = new Parser();
+
+            content = '--abc@{tpl(a=lit,\nb=${abc})}  @{tpl(a=lit,\nb=${abc})}';
+            pos = 0;
+            expect(parser.parse(content, true)).to.deep.eq([
+                new Any(t('--abc', Tok.TYPES.any)),
+                new TplFuncCall(
+                    new Sentinel([t('@{')]),
+                    new Name(t('tpl', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [
+                        new TplFuncArg(
+                            new Sentinel([]),
+                            new Name(t('a', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new Lit(t('lit', Tok.TYPES.nameWide)),
+                            new Sentinel([])
+                        ),
+                        new Sentinel([t(',')]),
+                        new TplFuncArg(
+                            new Sentinel([t('\n', Tok.TYPES.whiteSpace)]),
+                            new Name(t('b', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new VarReference(new Sentinel([t('${')]), new Name(t('abc', Tok.TYPES.name)), new Sentinel([t('}')])),
+                            new Sentinel([])
+                        )
+                    ],
+                    new Sentinel([t(')'), t('}')])
+                ),
+                new Any(t('  ', Tok.TYPES.any)),
+                new TplFuncCall(
+                    new Sentinel([t('@{')]),
+                    new Name(t('tpl', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [
+                        new TplFuncArg(
+                            new Sentinel([]),
+                            new Name(t('a', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new Lit(t('lit', Tok.TYPES.nameWide)),
+                            new Sentinel([])
+                        ),
+                        new Sentinel([t(',')]),
+                        new TplFuncArg(
+                            new Sentinel([t('\n', Tok.TYPES.whiteSpace)]),
+                            new Name(t('b', Tok.TYPES.name)),
+                            new Sentinel([t('=')]),
+                            new VarReference(new Sentinel([t('${')]), new Name(t('abc', Tok.TYPES.name)), new Sentinel([t('}')])),
+                            new Sentinel([])
+                        )
+                    ],
+                    new Sentinel([t(')'), t('}')])
+                )
+            ]);
+        });
+
         it('ignore comment and quotes', () => {
             const parser = new Parser();
             content = "ab'c${lit(a, ${b})}--";
             pos = 0;
-            expect(parser.parse(content, true)).to.deep.eq([
+            expect(parser.parse(content, true, true)).to.deep.eq([
                 new Any(t("ab'c", Tok.TYPES.any)),
                 new VarFuncCall(
                     new Sentinel([t('${')]),
@@ -344,21 +504,25 @@ describe('parser', () => {
             pos = 0;
             expect(parser.parse(content, true)).to.deep.eq([new Any(t('--abc$\\{lit(a, $\\{b})}', Tok.TYPES.any))]);
         });
-        it('enable comment', () => {
+        it('comment at the head', () => {
             const parser = new Parser();
             content = '--abc${lit(a, ${b})}';
             pos = 0;
             expect(parser.parse(content)).to.deep.eq([
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit(a, ${b})}', Tok.TYPES.any))
             ]);
-
+        });
+        it('comment in the middle', () => {
+            const parser = new Parser();
             content = 'xx--abc${lit(a, ${b})}';
             pos = 0;
             expect(parser.parse(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit(a, ${b})}', Tok.TYPES.any))
             ]);
-
+        });
+        it('comment with more dash', () => {
+            const parser = new Parser();
             content = 'xx---abc${lit(a, ${b})}';
             pos = 0;
             expect(parser.parse(content)).to.deep.eq([
