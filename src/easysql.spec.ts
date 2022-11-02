@@ -61,7 +61,7 @@ const t = (text: string, type?: TokType) => {
 
 describe('parser', () => {
     describe('tok', () => {
-        it.only('check valid', () => {
+        it('check valid', () => {
             expect(new Tok(0, 2, 'bc', Tok.TYPES.nameWide).isValid).to.true;
         });
     });
@@ -141,6 +141,19 @@ describe('parser', () => {
                 new VarReference(
                     new Sentinel([t('${'), t(' ', Tok.TYPES.whiteSpace)]),
                     new Name(t('a', Tok.TYPES.name)),
+                    new Sentinel([t(' ', Tok.TYPES.whiteSpace), t('}')])
+                )
+            );
+        });
+
+        it('var with white space in between name', () => {
+            const parser = new Parser();
+            content = '${ a bc }';
+            pos = 0;
+            expect(parser.parseSingleVar(content)).to.deep.eq(
+                new VarReference(
+                    new Sentinel([t('${'), t(' ', Tok.TYPES.whiteSpace)]),
+                    new Name(t('a bc', Tok.TYPES.name)),
                     new Sentinel([t(' ', Tok.TYPES.whiteSpace), t('}')])
                 )
             );
@@ -639,7 +652,31 @@ describe('parser', () => {
             ]);
         });
 
-        it.only('invalid var reference in string', () => {
+        it.only('invalid quote in var func call', () => {
+            const parser = new Parser();
+            content = '${f(a=1,asdf=,${f(x)})} as abcde -- com';
+            pos = 0;
+            console.log(JSON.stringify(parser.parse(content), null, 2));
+            expect(parser.parse(content)).to.deep.eq([
+                new VarFuncCall(
+                    new Sentinel([t('${')]),
+                    new Name(t('f', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [
+                        new Lit(t('a=1', Tok.TYPES.nameWide)),
+                        new Sentinel([t(',')]),
+                        new Lit(t('asdf=', Tok.TYPES.nameWide)),
+                        new Sentinel([t(',')]),
+                        new Lit(t('${f(x', Tok.TYPES.nameWide))
+                    ],
+                    new Sentinel([t(')'), t('}')])
+                ),
+                new Any(t(')} as abcde ', Tok.TYPES.any)),
+                new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t(' com', Tok.TYPES.any))
+            ]);
+        });
+
+        it('invalid var reference in string', () => {
             const parser = new Parser();
             content = ', `${a,bc}d` as abcde';
             pos = 0;

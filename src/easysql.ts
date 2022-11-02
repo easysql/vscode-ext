@@ -297,24 +297,34 @@ class SingleVarParser {
         // start node
         const startToks = [new Tok(0, 2, content, tokType)];
         const nameContent = content.substring(2, content.length - 1);
-        const matches = nameContent.match(/^(\s*)([^\s]*)(\s*)$/);
-        if (!matches) {
+        const startMatches = nameContent.match(/^(\s*)/);
+        if (!startMatches) {
             throw new Error('Must have a match, found nothing');
         }
         const start = 2;
-        if (matches[1]) {
-            startToks.push(new Tok(start, matches[1].length, content, Tok.TYPES.whiteSpace));
+        if (startMatches[1]) {
+            startToks.push(new Tok(start, startMatches[1].length, content, Tok.TYPES.whiteSpace));
         }
         const startNode = new Sentinel(startToks);
 
+        const endMatches = nameContent.match(/(\s*)$/);
+        if (!endMatches) {
+            throw new Error('Must have a match, found nothing');
+        }
+
         // var name node
-        const varTok = new Tok(start + matches[1].length, matches[2].length, content, Tok.TYPES.name);
+        const varTok = new Tok(
+            start + startMatches[1].length,
+            nameContent.length - startMatches[1].length - endMatches[1].length,
+            content,
+            Tok.TYPES.name
+        );
         const varName = new Name(varTok);
 
         // end node
         const endToks: Tok[] = [];
-        if (matches[3]) {
-            endToks.push(new Tok(start + matches[1].length + matches[2].length, matches[3].length, content, Tok.TYPES.whiteSpace));
+        if (endMatches[1]) {
+            endToks.push(new Tok(start + endMatches.index!, endMatches[1].length, content, Tok.TYPES.whiteSpace));
         }
         endToks.push(new Tok(content.length - 1, 1, content, Tok.TYPES.curlyBracketEnd));
         const endNode = new Sentinel(endToks);

@@ -126,7 +126,7 @@ select #{xx} @{a(,\na=b\n,c=\${a})}
         expect(new HighlightTokenParser().parse(content)).to.deep.eq(expected);
     });
 
-    it.only('should parse func', () => {
+    it('should parse func', () => {
         const content = `
 , \`\${fn(a,bc)}d\` as abcde
         `;
