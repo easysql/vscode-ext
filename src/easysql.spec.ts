@@ -60,8 +60,10 @@ const t = (text: string, type?: TokType) => {
 };
 
 describe('parser', () => {
-    it('should test', () => {
-        expect(1).to.eq(1);
+    describe('tok', () => {
+        it.only('check valid', () => {
+            expect(new Tok(0, 2, 'bc', Tok.TYPES.nameWide).isValid).to.true;
+        });
     });
     it('should find comment start', () => {
         expect(new Parser().findCommentStartInCurrentLine('--')).to.eq(0);
@@ -548,7 +550,22 @@ describe('parser', () => {
             ]);
         });
 
-        it.only('multi line tpl call with comment inside', () => {
+        it('space and var reference in string', () => {
+            const parser = new Parser();
+            content = "select ' ${abc}' from 123 -- comment";
+            pos = 0;
+            console.log(parser.parse(content));
+            expect(parser.parse(content)).to.deep.eq([
+                new Any(t('select ', Tok.TYPES.any)),
+                new Str(t("' ", Tok.TYPES.any)),
+                new VarReference(new Sentinel([t('${')]), new Name(t('abc', Tok.TYPES.name)), new Sentinel([t('}')])),
+                new Str(t("'", Tok.TYPES.quote)),
+                new Any(t(' from 123 ', Tok.TYPES.any)),
+                new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t(' comment', Tok.TYPES.any))
+            ]);
+        });
+
+        it('multi line tpl call with comment inside', () => {
             const parser = new Parser();
             content = 'xx"", @{lib(--abc\na=3)}';
             pos = 0;
@@ -619,6 +636,19 @@ describe('parser', () => {
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('${b})}', Tok.TYPES.any)),
                 new Any(t('\n', Tok.TYPES.any)),
                 new Any(t('abc', Tok.TYPES.any))
+            ]);
+        });
+
+        it.only('invalid var reference in string', () => {
+            const parser = new Parser();
+            content = ', `${a,bc}d` as abcde';
+            pos = 0;
+            expect(parser.parse(content)).to.deep.eq([
+                new Any(t(', ', Tok.TYPES.any)),
+                new Str(t('`', Tok.TYPES.quote)),
+                new VarReference(new Sentinel([t('${')]), new Name(t('a,bc', Tok.TYPES.name)), new Sentinel([t('}')])),
+                new Str(t('d`', Tok.TYPES.any)),
+                new Any(t(' as abcde', Tok.TYPES.any))
             ]);
         });
 

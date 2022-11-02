@@ -1,40 +1,12 @@
 import * as vscode from 'vscode';
+import { HighlightTokenParser, TokenTypes } from './highlight';
 
-const tokenTypes = new Map<string, number>();
-const tokenModifiers = new Map<string, number>();
-
-const legend = (function () {
-    const tokenTypesLegend = [
-        'string',
-        'number',
-        'operator',
-        'function',
-        'variable',
-        'parameter',
-        'varReferenceBegin',
-        'varReferenceEnd',
-        'parameterName'
-    ];
-    tokenTypesLegend.forEach((tokenType, index) => tokenTypes.set(tokenType, index));
-
-    const tokenModifiersLegend: string[] = [];
-    tokenModifiersLegend.forEach((tokenModifier, index) => tokenModifiers.set(tokenModifier, index));
-
-    return new vscode.SemanticTokensLegend(tokenTypesLegend, tokenModifiersLegend);
-})();
+const legend = new vscode.SemanticTokensLegend(Object.keys(TokenTypes), []);
 
 export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider({ language: 'sql' }, new DocumentSemanticTokensProvider(), legend)
     );
-}
-
-interface IParsedToken {
-    line: number;
-    startCharacter: number;
-    length: number;
-    tokenType: string;
-    tokenModifiers: string[];
 }
 
 class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
@@ -44,22 +16,18 @@ class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensPro
         // allTokens.forEach((token) => {
         //     builder.push(token.line, token.startCharacter, token.length, this._encodeTokenType(token.tokenType));
         // });
-        const builder = new vscode.SemanticTokensBuilder();
+        // const builder = new vscode.SemanticTokensBuilder();
         // 'ab${a}cc'
-        builder.push(0, 0, 3, this._encodeTokenType('string'));
-        builder.push(0, 3, 2, this._encodeTokenType('varReferenceBegin'));
-        builder.push(0, 5, 1, this._encodeTokenType('parameterName'));
-        builder.push(0, 6, 1, this._encodeTokenType('varReferenceEnd'));
-        builder.push(0, 7, 2, this._encodeTokenType('string'));
-        return builder.build();
-    }
+        // builder.push(0, 0, 3, this._encodeTokenType('string'));
+        // builder.push(0, 3, 2, this._encodeTokenType('varReferenceBegin'));
+        // builder.push(0, 5, 1, this._encodeTokenType('parameterName'));
+        // builder.push(0, 6, 1, this._encodeTokenType('varReferenceEnd'));
+        // builder.push(0, 7, 2, this._encodeTokenType('string'));
 
-    private _encodeTokenType(tokenType: string): number {
-        if (tokenTypes.has(tokenType)) {
-            return tokenTypes.get(tokenType)!;
-        } else if (tokenType === 'notInLegend') {
-            return tokenTypes.size + 2;
-        }
-        return 0;
+        const builder = new vscode.SemanticTokensBuilder();
+        new HighlightTokenParser().parse(document.getText()).forEach((token) => {
+            builder.push(token.line, token.startCharacter, token.length, token.tokenType);
+        });
+        return builder.build();
     }
 }

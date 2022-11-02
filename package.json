@@ -32,11 +32,17 @@
         "semanticTokenScopes": [
             {
                 "scopes": {
-                    "varReferenceBegin": [
+                    "literal": ["constant.character","constant.other.literal.easysql"],
+                    "invalid": ["invalid.illegal","invalid.illegal.word.easysql"],
+                    "operatorBegin": [
                         "keyword.operator",
                         "punctuation.definition.var-reference.begin.easysql"
                     ],
-                    "varReferenceEnd": [
+                    "operator": [
+                        "keyword.operator",
+                        "punctuation.definition.var-reference.begin.easysql"
+                    ],
+                    "operatorEnd": [
                         "keyword.operator",
                         "punctuation.definition.var-reference.end.easysql"
                     ],

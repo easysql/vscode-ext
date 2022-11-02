@@ -80,6 +80,19 @@ export class Tok {
         return this.content.substring(this.start, this.start + this.length);
     }
 
+    get isValid() {
+        if (this.tokeType.isAssignment) {
+            return this.text === '=';
+        }
+        if (this.tokeType.isName) {
+            return /^[a-zA-Z_]\w*$/.test(this.text);
+        }
+        if (this.tokeType.isNameWide) {
+            return /^[^,()$\n'"`]*$/.test(this.text);
+        }
+        return true;
+    }
+
     addCharOfLength(charLength: number) {
         if (charLength < 0) {
             this.start += charLength; // add to head
@@ -344,7 +357,7 @@ export class Parser {
         let nodes: EasySqlNode[] = [];
         let tplCallMatch = content.match(/@{(\n|[^'"`(}])+\((\n|[^'"`)])*\)(\n|\s)*}/);
         let funcCallMatch = content.match(/\${([^'"`(}])+\(([^'"`)])*\)(\s)*}/);
-        let varMatch = content.match(/[$#]{[^}]*}/);
+        let varMatch = content.match(/[$@#]{[^}]*}/);
         let quoteMatch = ignoreQuote ? null : content.match(/(['"`])/);
         const nextLineBreakIdx = content.indexOf('\n');
         if (nextLineBreakIdx !== -1) {
@@ -457,12 +470,12 @@ export class Parser {
         // change first any and add starting quote to str
         if (nodesInStr.length && nodesInStr[0] instanceof Any) {
             nodesFromStr.push(nodesInStr[0].addCharOfLength(-1).asStr()); // include starting quote
+            nodesInStr.splice(0, 1);
         } else {
             nodesFromStr.push(new Str(new Tok(quoteStartIdx, 1, content, Tok.TYPES.quote)));
         }
-        nodesInStr.splice(0, 1);
         if (nodesInStr.length && nodesInStr[0] instanceof Any) {
-            throw new Error('Should not contain 1 Any node at the top. Found: ' + nodesInStr[0].join());
+            throw new Error('Should not contain Any node at the top. Found: ' + nodesInStr[0].join());
         }
 
         // add nodes, and change last any and add ending quote to str
@@ -470,6 +483,7 @@ export class Parser {
             nodesFromStr = nodesFromStr.concat(nodesInStr.slice(0, nodesInStr.length - 1).map((node) => (node instanceof Any ? node.asStr() : node)));
             nodesFromStr.push((nodesInStr[nodesInStr.length - 1] as Any).addCharOfLength(1).asStr()); // include end quote
         } else {
+            nodesFromStr = nodesFromStr.concat(nodesInStr.map((node) => (node instanceof Any ? node.asStr() : node)));
             nodesFromStr.push(new Str(new Tok(quoteEndIdx, 1, content, Tok.TYPES.quote)));
         }
 
@@ -674,12 +688,25 @@ export class VarReference extends EasySqlNode {
     constructor(public start: Sentinel, public var_: Name, public end: Sentinel) {
         super();
     }
+
+    get bracketStartTok() {
+        return this.start.getToks().find((tok) => tok.tokeType.isVarCurlyBracketStart)!;
+    }
+
+    get bracketEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isCurlyBracketEnd)!;
+    }
+
     getToks() {
         return this.start.getToks().concat(this.var_.getToks()).concat(this.end.getToks());
     }
 
     getChildren() {
         return [this.var_];
+    }
+
+    get varTok() {
+        return this.var_.tok;
     }
 }
 
@@ -704,6 +731,21 @@ export class VarFuncCall extends EasySqlNode {
     getChildren() {
         return [this.funcName, ...this.args.filter((node) => !(node instanceof Sentinel))];
     }
+
+    get argStartTok() {
+        return this.argStart.getToks().find((tok) => tok.tokeType.isParenthesisStart)!;
+    }
+
+    get argEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isParenthesisEnd)!;
+    }
+    get bracketStartTok() {
+        return this.start.getToks().find((tok) => tok.tokeType.isVarCurlyBracketStart)!;
+    }
+
+    get bracketEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isCurlyBracketEnd)!;
+    }
 }
 
 export class TplReference extends EasySqlNode {
@@ -716,6 +758,18 @@ export class TplReference extends EasySqlNode {
     getChildren() {
         return [this.tpl];
     }
+
+    get bracketStartTok() {
+        return this.start.getToks().find((tok) => tok.tokeType.isTplCurlyBracketStart)!;
+    }
+
+    get bracketEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isCurlyBracketEnd)!;
+    }
+
+    get varTok() {
+        return this.tpl.tok;
+    }
 }
 
 export class TplVarReference extends EasySqlNode {
@@ -727,6 +781,18 @@ export class TplVarReference extends EasySqlNode {
     }
     getChildren() {
         return [this.var_];
+    }
+
+    get bracketStartTok() {
+        return this.start.getToks().find((tok) => tok.tokeType.isTplVarCurlyBracketStart)!;
+    }
+
+    get bracketEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isCurlyBracketEnd)!;
+    }
+
+    get varTok() {
+        return this.var_.tok;
     }
 }
 
@@ -742,6 +808,11 @@ export class TplFuncArg extends EasySqlNode {
             .concat(this.value.getToks())
             .concat(this.end.getToks());
     }
+
+    get assignmentTok() {
+        return this.assignment.getToks().find((tok) => tok.tokeType.isAssignment)!;
+    }
+
     getChildren() {
         return [this.name];
     }
@@ -767,6 +838,20 @@ export class TplFuncCall extends EasySqlNode {
     }
     getChildren() {
         return [this.funcName, ...this.args.filter((node) => !(node instanceof Sentinel))];
+    }
+    get argStartTok() {
+        return this.argStart.getToks().find((tok) => tok.tokeType.isParenthesisStart)!;
+    }
+
+    get argEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isParenthesisEnd)!;
+    }
+    get bracketStartTok() {
+        return this.start.getToks().find((tok) => tok.tokeType.isTplCurlyBracketStart)!;
+    }
+
+    get bracketEndTok() {
+        return this.end.getToks().find((tok) => tok.tokeType.isCurlyBracketEnd)!;
     }
 }
 
