@@ -83,8 +83,10 @@ export class Tok {
     addCharOfLength(charLength: number) {
         if (charLength < 0) {
             this.start += charLength; // add to head
+            this.length += -charLength;
+        } else {
+            this.length += charLength; // add to end
         }
-        this.length += charLength; // add to end
     }
 
     resetParentTokFrom(start: number, content: string) {
@@ -146,7 +148,7 @@ class SinlgeFuncCallParser {
         const funcName = funcCallContent.substring(0, parenthesisStart + 1);
         const matches = funcName.match(/^(\s*)([^\s]+)\($/);
         if (!matches) {
-            throw new Error('Must have a match, found nothing');
+            throw new Error('Must have a match, found nothing: ' + funcCallContent);
         }
 
         const sentinelToks = [];
@@ -312,10 +314,14 @@ class SingleVarParser {
     }
 }
 
+let i = 0;
 export class Parser {
     parse(content: string, ignoreComment?: boolean, ignoreQuote?: boolean): EasySqlNode[] {
-        const fullContent = content;
-
+        i += 1;
+        if (i > 50) {
+            throw new Error('stuck overflow');
+        }
+        console.log(`parsing content: ${content}, ignoreComment=${ignoreComment}, ignoreQuote=${ignoreQuote}`);
         if (ignoreQuote && !ignoreComment) {
             throw new Error("If quote is ignored, comment must be ignored. Since we don't need to find comments inside a string!");
         }
@@ -336,13 +342,31 @@ export class Parser {
         }
 
         let nodes: EasySqlNode[] = [];
-        const tplCallMatch = content.match(/@{(\n|[^'"`(])+\((\n|[^'"`)])*\)(\n|\s)*}/);
-        const funcCallMatch = content.match(/\${([^'"`(])+\(([^'"`)])*\)(\s)*}/);
-        const varMatch = content.match(/\${[^}]*}/);
-        const quoteMatch = ignoreQuote ? null : content.match(/['"`]/);
+        let tplCallMatch = content.match(/@{(\n|[^'"`(}])+\((\n|[^'"`)])*\)(\n|\s)*}/);
+        let funcCallMatch = content.match(/\${([^'"`(}])+\(([^'"`)])*\)(\s)*}/);
+        let varMatch = content.match(/[$#]{[^}]*}/);
+        let quoteMatch = ignoreQuote ? null : content.match(/(['"`])/);
+        const nextLineBreakIdx = content.indexOf('\n');
+        if (nextLineBreakIdx !== -1) {
+            if (tplCallMatch && tplCallMatch.index! > nextLineBreakIdx) {
+                tplCallMatch = null;
+            }
+            if (funcCallMatch && funcCallMatch.index! > nextLineBreakIdx) {
+                funcCallMatch = null;
+            }
+            if (varMatch && varMatch.index! > nextLineBreakIdx) {
+                varMatch = null;
+            }
+            if (quoteMatch && quoteMatch.index! > nextLineBreakIdx) {
+                quoteMatch = null;
+            }
+        }
+
         const firstMatch = this.findFirstMatch([tplCallMatch, funcCallMatch, varMatch, quoteMatch]);
         if (firstMatch) {
-            nodes.push(new Any(new Tok(0, firstMatch.index!, content, Tok.TYPES.any)));
+            if (firstMatch.index! !== 0) {
+                nodes.push(new Any(new Tok(0, firstMatch.index!, content, Tok.TYPES.any)));
+            }
             let nextStartIndex = firstMatch.index! + firstMatch[0].length;
             if (firstMatch === varMatch) {
                 nodes.push(this.parseSingleVar(firstMatch[0]).resetTokFrom(firstMatch.index!, content));
@@ -360,7 +384,16 @@ export class Parser {
         }
 
         if (content) {
-            return [new Any(new Tok(0, content.length, fullContent, Tok.TYPES.any)) as EasySqlNode];
+            const nextLineBreakIdx = content.indexOf('\n');
+            if (nextLineBreakIdx !== -1) {
+                const nodes: EasySqlNode[] = [
+                    new Any(new Tok(0, nextLineBreakIdx === -1 ? content.length : nextLineBreakIdx + 1, content, Tok.TYPES.any))
+                ];
+                return nodes.concat(
+                    this.parse(content.substring(nextLineBreakIdx + 1)).map((node) => node.resetTokFrom(nextLineBreakIdx + 1, content))
+                );
+            }
+            return [new Any(new Tok(0, content.length, content, Tok.TYPES.any)) as EasySqlNode];
         }
 
         return [];
@@ -383,14 +416,21 @@ export class Parser {
 
     private parseContentWithCommentInCurrentLine(content: string, commentStartIdx: number) {
         let nodes: EasySqlNode[] = [];
+
+        const nextLineBreakIdx = content.indexOf('\n');
         nodes = nodes.concat(this.parse(content.substring(0, commentStartIdx), true).map((node) => node.resetTokFrom(0, content)));
         nodes.push(
             new Comment(
                 new Sentinel([new Tok(commentStartIdx, 2, content, Tok.TYPES.commentStart)]),
-                new Tok(commentStartIdx + 2, content.length - commentStartIdx - 2, content, Tok.TYPES.any)
+                new Tok(
+                    commentStartIdx + 2,
+                    (nextLineBreakIdx === -1 ? content.length : nextLineBreakIdx) - commentStartIdx - 2,
+                    content,
+                    Tok.TYPES.any
+                )
             )
         );
-        const nextLineBreakIdx = content.indexOf('\n');
+
         if (nextLineBreakIdx !== -1) {
             nodes.push(new Sentinel([new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.whiteSpace)]));
             this.parse(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
@@ -406,7 +446,7 @@ export class Parser {
             throw new Error('No quote end found, this should not happen! Current line: ' + content.substring(0, quoteEndIdx + 1));
         }
 
-        const stringContent = content.substring(quoteStartIdx + 1, quoteEndIdx - 1);
+        const stringContent = content.substring(quoteStartIdx + 1, quoteEndIdx);
         if (stringContent.includes('\n')) {
             throw new Error('No line break should be included in string. This should not happen! Current string: ' + stringContent);
         }
@@ -427,12 +467,18 @@ export class Parser {
 
         // add nodes, and change last any and add ending quote to str
         if (nodesInStr.length && nodesInStr[nodesInStr.length - 1] instanceof Any) {
-            nodesFromStr = nodesFromStr.concat(nodesInStr.slice(0, nodesInStr.length - 1));
-            nodesFromStr.push((nodesInStr[nodesInStr.length - 1] as Any).addCharOfLength(1).asStr()); // include starting quote
+            nodesFromStr = nodesFromStr.concat(nodesInStr.slice(0, nodesInStr.length - 1).map((node) => (node instanceof Any ? node.asStr() : node)));
+            nodesFromStr.push((nodesInStr[nodesInStr.length - 1] as Any).addCharOfLength(1).asStr()); // include end quote
         } else {
             nodesFromStr.push(new Str(new Tok(quoteEndIdx, 1, content, Tok.TYPES.quote)));
         }
-        nodesFromStr.push(new Sentinel([new Tok(quoteEndIdx, 1, content, Tok.TYPES.quote)]));
+
+        if (nodesFromStr.length === 2) {
+            // only start and end, merge them into one
+            const [start, end] = [nodesFromStr[0] as Str, nodesFromStr[1] as Str];
+            nodesFromStr = [new Str(new Tok(start.text.start, start.text.length + end.text.length, start.text.content, Tok.TYPES.any))];
+        }
+
         return [nodesFromStr, quoteEndIdx];
     }
 
