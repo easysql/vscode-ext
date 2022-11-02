@@ -4,3 +4,5 @@ test/code.1.png
 test/code.diff.png
 Makefile
 out/
+coverage/
+.nyc_output/

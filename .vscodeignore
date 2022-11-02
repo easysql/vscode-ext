@@ -4,3 +4,5 @@
 vsc-extension-quickstart.md
 test/
 spike.md
+coverage/
+.nyc_output/
