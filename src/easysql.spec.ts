@@ -534,6 +534,36 @@ describe('parser', () => {
 
         it('multi line comment with string', () => {
             const parser = new Parser();
+            content = '\nc${lit}("a"\n\n';
+            pos = 0;
+            console.log(parser.parse(content));
+            expect(parser.parse(content)).to.deep.eq([
+                new Any(t('\n', Tok.TYPES.any)),
+                new Any(t('c', Tok.TYPES.any)),
+                new VarReference(new Sentinel([t('${')]), new Name(t('lit', Tok.TYPES.name)), new Sentinel([t('}')])),
+                new Any(t('(', Tok.TYPES.any)),
+                new Str(t('"a"', Tok.TYPES.any)),
+                new Any(t('\n', Tok.TYPES.any)),
+                new Any(t('\n', Tok.TYPES.any))
+            ]);
+        });
+
+        it.only('multi line tpl call with comment inside', () => {
+            const parser = new Parser();
+            content = 'xx"", @{lib(--abc\na=3)}';
+            pos = 0;
+            expect(parser.parse(content)).to.deep.eq([
+                new Any(t('xx', Tok.TYPES.any)),
+                new Str(t('""', Tok.TYPES.any)),
+                new Any(t(', @{lib(', Tok.TYPES.any)),
+                new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc', Tok.TYPES.any)),
+                new Any(t('\n', Tok.TYPES.any)),
+                new Any(t('a=3)}', Tok.TYPES.any))
+            ]);
+        });
+
+        it('multi line comment with string', () => {
+            const parser = new Parser();
             content = 'xx"", ---abc${\nlit("a", --${b})}';
             pos = 0;
             expect(parser.parse(content)).to.deep.eq([
