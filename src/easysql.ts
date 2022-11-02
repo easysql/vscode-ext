@@ -319,7 +319,7 @@ export class Parser {
     parse(content: string, ignoreComment?: boolean, ignoreQuote?: boolean): EasySqlNode[] {
         i += 1;
         if (i > 50) {
-            throw new Error('stuck overflow');
+            // throw new Error('stuck overflow');
         }
         console.log(`parsing content: ${content}, ignoreComment=${ignoreComment}, ignoreQuote=${ignoreQuote}`);
         if (ignoreQuote && !ignoreComment) {
@@ -401,14 +401,14 @@ export class Parser {
 
     private parseContentWithOpenQuoteInCurrentLine(content: string, openQuoteIdx: number) {
         let nodes: EasySqlNode[] = [];
-        nodes = nodes.concat(this.parse(content.substring(0, openQuoteIdx), true, true).map((node) => node.resetTokFrom(0, content)));
+        nodes = nodes.concat(this.parse(content.substring(0, openQuoteIdx), true).map((node) => node.resetTokFrom(0, content)));
 
         const nextLineBreakIdx = content.indexOf('\n');
         const openStrLength = nextLineBreakIdx === -1 ? content.length - openQuoteIdx : nextLineBreakIdx - openQuoteIdx;
-        nodes.push(new Str(new Tok(0, openStrLength, content, Tok.TYPES.any)));
+        nodes.push(new Str(new Tok(openQuoteIdx, openStrLength, content, Tok.TYPES.any)));
 
         if (nextLineBreakIdx !== -1) {
-            nodes.push(new Sentinel([new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.whiteSpace)]));
+            nodes.push(new Any(new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.any)));
             this.parse(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
         }
         return nodes;
@@ -432,7 +432,7 @@ export class Parser {
         );
 
         if (nextLineBreakIdx !== -1) {
-            nodes.push(new Sentinel([new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.whiteSpace)]));
+            nodes.push(new Any(new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.any)));
             this.parse(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
         }
         return nodes;

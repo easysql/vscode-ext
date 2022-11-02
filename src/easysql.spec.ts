@@ -541,7 +541,7 @@ describe('parser', () => {
                 new Str(t('""', Tok.TYPES.any)),
                 new Any(t(', ', Tok.TYPES.any)),
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('-abc${', Tok.TYPES.any)),
-                new Sentinel([t('\n', Tok.TYPES.whiteSpace)]),
+                new Any(t('\n', Tok.TYPES.any)),
                 new Any(t('lit(', Tok.TYPES.any)),
                 new Str(t('"a"', Tok.TYPES.any)),
                 new Any(t(', ', Tok.TYPES.any)),
@@ -549,11 +549,10 @@ describe('parser', () => {
             ]);
         });
 
-        it.only('multi line var/func with string', () => {
+        it('multi line var/func with string', () => {
             const parser = new Parser();
             content = 'xx"aa${a} ${f()}#{abc} @{t(a=1,"")}"\n`@{abc}';
             pos = 0;
-            console.log(parser.parse(content));
             expect(parser.parse(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Str(t('"aa', Tok.TYPES.any)),
@@ -574,7 +573,24 @@ describe('parser', () => {
             ]);
         });
 
-        it('multi line comment with open quote', () => {});
+        it('multi line comment with open quote', () => {
+            const parser = new Parser();
+            content = 'xx"", \'--${abc}\nlit("a", --${b})}\nabc';
+            pos = 0;
+            expect(parser.parse(content)).to.deep.eq([
+                new Any(t('xx', Tok.TYPES.any)),
+                new Str(t('""', Tok.TYPES.any)),
+                new Any(t(', ', Tok.TYPES.any)),
+                new Str(t("'--${abc}", Tok.TYPES.any)),
+                new Any(t('\n', Tok.TYPES.any)),
+                new Any(t('lit(', Tok.TYPES.any)),
+                new Str(t('"a"', Tok.TYPES.any)),
+                new Any(t(', ', Tok.TYPES.any)),
+                new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('${b})}', Tok.TYPES.any)),
+                new Any(t('\n', Tok.TYPES.any)),
+                new Any(t('abc', Tok.TYPES.any))
+            ]);
+        });
 
         it.skip('TODO: should ignore parsing when identity chars disabled', () => {
             const parser = new Parser();
