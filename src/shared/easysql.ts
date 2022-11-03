@@ -1,3 +1,5 @@
+import { logger } from '../shared/logger';
+
 export class TokType {
     constructor(public id: number, public name: string) {}
 
@@ -344,7 +346,7 @@ export class Parser {
         if (i > 50) {
             // throw new Error('stuck overflow');
         }
-        console.log(`parsing content: ${content}, ignoreComment=${ignoreComment}, ignoreQuote=${ignoreQuote}`);
+        logger.debug(`parsing content: ${content}, ignoreComment=${ignoreComment}, ignoreQuote=${ignoreQuote}`);
         if (ignoreQuote && !ignoreComment) {
             throw new Error("If quote is ignored, comment must be ignored. Since we don't need to find comments inside a string!");
         }
@@ -474,7 +476,7 @@ export class Parser {
             throw new Error('No line break should be included in string. This should not happen! Current string: ' + stringContent);
         }
 
-        console.log('parsing string: ', stringContent);
+        logger.debug('parsing string: ', stringContent);
         const nodesInStr = this.parse(stringContent, true, true).map((node) => node.resetTokFrom(quoteStartIdx + 1, content));
 
         // change first any and add starting quote to str

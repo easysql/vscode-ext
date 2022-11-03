@@ -17,6 +17,7 @@ import {
     TplFuncArg,
     Str
 } from './easysql';
+import { logger } from './logger';
 
 let content = '';
 let pos = 0;
@@ -58,6 +59,8 @@ const t = (text: string, type?: TokType) => {
     pos += text.length;
     return tok;
 };
+
+logger.setLevel('DEBUG');
 
 describe('parser', () => {
     describe('tok', () => {

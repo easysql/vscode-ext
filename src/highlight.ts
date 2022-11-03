@@ -1,4 +1,17 @@
-import { EasySqlNode, Lit, Parser, Str, Tok, TplFuncArg, TplFuncCall, TplReference, TplVarReference, VarFuncCall, VarReference } from './easysql';
+import {
+    EasySqlNode,
+    Lit,
+    Parser,
+    Str,
+    Tok,
+    TplFuncArg,
+    TplFuncCall,
+    TplReference,
+    TplVarReference,
+    VarFuncCall,
+    VarReference
+} from './shared/easysql';
+import { logger } from './shared/logger';
 
 type TokenType = number;
 
@@ -30,9 +43,9 @@ export class HighlightTokenParser {
         try {
             ast = new Parser().parse(content);
         } catch (err) {
-            console.log(err);
+            logger.error('Parse content to AST failed', err);
         }
-        console.log(ast);
+        logger.debug('Parseed AST: ', ast);
 
         const nodeTypesNeedToHandle = [VarReference, VarFuncCall, TplReference, TplFuncCall, TplVarReference, Str];
         const needToHandle = (node: EasySqlNode) => nodeTypesNeedToHandle.findIndex((type) => node instanceof type) !== -1;

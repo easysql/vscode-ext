@@ -7,3 +7,4 @@ Makefile
 out/
 coverage/
 .nyc_output/
+version
