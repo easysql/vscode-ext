@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as vscode from 'vscode';
 import { HighlightTokenParser, TokenTypes } from './highlight';
 
@@ -7,27 +8,68 @@ export function activate(context: vscode.ExtensionContext) {
     context.subscriptions.push(
         vscode.languages.registerDocumentSemanticTokensProvider({ language: 'sql' }, new DocumentSemanticTokensProvider(), legend)
     );
+    activateLanguageServer(context);
+}
+
+export function deactivate(): Thenable<void> | undefined {
+    return deactivateLanguageServer();
 }
 
 class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
     async provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
-        // const allTokens = this._parseText(document.getText());
-        // const builder = new vscode.SemanticTokensBuilder();
-        // allTokens.forEach((token) => {
-        //     builder.push(token.line, token.startCharacter, token.length, this._encodeTokenType(token.tokenType));
-        // });
-        // const builder = new vscode.SemanticTokensBuilder();
-        // 'ab${a}cc'
-        // builder.push(0, 0, 3, this._encodeTokenType('string'));
-        // builder.push(0, 3, 2, this._encodeTokenType('varReferenceBegin'));
-        // builder.push(0, 5, 1, this._encodeTokenType('parameterName'));
-        // builder.push(0, 6, 1, this._encodeTokenType('varReferenceEnd'));
-        // builder.push(0, 7, 2, this._encodeTokenType('string'));
-
         const builder = new vscode.SemanticTokensBuilder();
         new HighlightTokenParser().parse(document.getText()).forEach((token) => {
             builder.push(token.line, token.startCharacter, token.length, token.tokenType);
         });
         return builder.build();
     }
+}
+
+import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
+import { logger } from './shared/logger';
+
+let client: LanguageClient;
+
+export function activateLanguageServer(context: vscode.ExtensionContext) {
+    // The server is implemented in node
+    const serverModule = context.asAbsolutePath(path.join('server', 'out', 'server.js'));
+    // The debug options for the server
+    // --inspect=6009: runs the server in Node's Inspector mode so VS Code can attach to the server for debugging
+    const debugOptions = { execArgv: ['--nolazy', '--inspect=6009'] };
+
+    // If the extension is launched in debug mode then the debug server options are used
+    // Otherwise the run options are used
+    const serverOptions: ServerOptions = {
+        run: { module: serverModule, transport: TransportKind.ipc },
+        debug: {
+            module: serverModule,
+            transport: TransportKind.ipc,
+            options: debugOptions
+        }
+    };
+
+    // Options to control the language client
+    const clientOptions: LanguageClientOptions = {
+        // Register the server for plain text documents
+        documentSelector: [{ scheme: 'file', language: 'sql' }],
+        synchronize: {
+            // Notify the server about file changes to '.clientrc files contained in the workspace
+            fileEvents: vscode.workspace.createFileSystemWatcher('**/.clientrc')
+        }
+    };
+
+    // Create the language client and start the client.
+    client = new LanguageClient('languageServerExample', 'Language Server Example', serverOptions, clientOptions);
+
+    // Start the client. This will also launch the server
+    client.start();
+
+    logger.info('start server...');
+}
+
+export function deactivateLanguageServer(): Thenable<void> | undefined {
+    if (!client) {
+        return undefined;
+    }
+    return client.stop();
 }

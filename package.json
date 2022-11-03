@@ -2,9 +2,9 @@
     "name": "easysql",
     "displayName": "Easy SQL",
     "description": "Language support for ETLs developed in Easy SQL. Includes syntax highlighting, code completion, usage doc, file jumpping and so on.",
-    "version": "0.1.1",
+    "version": "0.2.1",
     "engines": {
-        "vscode": "^1.72.0"
+        "vscode": "^1.68.0"
     },
     "publisher": "EasySQL",
     "icon": "icon/icon_black_256x256.png",
@@ -52,7 +52,19 @@
                     ]
                 }
             }
-        ]
+        ],
+        "configuration": {
+			"type": "object",
+			"title": "EasySQL language server configuration",
+			"properties": {
+				"languageServerEasySQL.maxNumberOfProblems": {
+					"scope": "resource",
+					"type": "number",
+					"default": 100,
+					"description": "Controls the maximum number of problems produced by the server."
+				}
+			}
+		}
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",
@@ -61,6 +73,9 @@
         "watch": "tsc -watch -p ./",
         "unittest": "ts-mocha -p tsconfig.json src/**/*.spec.ts -w --watch-files '**/*.ts'",
         "coverage": "nyc --reporter=lcov --reporter=text-summary ts-mocha -p tsconfig.json src/**/*.spec.ts"
+    },
+    "dependencies": {
+        "vscode-languageclient": "^7.0.0"
     },
     "devDependencies": {
         "@types/chai": "^4.3.3",
