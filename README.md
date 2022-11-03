@@ -38,14 +38,19 @@ This will make the keyword bold.
 
 ## Known Issues
 
-- Strings with '--' inside affects variable/template highlight.
-- Variable/template reference highlight inside strings does not work.
+- The performace of the semantic analyzer may need to be improved.
+- Semantic analysis support: variable could be put anywhere in a function call
+- Semantic analysis support: template variable could be put anywhere in the template body
 
 ## Release Notes
 
 Basic highlight for ETLs written in Easy SQL.
 
-### 1.0.0
+### 0.2.0
+
+Syntax highlight based on semantic analysis result.
+
+### 0.1.0
 
 Syntax highlight.
 
