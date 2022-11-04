@@ -1,0 +1,475 @@
+{
+    "funcs": [
+        {
+            "label": "ensure_dwd_partition_exists(__step__, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})"
+        },
+        {
+            "label": "ensure_partition_exists(__step__, ${1:*args}, ${2:...})"
+        },
+        {
+            "label": "ensure_partition_or_first_partition_exists(__step__, ${1:*args}, ${2:...})"
+        },
+        {
+            "label": "ensure_table_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})"
+        },
+        {
+            "label": "ensure_table_partition_or_first_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})"
+        },
+        {
+            "label": "get_first_partition(${1:table_name})"
+        },
+        {
+            "label": "get_first_partition_optional(${1:table_name})"
+        },
+        {
+            "label": "get_last_partition(${1:table_name})"
+        },
+        {
+            "label": "get_partition_col(${1:table_name})"
+        },
+        {
+            "label": "get_partition_cols(${1:table_name})"
+        },
+        {
+            "label": "get_partition_or_first_partition(${1:table_name}, ${2:partition_value})"
+        },
+        {
+            "label": "get_partition_values_as_joined_str(${1:table_name})"
+        },
+        {
+            "label": "has_partition_col(${1:table_name})"
+        },
+        {
+            "label": "is_first_partition(${1:table_name}, ${2:partition_value})"
+        },
+        {
+            "label": "is_not_first_partition(${1:table_name}, ${2:partition_value})"
+        },
+        {
+            "label": "partition_exists(${1:table_name}, ${2:partition_value})"
+        },
+        {
+            "label": "partition_not_exists(${1:table_name}, ${2:partition_value})"
+        },
+        {
+            "label": "previous_partition_exists(${1:table_name}, ${2:curr_partition_value_as_dt})"
+        },
+        {
+            "label": "all_cols_prefixed_with_exclusion_expr(${1:table_name}, ${2:prefix}, ${3:*cols_to_exclude}, ${4:...})"
+        },
+        {
+            "label": "all_cols_with_exclusion_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})"
+        },
+        {
+            "label": "all_cols_without_one_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})"
+        },
+        {
+            "label": "alert(__step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})"
+        },
+        {
+            "label": "alert_exception_handler(${1:rule_name}, ${2:mentioned_users})"
+        },
+        {
+            "label": "alert_with_backend(__backend__, __step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})"
+        },
+        {
+            "label": "check_not_null_column_in_table(__step__, ${1:table_name}, ${2:not_null_column}, ${3:query})"
+        },
+        {
+            "label": "ensure_no_null_data_in_table(__step__, ${1:table_name}, ${2:query})"
+        },
+        {
+            "label": "bq_model_predict_with_local_spark(${1:model_save_path}, ${2:input_table_name}, ${3:output_table_name}, ${4:feature_cols}, ${5:id_col}, ${6:output_ref_cols})"
+        },
+        {
+            "label": "model_predict_with_local_spark(${1:model_save_path}, ${2:input_table_name}, ${3:output_table_name}, ${4:feature_cols}, ${5:id_col}, ${6:output_ref_cols})"
+        },
+        {
+            "label": "move_file(${1:source_file}, ${2:target_file})"
+        },
+        {
+            "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count})"
+        },
+        {
+            "label": "abs(${1:a})"
+        },
+        {
+            "label": "all(${1:iterable})"
+        },
+        {
+            "label": "any(${1:iterable})"
+        },
+        {
+            "label": "ascii(${1:obj})"
+        },
+        {
+            "label": "bin(${1:number})"
+        },
+        {
+            "label": "bool()"
+        },
+        {
+            "label": "breakpoint()"
+        },
+        {
+            "label": "bytearray()"
+        },
+        {
+            "label": "bytes()"
+        },
+        {
+            "label": "callable(${1:obj})"
+        },
+        {
+            "label": "chr(${1:i})"
+        },
+        {
+            "label": "classmethod()"
+        },
+        {
+            "label": "compile(${1:source}, ${2:filename}, ${3:mode}, ${4:flags}, ${5:dont_inherit}, ${6:optimize}, ${7:_feature_version})"
+        },
+        {
+            "label": "complex(${1:real}, ${2:imag})"
+        },
+        {
+            "label": "copyright()"
+        },
+        {
+            "label": "credits()"
+        },
+        {
+            "label": "delattr(${1:obj}, ${2:name})"
+        },
+        {
+            "label": "dict()"
+        },
+        {
+            "label": "dir()"
+        },
+        {
+            "label": "divmod(${1:x}, ${2:y})"
+        },
+        {
+            "label": "enumerate(${1:iterable}, ${2:start})"
+        },
+        {
+            "label": "eval(${1:source}, ${2:globals}, ${3:locals})"
+        },
+        {
+            "label": "exec(${1:source}, ${2:globals}, ${3:locals})"
+        },
+        {
+            "label": "exit(${1:code})"
+        },
+        {
+            "label": "filter()"
+        },
+        {
+            "label": "float(${1:x})"
+        },
+        {
+            "label": "format(${1:value}, ${2:format_spec})"
+        },
+        {
+            "label": "frozenset()"
+        },
+        {
+            "label": "getattr()"
+        },
+        {
+            "label": "globals()"
+        },
+        {
+            "label": "hasattr(${1:obj}, ${2:name})"
+        },
+        {
+            "label": "hash(${1:obj})"
+        },
+        {
+            "label": "hex(${1:number})"
+        },
+        {
+            "label": "id(${1:obj})"
+        },
+        {
+            "label": "input(${1:prompt})"
+        },
+        {
+            "label": "int()"
+        },
+        {
+            "label": "isinstance(${1:obj}, ${2:class_or_tuple})"
+        },
+        {
+            "label": "issubclass(${1:cls}, ${2:class_or_tuple})"
+        },
+        {
+            "label": "iter()"
+        },
+        {
+            "label": "len(${1:obj})"
+        },
+        {
+            "label": "license()"
+        },
+        {
+            "label": "list(${1:iterable})"
+        },
+        {
+            "label": "locals()"
+        },
+        {
+            "label": "map()"
+        },
+        {
+            "label": "max()"
+        },
+        {
+            "label": "memoryview(${1:object})"
+        },
+        {
+            "label": "min()"
+        },
+        {
+            "label": "next()"
+        },
+        {
+            "label": "object()"
+        },
+        {
+            "label": "oct(${1:number})"
+        },
+        {
+            "label": "open(${1:file}, ${2:mode}, ${3:buffering}, ${4:encoding}, ${5:errors}, ${6:newline}, ${7:closefd}, ${8:opener})"
+        },
+        {
+            "label": "ord(${1:c})"
+        },
+        {
+            "label": "pow(${1:a}, ${2:b})"
+        },
+        {
+            "label": "print()"
+        },
+        {
+            "label": "property(${1:fget}, ${2:fset}, ${3:fdel}, ${4:doc})"
+        },
+        {
+            "label": "quit(${1:code})"
+        },
+        {
+            "label": "range()"
+        },
+        {
+            "label": "repr(${1:obj})"
+        },
+        {
+            "label": "reversed(${1:sequence})"
+        },
+        {
+            "label": "round(${1:number}, ${2:ndigits})"
+        },
+        {
+            "label": "set()"
+        },
+        {
+            "label": "setattr(${1:obj}, ${2:name}, ${3:value})"
+        },
+        {
+            "label": "slice()"
+        },
+        {
+            "label": "sorted(${1:iterable}, ${2:key}, ${3:reverse})"
+        },
+        {
+            "label": "staticmethod()"
+        },
+        {
+            "label": "str()"
+        },
+        {
+            "label": "sum(${1:iterable}, ${2:start})"
+        },
+        {
+            "label": "super()"
+        },
+        {
+            "label": "tuple(${1:iterable})"
+        },
+        {
+            "label": "type()"
+        },
+        {
+            "label": "vars()"
+        },
+        {
+            "label": "zip()"
+        },
+        {
+            "label": "add(${1:a}, ${2:b})"
+        },
+        {
+            "label": "and_(${1:a}, ${2:b})"
+        },
+        {
+            "label": "attrgetter()"
+        },
+        {
+            "label": "concat(${1:a}, ${2:b})"
+        },
+        {
+            "label": "contains(${1:a}, ${2:b})"
+        },
+        {
+            "label": "countOf(${1:a}, ${2:b})"
+        },
+        {
+            "label": "delitem(${1:a}, ${2:b})"
+        },
+        {
+            "label": "eq(${1:a}, ${2:b})"
+        },
+        {
+            "label": "floordiv(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ge(${1:a}, ${2:b})"
+        },
+        {
+            "label": "getitem(${1:a}, ${2:b})"
+        },
+        {
+            "label": "gt(${1:a}, ${2:b})"
+        },
+        {
+            "label": "iadd(${1:a}, ${2:b})"
+        },
+        {
+            "label": "iand(${1:a}, ${2:b})"
+        },
+        {
+            "label": "iconcat(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ifloordiv(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ilshift(${1:a}, ${2:b})"
+        },
+        {
+            "label": "imatmul(${1:a}, ${2:b})"
+        },
+        {
+            "label": "imod(${1:a}, ${2:b})"
+        },
+        {
+            "label": "imul(${1:a}, ${2:b})"
+        },
+        {
+            "label": "index(${1:a})"
+        },
+        {
+            "label": "indexOf(${1:a}, ${2:b})"
+        },
+        {
+            "label": "inv(${1:a})"
+        },
+        {
+            "label": "invert(${1:a})"
+        },
+        {
+            "label": "ior(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ipow(${1:a}, ${2:b})"
+        },
+        {
+            "label": "irshift(${1:a}, ${2:b})"
+        },
+        {
+            "label": "is_(${1:a}, ${2:b})"
+        },
+        {
+            "label": "is_not(${1:a}, ${2:b})"
+        },
+        {
+            "label": "isub(${1:a}, ${2:b})"
+        },
+        {
+            "label": "itemgetter()"
+        },
+        {
+            "label": "itruediv(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ixor(${1:a}, ${2:b})"
+        },
+        {
+            "label": "le(${1:a}, ${2:b})"
+        },
+        {
+            "label": "length_hint(${1:obj}, ${2:default})"
+        },
+        {
+            "label": "lshift(${1:a}, ${2:b})"
+        },
+        {
+            "label": "lt(${1:a}, ${2:b})"
+        },
+        {
+            "label": "matmul(${1:a}, ${2:b})"
+        },
+        {
+            "label": "methodcaller()"
+        },
+        {
+            "label": "mod(${1:a}, ${2:b})"
+        },
+        {
+            "label": "mul(${1:a}, ${2:b})"
+        },
+        {
+            "label": "ne(${1:a}, ${2:b})"
+        },
+        {
+            "label": "neg(${1:a})"
+        },
+        {
+            "label": "not_(${1:a})"
+        },
+        {
+            "label": "or_(${1:a}, ${2:b})"
+        },
+        {
+            "label": "pos(${1:a})"
+        },
+        {
+            "label": "rshift(${1:a}, ${2:b})"
+        },
+        {
+            "label": "setitem(${1:a}, ${2:b}, ${3:c})"
+        },
+        {
+            "label": "sub(${1:a}, ${2:b})"
+        },
+        {
+            "label": "truediv(${1:a}, ${2:b})"
+        },
+        {
+            "label": "truth(${1:a})"
+        },
+        {
+            "label": "xor(${1:a}, ${2:b})"
+        },
+        {
+            "label": "equal(${1:a}, ${2:b})"
+        },
+        {
+            "label": "is_greater_or_equal(${1:a}, ${2:b})"
+        },
+        {
+            "label": "equal_ignore_case(${1:a}, ${2:b})"
+        }
+    ]
+}

@@ -325,7 +325,7 @@ class SingleVarParser {
         }
         const startNode = new Sentinel(startToks);
 
-        const endMatches = nameContent.match(/(\s*)$/);
+        const endMatches = nameContent.substring(startMatches[1]?.length || 0).match(/(\s*)$/);
         if (!endMatches) {
             throw new Error('Must have a match, found nothing');
         }
@@ -342,7 +342,7 @@ class SingleVarParser {
         // end node
         const endToks: Tok[] = [];
         if (endMatches[1]) {
-            endToks.push(new Tok(start + endMatches.index!, endMatches[1].length, content, Tok.TYPES.whiteSpace));
+            endToks.push(new Tok(start + (startMatches[1]?.length || 0) + endMatches.index!, endMatches[1].length, content, Tok.TYPES.whiteSpace));
         }
         endToks.push(new Tok(content.length - 1, 1, content, Tok.TYPES.curlyBracketEnd));
         const endNode = new Sentinel(endToks);

@@ -43,7 +43,7 @@ export function activateLanguageServer(context: vscode.ExtensionContext) {
     };
 
     // Create the language client and start the client.
-    client = new LanguageClient('languageServerExample', 'Language Server Example', serverOptions, clientOptions);
+    client = new LanguageClient('languageServerEasySQL', 'Language Server Easy SQL', serverOptions, clientOptions);
 
     // Start the client. This will also launch the server
     client.start();

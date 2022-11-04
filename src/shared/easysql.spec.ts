@@ -655,7 +655,7 @@ describe('parser', () => {
             ]);
         });
 
-        it.only('invalid quote in var func call', () => {
+        it('invalid quote in var func call', () => {
             const parser = new Parser();
             content = '${f(a=1,asdf=,${f(x)})} as abcde -- com';
             pos = 0;
