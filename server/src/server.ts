@@ -37,6 +37,7 @@ connection.onInitialize((params: InitializeParams) => {
                 resolveProvider: true,
                 triggerCharacters: ['{', '.', '=', ' ', '-']
             },
+            hoverProvider: true,
             semanticTokensProvider: { legend, full: true, range: true }
         }
     };
@@ -117,6 +118,10 @@ connection.onCompletion((_textDocumentPosition: TextDocumentPositionParams): Com
 // the completion list.
 connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
     return services.completer.resolveInformation(item);
+});
+
+connection.onHover((param) => {
+    return services.hoverProvider.onHover(param.position, param.textDocument.uri);
 });
 
 // Make the text document manager listen on the connection
