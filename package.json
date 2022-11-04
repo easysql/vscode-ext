@@ -18,7 +18,7 @@
     "activationEvents": [
         "onLanguage:sql"
     ],
-    "main": "./out/extension.js",
+    "main": "./out/main.js",
     "contributes": {
         "grammars": [
             {
@@ -32,8 +32,14 @@
         "semanticTokenScopes": [
             {
                 "scopes": {
-                    "literal": ["constant.character","constant.other.literal.easysql"],
-                    "invalid": ["invalid.illegal","invalid.illegal.word.easysql"],
+                    "literal": [
+                        "constant.character",
+                        "constant.other.literal.easysql"
+                    ],
+                    "invalid": [
+                        "invalid.illegal",
+                        "invalid.illegal.word.easysql"
+                    ],
                     "operatorBegin": [
                         "keyword.operator",
                         "punctuation.definition.var-reference.begin.easysql"
@@ -54,23 +60,26 @@
             }
         ],
         "configuration": {
-			"type": "object",
-			"title": "EasySQL language server configuration",
-			"properties": {
-				"languageServerEasySQL.maxNumberOfProblems": {
-					"scope": "resource",
-					"type": "number",
-					"default": 100,
-					"description": "Controls the maximum number of problems produced by the server."
-				}
-			}
-		}
+            "type": "object",
+            "title": "EasySQL language server configuration",
+            "properties": {
+                "languageServerEasySQL.maxNumberOfProblems": {
+                    "scope": "resource",
+                    "type": "number",
+                    "default": 100,
+                    "description": "Controls the maximum number of problems produced by the server."
+                }
+            }
+        }
     },
     "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
+        "vscode:prepublish": "npm run client:vscode:prepublish && npm run server:vscode:prepublish",
+        "client:vscode:prepublish": "npm run esbuild-base -- --minify",
+        "server:vscode:prepublish": "cd server && npm run vscode:prepublish",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
         "lint": "eslint . --ext .ts,.tsx",
-        "watch": "tsc -watch -p ./",
         "unittest": "ts-mocha -p tsconfig.json src/**/*.spec.ts -w --watch-files '**/*.ts'",
         "coverage": "nyc --reporter=lcov --reporter=text-summary ts-mocha -p tsconfig.json src/**/*.spec.ts"
     },
@@ -86,6 +95,7 @@
         "@typescript-eslint/eslint-plugin": "^5.30.0",
         "@typescript-eslint/parser": "^5.30.0",
         "chai": "^4.3.6",
+        "esbuild": "^0.15.13",
         "eslint": "^8.20.0",
         "eslint-config-prettier": "^8.3.0",
         "eslint-plugin-prettier": "^4.0.0",

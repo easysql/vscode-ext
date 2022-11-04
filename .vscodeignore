@@ -6,3 +6,12 @@ test/
 spike.md
 coverage/
 .nyc_output/
+node_modules/
+server/src/
+tech.md
+src/
+server/src
+server/*.json
+server/out/*.map
+server/node_modules
+out/*.map

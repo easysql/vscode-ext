@@ -15,6 +15,9 @@
 		"vscode-languageserver-textdocument": "^1.0.4"
 	},
 	"scripts": {
-        "watch": "tsc -watch -p ./"
+		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"esbuild-base": "esbuild ./src/server.ts --bundle --outfile=out/server.js --external:vscode --format=cjs --platform=node",
+        "esbuild": "npm run esbuild-base -- --sourcemap",
+        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch"
     }
 }
