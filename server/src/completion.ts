@@ -36,7 +36,7 @@ const funcDocAsCompletionItem: (funcDoc: FuncDoc, i: number) => CompletionItem =
     };
 };
 
-const simpleKeywords = ['backend: ', 'target=variables', 'target=func', 'target=check', 'target=list_variables'];
+const simpleKeywords = ['backend:', 'target=variables', 'target=func', 'target=check', 'target=list_variables'];
 const keywordsWithParams = [
     'inputs: ${1:*input_table_name}, ${2:...}',
     'outputs: ${1:*input_table_name}, ${2:...}',
@@ -61,10 +61,16 @@ export class CodeCompleter {
             (keyword) =>
                 ({
                     label: keyword,
+                    insertText: keyword,
                     kind: CompletionItemKind.Unit
                 } as CompletionItem)
         )
         .concat(keywordsWithParams.map(simpleLabelAsCompletionItem));
+    private readonly backendCompletionItems = ['spark', 'postgres', 'clickhouse', 'bigquery', 'flink'].map((backend) => ({
+        label: backend,
+        insertText: backend,
+        kind: CompletionItemKind.Unit
+    }));
 
     resolveInformation(item: CompletionItem): CompletionItem {
         item.detail = item.label;
@@ -79,8 +85,23 @@ export class CodeCompleter {
         console.log('on complete: ', text);
 
         if (text) {
+            if (text === '-') {
+                return this.keywordItems.map((item) => ({
+                    ...item,
+                    insertText: '- ' + item.insertText
+                }));
+            }
+            if (text === '--') {
+                return this.keywordItems.map((item) => ({
+                    ...item,
+                    insertText: ' ' + item.insertText
+                }));
+            }
             if (text === '-- ') {
                 return this.keywordItems;
+            }
+            if (text === '-- backend: ') {
+                return this.backendCompletionItems;
             }
             text = text.trimEnd();
             return this.completeFunctions(line!, text, doc!, params.position);
