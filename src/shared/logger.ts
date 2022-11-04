@@ -22,6 +22,23 @@ export class Logger {
         this.levelId = this.levelIds[level];
     }
 
+    timed<R>(func: () => R, level: LoggerLevel, _msg: string, ...args: any): R {
+        const start = new Date();
+        this.log(level, `Start to ${_msg}`, ...args);
+        try {
+            const result = func();
+            const end = new Date();
+            const timeSpent = end.getTime() - start.getTime();
+            this.log(level, `(Time spent: ${timeSpent}ms) Succeeded to ${_msg}`, ...args);
+            return result;
+        } catch (err) {
+            const end = new Date();
+            const timeSpent = end.getTime() - start.getTime();
+            this.log(level, `(Time spent: ${timeSpent}ms) Failed to ${_msg}`, ...args);
+            throw err;
+        }
+    }
+
     log(level: LoggerLevel, _msg: string, ...args: any) {
         if (this.levelId > this.levelIds[level]) {
             return;

@@ -1,7 +1,7 @@
 import { Range } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentAsts } from './ast';
-import { Parser } from './shared/easysql';
+import { EasySqlNode, Parser } from './shared/easysql';
 import { HighlightTokenParser } from './shared/highlight';
 import { logger } from './shared/logger';
 
@@ -14,10 +14,7 @@ export class HighlightTokens {
         return this._getEncodedTokens(ast, content);
     }
 
-    private _getEncodedTokens(
-        ast: import('/Users/gmliao/dev/projects/ftms/dataplat-vscode/easy-sql/server/src/shared/easysql').EasySqlNode[],
-        content: string
-    ) {
+    private _getEncodedTokens(ast: EasySqlNode[], content: string) {
         let lastLineNumber = 0;
         let lastCharacter = 0;
         return this.highlightTokenParser.parseAst(ast, content).flatMap((tok) => {
@@ -30,9 +27,8 @@ export class HighlightTokens {
     }
 
     getEncodedTokensByRange(doc: TextDocument, range: Range): number[] {
-        logger.info('get token from range: ', range);
         const content = doc.getText(range);
-        const ast = this.parser.parse(content);
+        const ast = logger.timed(() => this.parser.parse(content), 'INFO', `get token for doc ${doc.uri} of range: `, range);
         return this._getEncodedTokens(ast, content);
     }
 }

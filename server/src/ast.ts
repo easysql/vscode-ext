@@ -1,5 +1,6 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { EasySqlNode, Parser } from './shared/easysql';
+import { logger } from './shared/logger';
 
 export class DocumentAsts {
     constructor(public parser: Parser, public maxCacheCount = 10) {}
@@ -14,7 +15,7 @@ export class DocumentAsts {
             }
             return this.cachedAsts.get(doc.uri)!;
         }
-        const ast = this.parser.parse(doc.getText());
+        const ast = logger.timed(() => this.parser.parse(doc.getText()), 'INFO', 'create ast for doc: ', doc.uri);
         this.cachedAsts.set(doc.uri, ast);
         this.cachedUris.push(doc.uri);
         if (this.cachedUris.length > this.maxCacheCount) {
