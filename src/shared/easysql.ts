@@ -90,9 +90,25 @@ export class Tok {
             return /^[a-zA-Z_]\w*$/.test(this.text);
         }
         if (this.tokeType.isNameWide) {
-            return /^[^,()$\n'"`]*$/.test(this.text);
+            return /^[^,()\n'"`]+$/.test(this.text);
         }
         return true;
+    }
+
+    get invalidReason() {
+        if (this.tokeType.isAssignment) {
+            return 'Must be an assignment.';
+        }
+        if (this.tokeType.isName) {
+            return 'An identifier or keyword cannot immediately follow a numeric literal.';
+        }
+        if (this.tokeType.isNameWide) {
+            return 'A literal cannot contain characters of ,()\'"` . Please define a variable instead.';
+        }
+        if (!this.text) {
+            return 'Must not be empty.';
+        }
+        return 'Unknown.';
     }
 
     addCharOfLength(charLength: number) {

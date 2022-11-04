@@ -4,53 +4,38 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { logger } from './shared/logger';
 import { Settings } from './types';
+import { EasySqlNode, Parser } from './shared/easysql';
 
 export class CodeDiagnosticProvider {
     constructor(private settings: Settings) {}
+    private parser = new Parser();
 
     async validateTextDocument(textDocument: TextDocument): Promise<Diagnostic[]> {
-        logger.info('validateTextDocument...');
         // In this simple example we get the settings for every validate run.
         const settings = await this.settings.getDocumentSettings(textDocument.uri);
 
-        // The validator creates diagnostics for all uppercase words length 2 and more
-        const text = textDocument.getText();
-        const pattern = /\b[A-Z]{2,}\b/g;
-        let m: RegExpExecArray | null;
-
-        let problems = 0;
-        const diagnostics: Diagnostic[] = [];
-        while ((m = pattern.exec(text)) && problems < settings.maxNumberOfProblems) {
-            problems++;
-            const diagnostic: Diagnostic = {
-                severity: DiagnosticSeverity.Warning,
-                range: {
-                    start: textDocument.positionAt(m.index),
-                    end: textDocument.positionAt(m.index + m[0].length)
-                },
-                message: `${m[0]} is all uppercase.`,
-                source: 'ex'
-            };
-            if (this.settings.hasDiagnosticRelatedInformationCapability) {
-                diagnostic.relatedInformation = [
-                    {
-                        location: {
-                            uri: textDocument.uri,
-                            range: Object.assign({}, diagnostic.range)
-                        },
-                        message: 'Spelling matters'
-                    },
-                    {
-                        location: {
-                            uri: textDocument.uri,
-                            range: Object.assign({}, diagnostic.range)
-                        },
-                        message: 'Particularly for names'
-                    }
-                ];
-            }
-            diagnostics.push(diagnostic);
+        let ast: EasySqlNode[] = [];
+        try {
+            ast = this.parser.parse(textDocument.getText());
+        } catch (err) {
+            logger.error('Parse content to AST failed', err);
         }
-        return diagnostics;
+        logger.debug('Parseed AST: ', ast);
+
+        return ast
+            .flatMap((node) => node.getToks().filter((tok) => !tok.isValid))
+            .slice(0, settings.maxNumberOfProblems)
+            .map((tok) => {
+                const diagnostic: Diagnostic = {
+                    severity: DiagnosticSeverity.Error,
+                    range: {
+                        start: textDocument.positionAt(tok.start),
+                        end: textDocument.positionAt(tok.start + tok.length)
+                    },
+                    message: tok.invalidReason,
+                    source: '(EasySQL)'
+                };
+                return diagnostic;
+            });
     }
 }
