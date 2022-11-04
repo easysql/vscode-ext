@@ -9,11 +9,13 @@ import {
     InitializeParams,
     InitializeResult,
     ProposedFeatures,
+    SemanticTokensLegend,
     TextDocumentPositionParams,
     TextDocumentSyncKind
 } from 'vscode-languageserver/node';
 
 import { Services } from './services';
+import { TokenTypes } from './shared/highlight';
 import { logger } from './shared/logger';
 
 // Create a connection for the server, using Node's IPC as a transport.
@@ -26,13 +28,15 @@ connection.onInitialize((params: InitializeParams) => {
     logger.info('initializing server... at ', new Date());
     services.settings.init(params.capabilities);
 
+    const legend: SemanticTokensLegend = { tokenTypes: Object.keys(TokenTypes), tokenModifiers: [] };
     const result: InitializeResult = {
         capabilities: {
             textDocumentSync: TextDocumentSyncKind.Incremental,
             // Tell the client that this server supports code completion.
             completionProvider: {
                 resolveProvider: true
-            }
+            },
+            semanticTokensProvider: { legend, full: true, range: true }
         }
     };
     if (services.settings.hasWorkspaceFolderCapability) {
@@ -42,6 +46,26 @@ connection.onInitialize((params: InitializeParams) => {
             }
         };
     }
+
+    if (services.settings.hasSemanticTokenCapability) {
+        connection.languages.semanticTokens.on((semanticTokenParams) => {
+            const doc = services.documents.get(semanticTokenParams.textDocument.uri);
+            if (!doc) {
+                return { data: [] };
+            }
+            return { data: services.highlightTokens.getEncodedTokens(doc) };
+        });
+        connection.languages.semanticTokens.onRange((params) => {
+            const doc = services.documents.get(params.textDocument.uri);
+            if (!doc) {
+                return { data: [] };
+            }
+            return { data: services.highlightTokens.getEncodedTokensByRange(doc, params.range) };
+        });
+    } else {
+        connection.console.info('semanticTokens is disabled');
+    }
+
     return result;
 });
 
@@ -67,12 +91,14 @@ connection.onDidChangeConfiguration((change) => {
 
 services.documents.onDidClose((e) => {
     services.settings.removeDocSettings(e.document.uri);
+    services.documentAsts.remove(e.document);
 });
 
 // The content of a text document has changed. This event is emitted
 // when the text document first opened or when its content has changed.
 services.documents.onDidChangeContent(async (change) => {
     const doc = change.document;
+    services.documentAsts.remove(doc);
     connection.sendDiagnostics({ uri: doc.uri, diagnostics: await services.diagnostic.validateTextDocument(doc) });
 });
 

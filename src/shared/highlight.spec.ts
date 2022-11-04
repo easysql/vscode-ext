@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { HighlightTokenParser, IParsedToken, LineNumberFinder, SqlExprStringFinder, StringFound, TokenTypes } from './highlight';
-import { logger } from './shared/logger';
+import { logger } from './logger';
 
 logger.setLevel('DEBUG');
 

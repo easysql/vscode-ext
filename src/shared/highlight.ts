@@ -1,17 +1,5 @@
-import {
-    EasySqlNode,
-    Lit,
-    Parser,
-    Str,
-    Tok,
-    TplFuncArg,
-    TplFuncCall,
-    TplReference,
-    TplVarReference,
-    VarFuncCall,
-    VarReference
-} from './shared/easysql';
-import { logger } from './shared/logger';
+import { EasySqlNode, Lit, Parser, Str, Tok, TplFuncArg, TplFuncCall, TplReference, TplVarReference, VarFuncCall, VarReference } from './easysql';
+import { logger } from './logger';
 
 type TokenType = number;
 
@@ -37,8 +25,6 @@ export interface IParsedToken {
 
 export class HighlightTokenParser {
     parse(content: string): IParsedToken[] {
-        const result: (IParsedToken | null)[] = [];
-
         let ast: EasySqlNode[] = [];
         try {
             ast = new Parser().parse(content);
@@ -46,6 +32,11 @@ export class HighlightTokenParser {
             logger.error('Parse content to AST failed', err);
         }
         logger.debug('Parseed AST: ', ast);
+        return this.parseAst(ast, content);
+    }
+
+    parseAst(ast: EasySqlNode[], content: string): IParsedToken[] {
+        const result: (IParsedToken | null)[] = [];
 
         const nodeTypesNeedToHandle = [VarReference, VarFuncCall, TplReference, TplFuncCall, TplVarReference, Str];
         const needToHandle = (node: EasySqlNode) => nodeTypesNeedToHandle.findIndex((type) => node instanceof type) !== -1;

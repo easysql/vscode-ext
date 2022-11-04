@@ -97,16 +97,16 @@ export class Tok {
 
     get invalidReason() {
         if (this.tokeType.isAssignment) {
-            return 'Must be an assignment.';
-        }
-        if (this.tokeType.isName) {
-            return 'An identifier or keyword cannot immediately follow a numeric literal.';
-        }
-        if (this.tokeType.isNameWide) {
-            return 'A literal cannot contain characters of ,()\'"` . Please define a variable instead.';
+            return 'Operator "=" required.';
         }
         if (!this.text) {
             return 'Must not be empty.';
+        }
+        if (this.tokeType.isName) {
+            return 'An identifier or keyword should match /^[a-zA-Z_]\\w*$/ .';
+        }
+        if (this.tokeType.isNameWide) {
+            return 'A literal cannot contain characters of ,()\'"` . Please define a variable instead.';
         }
         return 'Unknown.';
     }

@@ -5,6 +5,8 @@ export class SettingsImpl implements Settings {
     public hasConfigurationCapability = false;
     public hasWorkspaceFolderCapability = false;
     public hasDiagnosticRelatedInformationCapability = false;
+    public hasSemanticTokenCapability = false;
+
     private globalSettings: ExampleSettings;
     // Cache the settings of all open documents
     private documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
@@ -27,6 +29,7 @@ export class SettingsImpl implements Settings {
             capabilities.textDocument.publishDiagnostics &&
             capabilities.textDocument.publishDiagnostics.relatedInformation
         );
+        this.hasSemanticTokenCapability = !!(capabilities.textDocument && capabilities.textDocument.semanticTokens);
     }
 
     getDocumentSettings(resource: string): Thenable<ExampleSettings> {

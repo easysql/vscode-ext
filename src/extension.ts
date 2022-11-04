@@ -1,28 +1,12 @@
 import * as path from 'path';
 import * as vscode from 'vscode';
-import { HighlightTokenParser, TokenTypes } from './highlight';
-
-const legend = new vscode.SemanticTokensLegend(Object.keys(TokenTypes), []);
 
 export function activate(context: vscode.ExtensionContext) {
-    context.subscriptions.push(
-        vscode.languages.registerDocumentSemanticTokensProvider({ language: 'sql' }, new DocumentSemanticTokensProvider(), legend)
-    );
     activateLanguageServer(context);
 }
 
 export function deactivate(): Thenable<void> | undefined {
     return deactivateLanguageServer();
-}
-
-class DocumentSemanticTokensProvider implements vscode.DocumentSemanticTokensProvider {
-    async provideDocumentSemanticTokens(document: vscode.TextDocument, token: vscode.CancellationToken): Promise<vscode.SemanticTokens> {
-        const builder = new vscode.SemanticTokensBuilder();
-        new HighlightTokenParser().parse(document.getText()).forEach((token) => {
-            builder.push(token.line, token.startCharacter, token.length, token.tokenType);
-        });
-        return builder.build();
-    }
 }
 
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
