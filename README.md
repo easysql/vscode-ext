@@ -97,6 +97,8 @@ Syntax highlight.
 - Completion: provide variable/template/template-variable completion
 - Diagnostics: provide diagnostics for target definition
 - Hover: provide more doc for python system functions
+- Jump to definition
+- Jump to file
 
 ## For more information
 
