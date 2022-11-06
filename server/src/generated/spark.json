@@ -1,499 +1,664 @@
 {
     "funcs": [
         {
-            "label": "ensure_dwd_partition_exists(__step__, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})"
+            "label": "ensure_dwd_partition_exists(__step__, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})",
+            "type": "easysql"
         },
         {
-            "label": "ensure_partition_exists(__step__, ${1:*args}, ${2:...})"
+            "label": "ensure_partition_exists(__step__, ${1:*args}, ${2:...})",
+            "type": "easysql"
         },
         {
-            "label": "ensure_partition_or_first_partition_exists(__step__, ${1:*args}, ${2:...})"
+            "label": "ensure_partition_or_first_partition_exists(__step__, ${1:*args}, ${2:...})",
+            "type": "easysql"
         },
         {
-            "label": "ensure_table_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})"
+            "label": "ensure_table_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
+            "type": "easysql"
         },
         {
-            "label": "ensure_table_partition_or_first_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})"
+            "label": "ensure_table_partition_or_first_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
+            "type": "easysql"
         },
         {
-            "label": "get_first_partition(${1:table_name})"
+            "label": "get_first_partition(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "get_first_partition_optional(${1:table_name})"
+            "label": "get_first_partition_optional(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "get_last_partition(${1:table_name})"
+            "label": "get_last_partition(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "get_partition_col(${1:table_name})"
+            "label": "get_partition_col(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "get_partition_cols(${1:table_name})"
+            "label": "get_partition_cols(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "get_partition_or_first_partition(${1:table_name}, ${2:partition_value})"
+            "label": "get_partition_or_first_partition(${1:table_name}, ${2:partition_value})",
+            "type": "easysql"
         },
         {
-            "label": "get_partition_values_as_joined_str(${1:table_name})"
+            "label": "get_partition_values_as_joined_str(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "has_partition_col(${1:table_name})"
+            "label": "has_partition_col(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "is_first_partition(${1:table_name}, ${2:partition_value})"
+            "label": "is_first_partition(${1:table_name}, ${2:partition_value})",
+            "type": "easysql"
         },
         {
-            "label": "is_not_first_partition(${1:table_name}, ${2:partition_value})"
+            "label": "is_not_first_partition(${1:table_name}, ${2:partition_value})",
+            "type": "easysql"
         },
         {
-            "label": "partition_exists(${1:table_name}, ${2:partition_value})"
+            "label": "partition_exists(${1:table_name}, ${2:partition_value})",
+            "type": "easysql"
         },
         {
-            "label": "partition_not_exists(${1:table_name}, ${2:partition_value})"
+            "label": "partition_not_exists(${1:table_name}, ${2:partition_value})",
+            "type": "easysql"
         },
         {
-            "label": "previous_partition_exists(${1:table_name}, ${2:curr_partition_value_as_dt})"
+            "label": "previous_partition_exists(${1:table_name}, ${2:curr_partition_value_as_dt})",
+            "type": "easysql"
         },
         {
-            "label": "all_cols_prefixed_with_exclusion_expr(${1:table_name}, ${2:prefix}, ${3:*cols_to_exclude}, ${4:...})"
+            "label": "all_cols_prefixed_with_exclusion_expr(${1:table_name}, ${2:prefix}, ${3:*cols_to_exclude}, ${4:...})",
+            "type": "easysql"
         },
         {
-            "label": "all_cols_with_exclusion_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})"
+            "label": "all_cols_with_exclusion_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})",
+            "type": "easysql"
         },
         {
-            "label": "all_cols_without_one_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})"
+            "label": "all_cols_without_one_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})",
+            "type": "easysql"
         },
         {
-            "label": "unpersist(${1:table_name})"
+            "label": "unpersist(${1:table_name})",
+            "type": "easysql"
         },
         {
-            "label": "coalesce(${1:table}, ${2:partitions})"
+            "label": "coalesce(${1:table}, ${2:partitions})",
+            "type": "easysql"
         },
         {
-            "label": "repartition(${1:table}, ${2:partitions})"
+            "label": "repartition(${1:table}, ${2:partitions})",
+            "type": "easysql"
         },
         {
-            "label": "repartition_by_column(${1:table}, ${2:partitions})"
+            "label": "repartition_by_column(${1:table}, ${2:partitions})",
+            "type": "easysql"
         },
         {
-            "label": "set_shuffle_partitions(${1:partitions})"
+            "label": "set_shuffle_partitions(${1:partitions})",
+            "type": "easysql"
         },
         {
-            "label": "move_file(${1:source_file}, ${2:target_file})"
+            "label": "move_file(${1:source_file}, ${2:target_file})",
+            "type": "easysql"
         },
         {
-            "label": "rename_csv_output(${1:spark_output_path}, ${2:to_file})"
+            "label": "rename_csv_output(${1:spark_output_path}, ${2:to_file})",
+            "type": "easysql"
         },
         {
-            "label": "update_json_local(__context__, ${1:vars}, ${2:list_vars}, ${3:json_attr}, ${4:output_file})"
+            "label": "update_json_local(__context__, ${1:vars}, ${2:list_vars}, ${3:json_attr}, ${4:output_file})",
+            "type": "easysql"
         },
         {
-            "label": "write_csv(${1:table}, ${2:output_file})"
+            "label": "write_csv(${1:table}, ${2:output_file})",
+            "type": "easysql"
         },
         {
-            "label": "write_json_local(${1:table}, ${2:output_file})"
+            "label": "write_json_local(${1:table}, ${2:output_file})",
+            "type": "easysql"
         },
         {
-            "label": "alert(__step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})"
+            "label": "alert(__step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
+            "type": "easysql"
         },
         {
-            "label": "alert_exception_handler(${1:rule_name}, ${2:mentioned_users})"
+            "label": "alert_exception_handler(${1:rule_name}, ${2:mentioned_users})",
+            "type": "easysql"
         },
         {
-            "label": "alert_with_backend(__backend__, __step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})"
+            "label": "alert_with_backend(__backend__, __step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
+            "type": "easysql"
         },
         {
-            "label": "check_not_null_column_in_table(__step__, ${1:table_name}, ${2:not_null_column}, ${3:query})"
+            "label": "check_not_null_column_in_table(__step__, ${1:table_name}, ${2:not_null_column}, ${3:query})",
+            "type": "easysql"
         },
         {
-            "label": "ensure_no_null_data_in_table(__step__, ${1:table_name}, ${2:query})"
+            "label": "ensure_no_null_data_in_table(__step__, ${1:table_name}, ${2:query})",
+            "type": "easysql"
         },
         {
-            "label": "model_predict(${1:model_save_path}, ${2:table_name}, ${3:feature_cols}, ${4:id_col}, ${5:output_ref_cols})"
+            "label": "model_predict(${1:model_save_path}, ${2:table_name}, ${3:feature_cols}, ${4:id_col}, ${5:output_ref_cols})",
+            "type": "easysql"
         },
         {
-            "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count})"
+            "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count})",
+            "type": "easysql"
         },
         {
-            "label": "abs(${1:a})"
+            "label": "abs(${1:a})",
+            "type": "system"
         },
         {
-            "label": "all(${1:iterable})"
+            "label": "all(${1:iterable})",
+            "type": "system"
         },
         {
-            "label": "any(${1:iterable})"
+            "label": "any(${1:iterable})",
+            "type": "system"
         },
         {
-            "label": "ascii(${1:obj})"
+            "label": "ascii(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "bin(${1:number})"
+            "label": "bin(${1:number})",
+            "type": "system"
         },
         {
-            "label": "bool()"
+            "label": "bool()",
+            "type": "easysql"
         },
         {
-            "label": "breakpoint()"
+            "label": "breakpoint()",
+            "type": "easysql"
         },
         {
-            "label": "bytearray()"
+            "label": "bytearray()",
+            "type": "easysql"
         },
         {
-            "label": "bytes()"
+            "label": "bytes()",
+            "type": "easysql"
         },
         {
-            "label": "callable(${1:obj})"
+            "label": "callable(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "chr(${1:i})"
+            "label": "chr(${1:i})",
+            "type": "system"
         },
         {
-            "label": "classmethod()"
+            "label": "classmethod()",
+            "type": "easysql"
         },
         {
-            "label": "compile(${1:source}, ${2:filename}, ${3:mode}, ${4:flags}, ${5:dont_inherit}, ${6:optimize}, ${7:_feature_version})"
+            "label": "compile(${1:source}, ${2:filename}, ${3:mode}, ${4:flags}, ${5:dont_inherit}, ${6:optimize}, ${7:_feature_version})",
+            "type": "system"
         },
         {
-            "label": "complex(${1:real}, ${2:imag})"
+            "label": "complex(${1:real}, ${2:imag})",
+            "type": "system"
         },
         {
-            "label": "copyright()"
+            "label": "copyright()",
+            "type": "system"
         },
         {
-            "label": "credits()"
+            "label": "credits()",
+            "type": "system"
         },
         {
-            "label": "delattr(${1:obj}, ${2:name})"
+            "label": "delattr(${1:obj}, ${2:name})",
+            "type": "system"
         },
         {
-            "label": "dict()"
+            "label": "dict()",
+            "type": "easysql"
         },
         {
-            "label": "dir()"
+            "label": "dir()",
+            "type": "easysql"
         },
         {
-            "label": "divmod(${1:x}, ${2:y})"
+            "label": "divmod(${1:x}, ${2:y})",
+            "type": "system"
         },
         {
-            "label": "enumerate(${1:iterable}, ${2:start})"
+            "label": "enumerate(${1:iterable}, ${2:start})",
+            "type": "system"
         },
         {
-            "label": "eval(${1:source}, ${2:globals}, ${3:locals})"
+            "label": "eval(${1:source}, ${2:globals}, ${3:locals})",
+            "type": "system"
         },
         {
-            "label": "exec(${1:source}, ${2:globals}, ${3:locals})"
+            "label": "exec(${1:source}, ${2:globals}, ${3:locals})",
+            "type": "system"
         },
         {
-            "label": "exit(${1:code})"
+            "label": "exit(${1:code})",
+            "type": "system"
         },
         {
-            "label": "filter()"
+            "label": "filter()",
+            "type": "easysql"
         },
         {
-            "label": "float(${1:x})"
+            "label": "float(${1:x})",
+            "type": "system"
         },
         {
-            "label": "format(${1:value}, ${2:format_spec})"
+            "label": "format(${1:value}, ${2:format_spec})",
+            "type": "system"
         },
         {
-            "label": "frozenset()"
+            "label": "frozenset()",
+            "type": "easysql"
         },
         {
-            "label": "getattr()"
+            "label": "getattr()",
+            "type": "easysql"
         },
         {
-            "label": "globals()"
+            "label": "globals()",
+            "type": "system"
         },
         {
-            "label": "hasattr(${1:obj}, ${2:name})"
+            "label": "hasattr(${1:obj}, ${2:name})",
+            "type": "system"
         },
         {
-            "label": "hash(${1:obj})"
+            "label": "hash(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "hex(${1:number})"
+            "label": "hex(${1:number})",
+            "type": "system"
         },
         {
-            "label": "id(${1:obj})"
+            "label": "id(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "input(${1:prompt})"
+            "label": "input(${1:prompt})",
+            "type": "system"
         },
         {
-            "label": "int()"
+            "label": "int()",
+            "type": "easysql"
         },
         {
-            "label": "isinstance(${1:obj}, ${2:class_or_tuple})"
+            "label": "isinstance(${1:obj}, ${2:class_or_tuple})",
+            "type": "system"
         },
         {
-            "label": "issubclass(${1:cls}, ${2:class_or_tuple})"
+            "label": "issubclass(${1:cls}, ${2:class_or_tuple})",
+            "type": "system"
         },
         {
-            "label": "iter()"
+            "label": "iter()",
+            "type": "easysql"
         },
         {
-            "label": "len(${1:obj})"
+            "label": "len(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "license()"
+            "label": "license()",
+            "type": "system"
         },
         {
-            "label": "list(${1:iterable})"
+            "label": "list(${1:iterable})",
+            "type": "system"
         },
         {
-            "label": "locals()"
+            "label": "locals()",
+            "type": "system"
         },
         {
-            "label": "map()"
+            "label": "map()",
+            "type": "easysql"
         },
         {
-            "label": "max()"
+            "label": "max()",
+            "type": "easysql"
         },
         {
-            "label": "memoryview(${1:object})"
+            "label": "memoryview(${1:object})",
+            "type": "system"
         },
         {
-            "label": "min()"
+            "label": "min()",
+            "type": "easysql"
         },
         {
-            "label": "next()"
+            "label": "next()",
+            "type": "easysql"
         },
         {
-            "label": "object()"
+            "label": "object()",
+            "type": "system"
         },
         {
-            "label": "oct(${1:number})"
+            "label": "oct(${1:number})",
+            "type": "system"
         },
         {
-            "label": "open(${1:file}, ${2:mode}, ${3:buffering}, ${4:encoding}, ${5:errors}, ${6:newline}, ${7:closefd}, ${8:opener})"
+            "label": "open(${1:file}, ${2:mode}, ${3:buffering}, ${4:encoding}, ${5:errors}, ${6:newline}, ${7:closefd}, ${8:opener})",
+            "type": "system"
         },
         {
-            "label": "ord(${1:c})"
+            "label": "ord(${1:c})",
+            "type": "system"
         },
         {
-            "label": "pow(${1:a}, ${2:b})"
+            "label": "pow(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "print()"
+            "label": "print()",
+            "type": "easysql"
         },
         {
-            "label": "property(${1:fget}, ${2:fset}, ${3:fdel}, ${4:doc})"
+            "label": "property(${1:fget}, ${2:fset}, ${3:fdel}, ${4:doc})",
+            "type": "system"
         },
         {
-            "label": "quit(${1:code})"
+            "label": "quit(${1:code})",
+            "type": "system"
         },
         {
-            "label": "range()"
+            "label": "range()",
+            "type": "easysql"
         },
         {
-            "label": "repr(${1:obj})"
+            "label": "repr(${1:obj})",
+            "type": "system"
         },
         {
-            "label": "reversed(${1:sequence})"
+            "label": "reversed(${1:sequence})",
+            "type": "system"
         },
         {
-            "label": "round(${1:number}, ${2:ndigits})"
+            "label": "round(${1:number}, ${2:ndigits})",
+            "type": "system"
         },
         {
-            "label": "set()"
+            "label": "set()",
+            "type": "easysql"
         },
         {
-            "label": "setattr(${1:obj}, ${2:name}, ${3:value})"
+            "label": "setattr(${1:obj}, ${2:name}, ${3:value})",
+            "type": "system"
         },
         {
-            "label": "slice()"
+            "label": "slice()",
+            "type": "easysql"
         },
         {
-            "label": "sorted(${1:iterable}, ${2:key}, ${3:reverse})"
+            "label": "sorted(${1:iterable}, ${2:key}, ${3:reverse})",
+            "type": "system"
         },
         {
-            "label": "staticmethod()"
+            "label": "staticmethod()",
+            "type": "easysql"
         },
         {
-            "label": "str()"
+            "label": "str()",
+            "type": "easysql"
         },
         {
-            "label": "sum(${1:iterable}, ${2:start})"
+            "label": "sum(${1:iterable}, ${2:start})",
+            "type": "system"
         },
         {
-            "label": "super()"
+            "label": "super()",
+            "type": "easysql"
         },
         {
-            "label": "tuple(${1:iterable})"
+            "label": "tuple(${1:iterable})",
+            "type": "system"
         },
         {
-            "label": "type()"
+            "label": "type()",
+            "type": "easysql"
         },
         {
-            "label": "vars()"
+            "label": "vars()",
+            "type": "easysql"
         },
         {
-            "label": "zip()"
+            "label": "zip()",
+            "type": "easysql"
         },
         {
-            "label": "add(${1:a}, ${2:b})"
+            "label": "add(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "and_(${1:a}, ${2:b})"
+            "label": "and_(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "attrgetter()"
+            "label": "attrgetter()",
+            "type": "easysql"
         },
         {
-            "label": "concat(${1:a}, ${2:b})"
+            "label": "concat(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "contains(${1:a}, ${2:b})"
+            "label": "contains(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "countOf(${1:a}, ${2:b})"
+            "label": "countOf(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "delitem(${1:a}, ${2:b})"
+            "label": "delitem(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "eq(${1:a}, ${2:b})"
+            "label": "eq(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "floordiv(${1:a}, ${2:b})"
+            "label": "floordiv(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ge(${1:a}, ${2:b})"
+            "label": "ge(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "getitem(${1:a}, ${2:b})"
+            "label": "getitem(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "gt(${1:a}, ${2:b})"
+            "label": "gt(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "iadd(${1:a}, ${2:b})"
+            "label": "iadd(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "iand(${1:a}, ${2:b})"
+            "label": "iand(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "iconcat(${1:a}, ${2:b})"
+            "label": "iconcat(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ifloordiv(${1:a}, ${2:b})"
+            "label": "ifloordiv(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ilshift(${1:a}, ${2:b})"
+            "label": "ilshift(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "imatmul(${1:a}, ${2:b})"
+            "label": "imatmul(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "imod(${1:a}, ${2:b})"
+            "label": "imod(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "imul(${1:a}, ${2:b})"
+            "label": "imul(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "index(${1:a})"
+            "label": "index(${1:a})",
+            "type": "system"
         },
         {
-            "label": "indexOf(${1:a}, ${2:b})"
+            "label": "indexOf(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "inv(${1:a})"
+            "label": "inv(${1:a})",
+            "type": "system"
         },
         {
-            "label": "invert(${1:a})"
+            "label": "invert(${1:a})",
+            "type": "system"
         },
         {
-            "label": "ior(${1:a}, ${2:b})"
+            "label": "ior(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ipow(${1:a}, ${2:b})"
+            "label": "ipow(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "irshift(${1:a}, ${2:b})"
+            "label": "irshift(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "is_(${1:a}, ${2:b})"
+            "label": "is_(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "is_not(${1:a}, ${2:b})"
+            "label": "is_not(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "isub(${1:a}, ${2:b})"
+            "label": "isub(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "itemgetter()"
+            "label": "itemgetter()",
+            "type": "easysql"
         },
         {
-            "label": "itruediv(${1:a}, ${2:b})"
+            "label": "itruediv(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ixor(${1:a}, ${2:b})"
+            "label": "ixor(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "le(${1:a}, ${2:b})"
+            "label": "le(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "length_hint(${1:obj}, ${2:default})"
+            "label": "length_hint(${1:obj}, ${2:default})",
+            "type": "system"
         },
         {
-            "label": "lshift(${1:a}, ${2:b})"
+            "label": "lshift(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "lt(${1:a}, ${2:b})"
+            "label": "lt(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "matmul(${1:a}, ${2:b})"
+            "label": "matmul(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "methodcaller()"
+            "label": "methodcaller()",
+            "type": "easysql"
         },
         {
-            "label": "mod(${1:a}, ${2:b})"
+            "label": "mod(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "mul(${1:a}, ${2:b})"
+            "label": "mul(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "ne(${1:a}, ${2:b})"
+            "label": "ne(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "neg(${1:a})"
+            "label": "neg(${1:a})",
+            "type": "system"
         },
         {
-            "label": "not_(${1:a})"
+            "label": "not_(${1:a})",
+            "type": "system"
         },
         {
-            "label": "or_(${1:a}, ${2:b})"
+            "label": "or_(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "pos(${1:a})"
+            "label": "pos(${1:a})",
+            "type": "system"
         },
         {
-            "label": "rshift(${1:a}, ${2:b})"
+            "label": "rshift(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "setitem(${1:a}, ${2:b}, ${3:c})"
+            "label": "setitem(${1:a}, ${2:b}, ${3:c})",
+            "type": "system"
         },
         {
-            "label": "sub(${1:a}, ${2:b})"
+            "label": "sub(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "truediv(${1:a}, ${2:b})"
+            "label": "truediv(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "truth(${1:a})"
+            "label": "truth(${1:a})",
+            "type": "system"
         },
         {
-            "label": "xor(${1:a}, ${2:b})"
+            "label": "xor(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "equal(${1:a}, ${2:b})"
+            "label": "equal(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "is_greater_or_equal(${1:a}, ${2:b})"
+            "label": "is_greater_or_equal(${1:a}, ${2:b})",
+            "type": "system"
         },
         {
-            "label": "equal_ignore_case(${1:a}, ${2:b})"
+            "label": "equal_ignore_case(${1:a}, ${2:b})",
+            "type": "system"
         }
     ]
 }
