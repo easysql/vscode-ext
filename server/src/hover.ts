@@ -22,30 +22,29 @@ export class FunctionHover implements TypedHover {
             throw new Error('Should check accept before call hover!');
         }
         const funcName = this.funcNameLeft[0] + this.funcNameRight[1];
+
         const headerCode = this.doc.getText().substring(0, 500);
         const backendMatch = headerCode.match(/(^|\n)-- backend:\s*([\w]+)(\s|\n)/);
-        if (backendMatch) {
-            const funcs = backendMatch[1].toLowerCase() == 'spark' ? sparkFuncs : rdbFuncs;
-            const func = funcs.funcs.find((func) => func.label.startsWith(funcName + '('));
-            if (func) {
-                const label = func.label
-                    .replace(/\${[\d]+:/g, '{')
-                    .replaceAll('{', '')
-                    .replaceAll('}', '');
-                const type = func.type === 'easysql' ? 'EasySQL' : 'Python system';
-                return {
-                    contents: { kind: 'plaintext', value: `(${type} function) ${label}` },
-                    range: {
-                        start: { line: this.position.line, character: this.funcNameLeft.index! + 2 },
-                        end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
-                    }
-                };
-            }
+        const funcs = !backendMatch || backendMatch[1].toLowerCase() == 'spark' ? sparkFuncs : rdbFuncs;
+        const func = funcs.funcs.find((func) => func.label.startsWith(funcName + '('));
+        if (func) {
+            const label = func.label
+                .replace(/\${[\d]+:/g, '{')
+                .replaceAll('{', '')
+                .replaceAll('}', '');
+            const type = func.type === 'easysql' ? 'EasySQL' : 'Python system';
+            return {
+                contents: { kind: 'plaintext', value: `(${type} function) ${label}` },
+                range: {
+                    start: { line: this.position.line, character: this.funcNameLeft.index! },
+                    end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
+                }
+            };
         }
         return {
             contents: { kind: 'plaintext', value: '(User-defined function. Signature unknown.) ' + funcName },
             range: {
-                start: { line: this.position.line, character: this.funcNameLeft.index! + 2 },
+                start: { line: this.position.line, character: this.funcNameLeft.index! },
                 end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
             }
         };
