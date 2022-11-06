@@ -15,7 +15,7 @@ export class DocumentAsts {
             }
             return this.cachedAsts.get(doc.uri)!;
         }
-        const ast = logger.timed(() => this.parser.parse(doc.getText()), 'INFO', 'create ast for doc: ', doc.uri);
+        const ast = logger.timed(() => this.parser.parse(doc.getText()), 'DEBUG', 'create ast for doc: ', doc.uri);
         this.cachedAsts.set(doc.uri, ast);
         this.cachedUris.push(doc.uri);
         if (this.cachedUris.length > this.maxCacheCount) {

@@ -25,7 +25,7 @@ const connection = createConnection(ProposedFeatures.all);
 const services = new Services(connection);
 
 connection.onInitialize((params: InitializeParams) => {
-    logger.info('initializing server... at ', new Date());
+    logger.info('initializing server at ', new Date());
     services.settings.init(params.capabilities);
 
     const legend: SemanticTokensLegend = { tokenTypes: Object.keys(TokenTypes), tokenModifiers: [] };

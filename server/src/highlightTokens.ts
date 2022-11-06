@@ -28,7 +28,7 @@ export class HighlightTokens {
 
     getEncodedTokensByRange(doc: TextDocument, range: Range): number[] {
         const content = doc.getText(range);
-        const ast = logger.timed(() => this.parser.parse(content), 'INFO', `get token for doc ${doc.uri} of range: `, range);
+        const ast = logger.timed(() => this.parser.parse(content), 'DEBUG', `get token for doc ${doc.uri} of range: `, range);
         return this._getEncodedTokens(ast, content);
     }
 }
