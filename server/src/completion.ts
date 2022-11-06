@@ -7,9 +7,10 @@ import {
     TextDocumentPositionParams,
     TextDocuments
 } from 'vscode-languageserver/node';
-import { Parser, TplFuncCall, VarFuncCall } from './shared/easysql';
+import { EasySQLContentFinder, Parser, TplFuncCall, VarFuncCall } from './shared/easysql';
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
+import { logger } from './shared/logger';
 
 interface FuncDoc {
     label: string;
@@ -110,31 +111,41 @@ export class CodeCompleter {
     }
 
     completeFunctions(line: string, text: string, doc: TextDocument, position: Position) {
-        const insideFuncCall = this.parser
-            .parse(line!)
-            .reverse()
-            .find((node) => {
-                if (node instanceof VarFuncCall || node instanceof TplFuncCall) {
-                    const [startPos, endPos] = [node.startPos, node.endPos];
-                    if (startPos < position.character && endPos > position.character) {
-                        return node.startPos + node.join().indexOf('(') < position.character;
-                    }
+        if (line.startsWith('-- target=') && text.endsWith('${')) {
+            logger.debug('reference inside target definition, will not complete: ', text);
+            return [];
+        }
+        const astReversed = this.parser.parse(line!, true).reverse();
+        const outerFuncCallIndex = astReversed.findIndex((node) => {
+            if (node instanceof VarFuncCall || node instanceof TplFuncCall) {
+                const [startPos, endPos] = [node.startPos, node.endPos];
+                if (startPos < position.character && endPos > position.character) {
+                    return node.startPos + node.join().indexOf('(') < position.character;
                 }
-                return false;
-            });
+            }
+            return false;
+        });
 
-        if (insideFuncCall) {
-            console.log('inside funcCall, will not complete: ', text);
+        if (outerFuncCallIndex !== -1) {
+            logger.debug('inside funcCall, will not complete: ', text);
             return [];
         }
 
         if (text.endsWith('${') || text.match(/^-- target=(check|func)\.$/) || text.match(/^-- target=.*if=$/)) {
             const headerCode = doc!.getText().substring(0, 500);
             const backendMatch = headerCode.match(/(^|\n)-- backend:\s*([\w]+)(\s|\n)/);
+            let items = [];
             if (backendMatch) {
-                return backendMatch[1].toLowerCase() == 'spark' ? this.sparkFuncCompletionItems : this.rdbFuncCompletionItems;
+                items = backendMatch[1].toLowerCase() == 'spark' ? this.sparkFuncCompletionItems : this.rdbFuncCompletionItems;
             }
-            return this.sparkFuncCompletionItems;
+            items = this.sparkFuncCompletionItems;
+
+            const openQuoteIdx = EasySQLContentFinder.findOpenQuoteInCurrentLine(text);
+            if (openQuoteIdx !== -1) {
+                items = items.map((item) => ({ ...item, insertText: item.insertText + '}' }));
+            }
+
+            return items;
         }
         return [];
     }

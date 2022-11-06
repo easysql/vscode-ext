@@ -130,6 +130,55 @@ export class Tok {
     }
 }
 
+export class EasySQLContentFinder {
+    public static findCommentStartInCurrentLine(content: string): number {
+        // backslash is backslash in sql, it's not used to escape characters.
+        // If we need to insert a quote inside string, just use double quotes. e.g. '''' is for single quote in string.
+        const quoteChars = '\'"`';
+        let quoteOpen = '';
+        for (let i = 0; i < content.length; i++) {
+            const ch = content.charAt(i);
+            if (ch === '\n') {
+                return -1;
+            }
+            if (quoteChars.includes(ch)) {
+                if (quoteOpen === ch) {
+                    quoteOpen = '';
+                } else if (!quoteOpen) {
+                    quoteOpen = ch;
+                }
+            } else if (ch === '-' && content.charAt(i + 1) === '-' && !quoteOpen) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public static findOpenQuoteInCurrentLine(content: string): number {
+        // backslash is backslash in sql, it's not used to escape characters.
+        // If we need to insert a quote inside string, just use double quotes. e.g. '''' is for single quote in string.
+        const quoteChars = '\'"`';
+        let quoteOpen = '';
+        let quoteOpenIdx = -1;
+        for (let i = 0; i < content.length; i++) {
+            const ch = content.charAt(i);
+            if (ch === '\n') {
+                return quoteOpenIdx;
+            }
+            if (quoteChars.includes(ch)) {
+                if (quoteOpen === ch) {
+                    quoteOpen = '';
+                    quoteOpenIdx = -1;
+                } else if (!quoteOpen) {
+                    quoteOpen = ch;
+                    quoteOpenIdx = i;
+                }
+            }
+        }
+        return quoteOpenIdx;
+    }
+}
+
 class SinlgeFuncCallParser {
     parse(content: string): VarFuncCall | TplFuncCall {
         // e.g. ${func(var1, ${var2}, var3)}, @{func(a=var1, b=${var2})}, ${func()}, @{func()}
@@ -369,14 +418,14 @@ export class Parser {
 
         let commentStartIdx = -1;
         if (!ignoreComment) {
-            commentStartIdx = this.findCommentStartInCurrentLine(content);
+            commentStartIdx = EasySQLContentFinder.findCommentStartInCurrentLine(content);
             if (commentStartIdx !== -1) {
                 return this.parseContentWithCommentInCurrentLine(content, commentStartIdx);
             }
         }
 
         if (!ignoreQuote) {
-            const openQuoteIdx = this.findOpenQuoteInCurrentLine(content);
+            const openQuoteIdx = EasySQLContentFinder.findOpenQuoteInCurrentLine(content);
             if (openQuoteIdx !== -1) {
                 return this.parseContentWithOpenQuoteInCurrentLine(content, openQuoteIdx);
             }
@@ -524,7 +573,7 @@ export class Parser {
         return [nodesFromStr, quoteEndIdx];
     }
 
-    public findFirstMatch([tplCallMatch, funcCallMatch, varMatch, quoteMatch]: (RegExpMatchArray | null)[]): RegExpMatchArray | null {
+    private findFirstMatch([tplCallMatch, funcCallMatch, varMatch, quoteMatch]: (RegExpMatchArray | null)[]): RegExpMatchArray | null {
         const matches = [
             { priorityOnEq: -1, match: tplCallMatch }, // will never conflict with the other three
             { priorityOnEq: 1, match: funcCallMatch },
@@ -541,53 +590,6 @@ export class Parser {
             return null;
         }
         return matches[0].match;
-    }
-
-    public findCommentStartInCurrentLine(content: string): number {
-        // backslash is backslash in sql, it's not used to escape characters.
-        // If we need to insert a quote inside string, just use double quotes. e.g. '''' is for single quote in string.
-        const quoteChars = '\'"`';
-        let quoteOpen = '';
-        for (let i = 0; i < content.length; i++) {
-            const ch = content.charAt(i);
-            if (ch === '\n') {
-                return -1;
-            }
-            if (quoteChars.includes(ch)) {
-                if (quoteOpen === ch) {
-                    quoteOpen = '';
-                } else if (!quoteOpen) {
-                    quoteOpen = ch;
-                }
-            } else if (ch === '-' && content.charAt(i + 1) === '-' && !quoteOpen) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    public findOpenQuoteInCurrentLine(content: string): number {
-        // backslash is backslash in sql, it's not used to escape characters.
-        // If we need to insert a quote inside string, just use double quotes. e.g. '''' is for single quote in string.
-        const quoteChars = '\'"`';
-        let quoteOpen = '';
-        let quoteOpenIdx = -1;
-        for (let i = 0; i < content.length; i++) {
-            const ch = content.charAt(i);
-            if (ch === '\n') {
-                return quoteOpenIdx;
-            }
-            if (quoteChars.includes(ch)) {
-                if (quoteOpen === ch) {
-                    quoteOpen = '';
-                    quoteOpenIdx = -1;
-                } else if (!quoteOpen) {
-                    quoteOpen = ch;
-                    quoteOpenIdx = i;
-                }
-            }
-        }
-        return quoteOpenIdx;
     }
 
     public parseSingleFuncCall(content: string): VarFuncCall | TplFuncCall {
