@@ -1,23 +1,23 @@
 {
     "funcs": [
         {
-            "label": "ensure_dwd_partition_exists(__step__, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})",
+            "label": "ensure_dwd_partition_exists(\\${__step__}, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})",
             "type": "easysql"
         },
         {
-            "label": "ensure_partition_exists(__step__, ${1:*args}, ${2:...})",
+            "label": "ensure_partition_exists(\\${__step__}, ${1:*args}, ${2:...})",
             "type": "easysql"
         },
         {
-            "label": "ensure_partition_or_first_partition_exists(__step__, ${1:*args}, ${2:...})",
+            "label": "ensure_partition_or_first_partition_exists(\\${__step__}, ${1:*args}, ${2:...})",
             "type": "easysql"
         },
         {
-            "label": "ensure_table_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
+            "label": "ensure_table_partition_exists(\\${__step__}, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
             "type": "easysql"
         },
         {
-            "label": "ensure_table_partition_or_first_partition_exists(__step__, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
+            "label": "ensure_table_partition_or_first_partition_exists(\\${__step__}, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
             "type": "easysql"
         },
         {
@@ -85,7 +85,7 @@
             "type": "easysql"
         },
         {
-            "label": "alert(__step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
+            "label": "alert(\\${__step__}, \\${__context__}, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
             "type": "easysql"
         },
         {
@@ -93,15 +93,15 @@
             "type": "easysql"
         },
         {
-            "label": "alert_with_backend(__backend__, __step__, __context__, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
+            "label": "alert_with_backend(\\${__backend__}, \\${__step__}, \\${__context__}, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
             "type": "easysql"
         },
         {
-            "label": "check_not_null_column_in_table(__step__, ${1:table_name}, ${2:not_null_column}, ${3:query})",
+            "label": "check_not_null_column_in_table(\\${__step__}, ${1:table_name}, ${2:not_null_column}, ${3:query})",
             "type": "easysql"
         },
         {
-            "label": "ensure_no_null_data_in_table(__step__, ${1:table_name}, ${2:query})",
+            "label": "ensure_no_null_data_in_table(\\${__step__}, ${1:table_name}, ${2:query})",
             "type": "easysql"
         },
         {

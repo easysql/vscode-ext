@@ -135,15 +135,13 @@ export class CodeCompleter {
             const headerCode = doc!.getText().substring(0, 500);
             const backendMatch = headerCode.match(/(^|\n)-- backend:\s*([\w]+)(\s|\n)/);
             let items = [];
-            if (backendMatch) {
-                items = backendMatch[1].toLowerCase() == 'spark' ? this.sparkFuncCompletionItems : this.rdbFuncCompletionItems;
-            }
-            items = this.sparkFuncCompletionItems;
+            items = !backendMatch || backendMatch[1].toLowerCase() == 'spark' ? this.sparkFuncCompletionItems : this.rdbFuncCompletionItems;
 
             const openQuoteIdx = EasySQLContentFinder.findOpenQuoteInCurrentLine(text);
             if (openQuoteIdx !== -1) {
                 items = items.map((item) => ({ ...item, insertText: item.insertText + '}' }));
             }
+            console.log(items[0]);
 
             return items;
         }
