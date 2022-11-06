@@ -83,7 +83,7 @@ export class CodeCompleter {
         const range: Range = { start: { line: params.position.line, character: 0 }, end: { line: params.position.line, character: 1000 } };
         const line = doc?.getText(range);
         let text = line?.substring(0, params.position.character);
-        console.log('on complete: ', text);
+        logger.debug('on complete: ', text);
 
         if (text) {
             if (text === '-') {
@@ -141,8 +141,6 @@ export class CodeCompleter {
             if (openQuoteIdx !== -1) {
                 items = items.map((item) => ({ ...item, insertText: item.insertText + '}' }));
             }
-            console.log(items[0]);
-
             return items;
         }
         return [];
