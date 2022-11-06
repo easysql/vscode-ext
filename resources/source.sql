@@ -1,6 +1,8 @@
 -- backend: spark
 
--- target=check.ensure_table_partition_exists(__step__, ${data_date}, some_table)
+-- target=check.ensure_table_partition_exists(${__step__}, ${data_date}, some_table)
+
+-- target=check.ensure_table_partition_exists(${__step__}, partition_value, table, *tables, ...)
 
 -- target=temp.some_temp_table, if=equal_ignore_case(${a}, ${b})
 select *
