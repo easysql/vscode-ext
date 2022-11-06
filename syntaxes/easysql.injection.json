@@ -403,7 +403,7 @@
         },
         "var-reference-in-body-invalid": {
             "name": "meta.var-reference.body.easysql",
-            "match": "(?<!--.*)(\\${)(.*)(})",
+            "match": "(?<!--.*)(\\${)([^}]*)(})",
             "captures": {
                 "1": { "name": "punctuation.definition.var-reference.begin.easysql" },
                 "2": { "name": "invalid.illegal.word.easysql" },
@@ -546,8 +546,8 @@
                     "name": "punctuation.separator.arguments.easysql",
                     "match": "(,)"
                 },
-                { "include": "#var-reference-in-func-invalid" },
                 { "include": "#var-reference-in-func" },
+                { "include": "#var-reference-in-func-invalid" },
                 {
                     "match": "(?<=[,(])\\s*([^,)]+)(?=[,)])",
                     "captures": {
@@ -584,7 +584,7 @@
         },
         "var-reference-in-func-invalid": {
             "name": "meta.var-reference.easysql",
-            "match": "(?<=[,(])\\s*(\\${)\\s*(\\w*[^\\w]\\w*)\\s*(})",
+            "match": "(?<=[,(])\\s*(\\${)\\s*([^}]*)\\s*(})",
             "captures": {
                 "1": {
                     "name": "punctuation.definition.var-reference.begin.easysql"
@@ -677,7 +677,7 @@
         },
         "var-reference-in-tpl-invalid": {
             "name": "meta.tpl-var.easysql",
-            "match": "(?<=[,(])\\s*(\\w+)\\s*(=)\\s*(\\${)\\s*(.*)\\s*(})",
+            "match": "(?<=[,(])\\s*(\\w+)\\s*(=)\\s*(\\${)\\s*([^}]*)\\s*(})",
             "captures": {
                 "1": {
                     "name": "variable.parameter.name.tpl.easysql"
