@@ -78,7 +78,11 @@ Right now, keyword and function information are provided on hover.
 
 ## Release Notes
 
-Basic highlight for ETLs written in Easy SQL.
+Language features for ETLs written in Easy SQL, including syntax highlight, code completion, syntax diagnostics, and hover for more information.
+
+### 1.0.0
+
+Basic code completion, diagnostics, hover for more information implemented.
 
 ### 0.2.0
 
