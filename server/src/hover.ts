@@ -30,7 +30,9 @@ export class FunctionHover implements TypedHover {
         if (func) {
             const label = func.label
                 .replace(/\${[\d]+:/g, '{')
+                .replace(/\\\${__(\w+)__}/g, '$1')
                 .replaceAll('{', '')
+                .replaceAll(', ...', '')
                 .replaceAll('}', '');
             const type = func.type === 'easysql' ? 'EasySQL' : 'Python system';
             return {
