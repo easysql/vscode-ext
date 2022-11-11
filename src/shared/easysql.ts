@@ -1,3 +1,4 @@
+import { sep } from 'path';
 import { logger } from '../shared/logger';
 
 export class TokType {
@@ -482,9 +483,14 @@ class TargetParser {
                 case 'variables':
                 case 'list_variables':
                     return this.parseVariables(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                case 'template':
+                case 'log':
+                case 'action':
+                    return this.parseOther(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                 default:
                     return new Target(
                         startTok,
+                        new Sentinel([]),
                         null,
                         m[4]
                             ? new Sentinel([new Tok(targetStartTokLen + 1 + type.length, m[4].length, content, Tok.TYPES.whiteSpace)])
@@ -496,18 +502,51 @@ class TargetParser {
         }
     }
 
+    private parseOther(type: 'template' | 'log' | 'action', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+        const cls = type === 'template' ? Template : type === 'log' ? Log : Action;
+        const m = endBlock.match(/^\.(\w*)([^\w].*)?$/);
+        if (!m) {
+            return new cls(
+                startTok,
+                new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)]),
+                new Name(new Tok(endBlockStart + 1, endBlock.length - 1, content, Tok.TYPES.name)),
+                new Sentinel([]),
+                null,
+                new Sentinel([])
+            );
+        }
+        const nameSep = new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)]);
+        const name = new Name(new Tok(endBlockStart + 1, m[1].length, content, Tok.TYPES.name));
+        endBlockStart = endBlockStart + 1 + m[1].length;
+        if (this.conditionParser.acceptWithSeparator(m[2])) {
+            const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock.substring(m[1].length + 1));
+            return new cls(
+                startTok,
+                nameSep,
+                name,
+                separator.resetTokFrom(endBlockStart, content),
+                condition.resetTokFrom(endBlockStart, content),
+                new Sentinel([])
+            );
+        }
+        const endTok = endBlock
+            ? new Sentinel([new Tok(endBlockStart, endBlock.length - 1 - m[1].length, content, Tok.TYPES.whiteSpace)])
+            : new Sentinel([]);
+        return new cls(startTok, nameSep, name, new Sentinel([]), null, endTok);
+    }
     private parseVariables(type: 'variables' | 'list_variables', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
         const cls = type === 'variables' ? Variables : ListVariables;
         if (this.conditionParser.acceptWithSeparator(endBlock)) {
             const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock);
             return new cls(
-                startTok.merge(separator.resetTokFrom(endBlockStart, content)),
+                startTok,
+                separator.resetTokFrom(endBlockStart, content),
                 condition.resetTokFrom(endBlockStart, content),
                 new Sentinel([])
             );
         }
         const endTok = endBlock ? new Sentinel([new Tok(endBlockStart, endBlock.length, content, Tok.TYPES.whiteSpace)]) : new Sentinel([]);
-        return new cls(startTok, null, endTok);
+        return new cls(startTok, new Sentinel([]), null, endTok);
     }
 }
 
@@ -1051,7 +1090,7 @@ export class Condition extends EasySqlNode {
 }
 
 export class Target extends EasySqlNode {
-    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
+    constructor(public start: Sentinel, public separator: Sentinel, public condition: Condition | null, public end: Sentinel) {
         super();
     }
     getChildren(): EasySqlNode[] {
@@ -1060,6 +1099,7 @@ export class Target extends EasySqlNode {
     getToks(): Tok[] {
         return this.start
             .getToks()
+            .concat(this.separator.getToks())
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
@@ -1073,7 +1113,7 @@ export class Check extends Target {
         public condition: Condition | null,
         public end: Sentinel
     ) {
-        super(start, condition, end);
+        super(start, separator, condition, end);
     }
     getChildren(): EasySqlNode[] {
         return this.condition ? [this.content, this.condition] : [this.content];
@@ -1089,8 +1129,8 @@ export class Check extends Target {
 }
 
 export class Variables extends Target {
-    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
-        super(start, condition, end);
+    constructor(public start: Sentinel, public separator: Sentinel, public condition: Condition | null, public end: Sentinel) {
+        super(start, separator, condition, end);
     }
     getChildren(): EasySqlNode[] {
         return [];
@@ -1104,7 +1144,69 @@ export class Variables extends Target {
 }
 
 export class ListVariables extends Variables {
-    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
-        super(start, condition, end);
+    constructor(public start: Sentinel, public separator: Sentinel, public condition: Condition | null, public end: Sentinel) {
+        super(start, separator, condition, end);
+    }
+}
+
+export class TargetOther extends Target {
+    constructor(
+        public start: Sentinel,
+        public separator: Sentinel,
+        public name: Name,
+        public conditionSeparator: Sentinel,
+        public condition: Condition | null,
+        public end: Sentinel
+    ) {
+        super(start, separator, condition, end);
+    }
+    getToks(): Tok[] {
+        return this.start
+            .getToks()
+            .concat(this.separator.getToks())
+            .concat(this.separator.getToks())
+            .concat(this.name.getToks())
+            .concat(this.conditionSeparator.getToks())
+            .concat(this.condition?.getToks() || [])
+            .concat(this.end.getToks());
+    }
+}
+
+export class Template extends TargetOther {
+    constructor(
+        public start: Sentinel,
+        public separator: Sentinel,
+        public name: Name,
+        public conditionSeparator: Sentinel,
+        public condition: Condition | null,
+        public end: Sentinel
+    ) {
+        super(start, separator, name, conditionSeparator, condition, end);
+    }
+}
+
+export class Log extends TargetOther {
+    constructor(
+        public start: Sentinel,
+        public separator: Sentinel,
+        public name: Name,
+        public conditionSeparator: Sentinel,
+        public condition: Condition | null,
+        public end: Sentinel
+    ) {
+        super(start, separator, name, conditionSeparator, condition, end);
+    }
+}
+
+export class Action extends TargetOther {
+    constructor(
+        public start: Sentinel,
+        public separator: Sentinel,
+        public name: Name,
+        public conditionSeparator: Sentinel,
+        public condition: Condition | null,
+        public end: Sentinel
+    ) {
+        super(start, separator, name, conditionSeparator, condition, end);
     }
 }

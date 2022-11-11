@@ -21,7 +21,10 @@ import {
     Variables,
     Condition,
     FuncCall,
-    SinlgeFuncCallParser
+    SinlgeFuncCallParser,
+    Log,
+    Template,
+    Action
 } from './easysql';
 import { logger } from './logger';
 
@@ -224,7 +227,7 @@ describe('SinlgeFuncCallParser', () => {
             );
         });
 
-        it.only('one parameter without curly bracket', () => {
+        it('one parameter without curly bracket', () => {
             const parser = new SinlgeFuncCallParser();
             content = 'func(var)';
             pos = 0;
@@ -434,6 +437,7 @@ describe.only('target parser', () => {
         expect(parser.parseTarget(content)).to.deep.eq(
             new Variables(
                 new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]),
+                new Sentinel([]),
                 null,
                 new Sentinel([t('.a bc, if=bool()', Tok.TYPES.whiteSpace)]) // tolerant white-spaces.
             )
@@ -446,14 +450,60 @@ describe.only('target parser', () => {
         pos = 0;
         expect(parser.parseTarget(content)).to.deep.eq(
             new Variables(
-                new Sentinel([
-                    t('-- target'),
-                    t('='),
-                    t('variables', Tok.TYPES.name),
-                    t(' ', Tok.TYPES.whiteSpace),
-                    t(','),
-                    t(' ', Tok.TYPES.whiteSpace)
-                ]),
+                new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]),
+                new Sentinel([t(' ', Tok.TYPES.whiteSpace), t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                new Condition(
+                    new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                    new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([])
+                ),
+                new Sentinel([])
+            )
+        );
+    });
+
+    it('should parse log variables target', () => {
+        const parser = new Parser();
+        content = '-- target=log.a bc, if=bool()';
+        pos = 0;
+        expect(parser.parseTarget(content)).to.deep.eq(
+            new Log(
+                new Sentinel([t('-- target'), t('='), t('log', Tok.TYPES.name)]),
+                new Sentinel([t('.')]),
+                new Name(t('a', Tok.TYPES.name)),
+                new Sentinel([]),
+                null,
+                new Sentinel([t(' bc, if=bool()', Tok.TYPES.whiteSpace)]) // tolerant white-spaces.
+            )
+        );
+    });
+
+    it('should parse action variables target', () => {
+        const parser = new Parser();
+        content = '-- target=action.a bc, if=bool()';
+        pos = 0;
+        expect(parser.parseTarget(content)).to.deep.eq(
+            new Action(
+                new Sentinel([t('-- target'), t('='), t('action', Tok.TYPES.name)]),
+                new Sentinel([t('.')]),
+                new Name(t('a', Tok.TYPES.name)),
+                new Sentinel([]),
+                null,
+                new Sentinel([t(' bc, if=bool()', Tok.TYPES.whiteSpace)]) // tolerant white-spaces.
+            )
+        );
+    });
+
+    it('should parse tempalte variables target with condition', () => {
+        const parser = new Parser();
+        content = '-- target=template.abc, if=bool()';
+        pos = 0;
+        expect(parser.parseTarget(content)).to.deep.eq(
+            new Template(
+                new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.name)]),
+                new Sentinel([t('.')]),
+                new Name(t('abc', Tok.TYPES.name)),
+                new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
                 new Condition(
                     new Sentinel([t('if', Tok.TYPES.name), t('=')]),
                     new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
