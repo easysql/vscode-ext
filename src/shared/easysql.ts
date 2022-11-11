@@ -55,6 +55,8 @@ export class Tok {
         comma: new TokType(7, 'comma'),
         assignment: new TokType(8, 'assignment'),
         quote: new TokType(9, 'quote'),
+        point: new TokType(10, 'point'),
+        targetStart: new TokType(11, 'targetStart'),
         name: new TokType(20, 'name'),
         nameWide: new TokType(21, 'nameWide'),
         commentStart: new TokType(22, 'commentStart'),
@@ -179,14 +181,18 @@ export class EasySQLContentFinder {
     }
 }
 
-class SinlgeFuncCallParser {
-    parse(content: string): VarFuncCall | TplFuncCall {
+export class SinlgeFuncCallParser {
+    parse(content: string, withoutCurlyBracket?: boolean): VarFuncCall | TplFuncCall | FuncCall {
         // e.g. ${func(var1, ${var2}, var3)}, @{func(a=var1, b=${var2})}, ${func()}, @{func()}
-        const tokType = content[0] === '$' ? Tok.TYPES.varCurlyBracketStart : Tok.TYPES.tplCurlyBracketStart;
+        const tokType = withoutCurlyBracket
+            ? Tok.TYPES.varCurlyBracketStart
+            : content[0] === '$'
+            ? Tok.TYPES.varCurlyBracketStart
+            : Tok.TYPES.tplCurlyBracketStart;
         const startNode = new Sentinel([new Tok(0, 2, content, tokType)]);
 
         // handle: func(
-        let contentStart = 2;
+        let contentStart = withoutCurlyBracket ? 0 : 2;
         const funcCallContent = content.substring(contentStart, content.length - contentStart);
         const parenthesisStart = funcCallContent.indexOf('(');
         if (parenthesisStart === -1) {
@@ -207,15 +213,22 @@ class SinlgeFuncCallParser {
         const paramsNode: (Lit | VarReference | TplFuncArg | Sentinel)[] = this.parseParams(paramsContent, contentStart, content, tokType);
 
         // handle end: )}, ) }
-        const endNode = this.parseEndNode(parenthesisEndIdx, content);
+        const endNode = this.parseEndNode(parenthesisEndIdx, content, withoutCurlyBracket);
+
+        if (withoutCurlyBracket) {
+            return new FuncCall(funcNameNode, argStart, paramsNode as (Sentinel | Lit | VarReference)[], endNode);
+        }
 
         return tokType.isVarCurlyBracketStart
             ? new VarFuncCall(startNode, funcNameNode, argStart, paramsNode as (Sentinel | Lit | VarReference)[], endNode)
             : new TplFuncCall(startNode, funcNameNode, argStart, paramsNode as (Sentinel | TplFuncArg)[], endNode);
     }
 
-    private parseEndNode(parenthesisEndIdx: number, content: string) {
+    private parseEndNode(parenthesisEndIdx: number, content: string, withoutCurlyBracket?: boolean) {
         const endToks = [new Tok(parenthesisEndIdx, 1, content, Tok.TYPES.parenthesisEnd)];
+        if (withoutCurlyBracket) {
+            return new Sentinel(endToks);
+        }
         if (parenthesisEndIdx !== content.length - 2) {
             endToks.push(new Tok(parenthesisEndIdx + 1, content.length - parenthesisEndIdx - 2, content, Tok.TYPES.whiteSpace));
         }
@@ -351,7 +364,7 @@ class SinlgeFuncCallParser {
     }
 }
 
-class SingleVarParser {
+export class SingleVarParser {
     parse(content: string) {
         // e.g. ${var2}  @{ var2 }
         const tokType =
@@ -401,6 +414,100 @@ class SingleVarParser {
             : tokType.isTplCurlyBracketStart
             ? new TplReference(startNode, varName, endNode)
             : new TplVarReference(startNode, varName, endNode);
+    }
+}
+
+export class ConditionParser {
+    accept(content: string) {
+        return content.startsWith('if=');
+    }
+    parse(content: string): Condition {
+        const contentWithEndTrimed = content.trimEnd();
+        const end =
+            contentWithEndTrimed.length === content.length
+                ? new Sentinel([])
+                : new Sentinel([new Tok(contentWithEndTrimed.length, content.length - contentWithEndTrimed.length, content, Tok.TYPES.whiteSpace)]);
+        return new Condition(
+            new Sentinel([new Tok(0, 2, content, Tok.TYPES.name), new Tok(2, 1, content, Tok.TYPES.assignment)]),
+            (new SinlgeFuncCallParser().parse(content.substring(3), true) as FuncCall).resetTokFrom(3, content),
+            end
+        );
+    }
+
+    acceptWithSeparator(content: string) {
+        return !!content.match(/^(\s*),(\s*)if=/);
+    }
+
+    parseWithSeparator(content: string): [Sentinel, Condition] {
+        const m = content.match(/^(\s*),(\s*)if=/);
+        if (!m) {
+            throw new Error('should exist a match');
+        }
+        const separatorToks: Tok[] = [];
+        let startPos = 0;
+        if (m[1]) {
+            separatorToks.push(new Tok(0, m[1].length, content, Tok.TYPES.whiteSpace));
+            startPos = m[1].length;
+        }
+        separatorToks.push(new Tok(startPos, 1, content, Tok.TYPES.comma));
+        startPos += 1;
+        if (m[2]) {
+            separatorToks.push(new Tok(startPos, m[2].length, content, Tok.TYPES.whiteSpace));
+            startPos += m[2].length;
+        }
+
+        const separator = new Sentinel(separatorToks);
+        const condition = this.parse(content.substring(startPos)).resetTokFrom(startPos, content);
+        return [separator, condition];
+    }
+}
+
+class TargetParser {
+    private conditionParser = new ConditionParser();
+    accept(content: string) {
+        return content.startsWith('-- target=');
+    }
+    parse(content: string): Target {
+        const m = content.match(/^(-- target)(=)(\w*)([^\w].*)?$/);
+        if (m) {
+            const targetStartTokLen = '-- target'.length;
+            const type = m[3];
+            const startTok = new Sentinel([
+                new Tok(0, targetStartTokLen, content, Tok.TYPES.targetStart),
+                new Tok(targetStartTokLen, 1, content, Tok.TYPES.assignment),
+                new Tok(targetStartTokLen + 1, type.length, content, Tok.TYPES.name)
+            ]);
+
+            switch (type) {
+                case 'variables':
+                case 'list_variables':
+                    return this.parseVariables(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                default:
+                    return new Target(
+                        startTok,
+                        null,
+                        m[4]
+                            ? new Sentinel([new Tok(targetStartTokLen + 1 + type.length, m[4].length, content, Tok.TYPES.whiteSpace)])
+                            : new Sentinel([])
+                    );
+            }
+        } else {
+            throw new Error('should exist a match!');
+        }
+    }
+
+    private parseVariables(type: 'variables' | 'list_variables', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+        const cls = type === 'variables' ? Variables : ListVariables;
+        if (this.conditionParser.acceptWithSeparator(endBlock)) {
+            const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock);
+            return new cls(
+                startTok.merge(separator.resetTokFrom(endBlockStart, content)),
+                condition.resetTokFrom(endBlockStart, content),
+                new Sentinel([])
+            );
+        }
+        const endTok = endBlock ? new Sentinel([new Tok(endBlockStart, endBlock.length, content, Tok.TYPES.whiteSpace)]) : new Sentinel([]);
+        return new cls(startTok, null, endTok);
     }
 }
 
@@ -593,7 +700,11 @@ export class Parser {
     }
 
     public parseSingleFuncCall(content: string): VarFuncCall | TplFuncCall {
-        return new SinlgeFuncCallParser().parse(content);
+        return new SinlgeFuncCallParser().parse(content) as VarFuncCall | TplFuncCall;
+    }
+
+    public parseTarget(content: string): Target {
+        return new TargetParser().parse(content);
     }
 
     public parseSingleVar(content: string): VarReference | TplReference | TplVarReference {
@@ -908,5 +1019,92 @@ export class Str extends EasySqlNode {
     }
     getToks(): Tok[] {
         return [this.text];
+    }
+}
+
+export class FuncCall extends EasySqlNode {
+    constructor(public funcName: Name, public argStart: Sentinel, public args: (Lit | VarReference | Sentinel)[], public end: Sentinel) {
+        super();
+    }
+    getToks() {
+        return this.funcName
+            .getToks()
+            .concat(this.argStart.getToks())
+            .concat(this.args.flatMap((node) => node.getToks()))
+            .concat(this.end.getToks());
+    }
+    getChildren() {
+        return [this.funcName, ...this.args.filter((node) => !(node instanceof Sentinel))];
+    }
+}
+
+export class Condition extends EasySqlNode {
+    constructor(public start: Sentinel, public funcCall: FuncCall, public end: Sentinel) {
+        super();
+    }
+    getChildren(): EasySqlNode[] {
+        return [this.funcCall];
+    }
+    getToks(): Tok[] {
+        return this.start.getToks().concat(this.funcCall.getToks()).concat(this.end.getToks());
+    }
+}
+
+export class Target extends EasySqlNode {
+    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
+        super();
+    }
+    getChildren(): EasySqlNode[] {
+        return [];
+    }
+    getToks(): Tok[] {
+        return this.start
+            .getToks()
+            .concat(this.condition?.getToks() || [])
+            .concat(this.end.getToks());
+    }
+}
+
+export class Check extends Target {
+    constructor(
+        public start: Sentinel,
+        public content: Name | FuncCall,
+        public separator: Sentinel,
+        public condition: Condition | null,
+        public end: Sentinel
+    ) {
+        super(start, condition, end);
+    }
+    getChildren(): EasySqlNode[] {
+        return this.condition ? [this.content, this.condition] : [this.content];
+    }
+    getToks(): Tok[] {
+        return this.start
+            .getToks()
+            .concat(this.content.getToks())
+            .concat(this.separator.getToks())
+            .concat(this.condition?.getToks() || [])
+            .concat(this.end.getToks());
+    }
+}
+
+export class Variables extends Target {
+    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
+        super(start, condition, end);
+    }
+    getChildren(): EasySqlNode[] {
+        return [];
+    }
+    getToks(): Tok[] {
+        return this.start
+            .getToks()
+            .concat(this.condition?.getToks() || [])
+            .concat(this.end.getToks());
+    }
+}
+
+export class ListVariables extends Variables {
+    constructor(public start: Sentinel, public condition: Condition | null, public end: Sentinel) {
+        super(start, condition, end);
     }
 }

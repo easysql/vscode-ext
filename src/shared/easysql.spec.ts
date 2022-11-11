@@ -15,7 +15,13 @@ import {
     Lit,
     TplFuncCall,
     TplFuncArg,
-    Str
+    Str,
+    EasySQLContentFinder,
+    Check,
+    Variables,
+    Condition,
+    FuncCall,
+    SinlgeFuncCallParser
 } from './easysql';
 import { logger } from './logger';
 
@@ -47,6 +53,12 @@ const t = (text: string, type?: TokType) => {
             case ',':
                 tokType = Tok.TYPES.comma;
                 break;
+            case '.':
+                tokType = Tok.TYPES.point;
+                break;
+            case '-- target':
+                tokType = Tok.TYPES.targetStart;
+                break;
             case '=':
                 tokType = Tok.TYPES.assignment;
                 break;
@@ -62,39 +74,42 @@ const t = (text: string, type?: TokType) => {
 
 logger.setLevel('DEBUG');
 
-describe('parser', () => {
-    describe('tok', () => {
-        it('check valid', () => {
-            expect(new Tok(0, 2, 'bc', Tok.TYPES.nameWide).isValid).to.true;
-        });
+describe('tok', () => {
+    it('check valid', () => {
+        expect(new Tok(0, 2, 'bc', Tok.TYPES.nameWide).isValid).to.true;
     });
+});
+
+describe('EasySQLContentFinder', () => {
     it('should find comment start', () => {
-        expect(new Parser().findCommentStartInCurrentLine('--')).to.eq(0);
-        expect(new Parser().findCommentStartInCurrentLine('123--')).to.eq(3);
-        expect(new Parser().findCommentStartInCurrentLine('""--')).to.eq(2);
-        expect(new Parser().findCommentStartInCurrentLine('"--')).to.eq(-1);
-        expect(new Parser().findCommentStartInCurrentLine('"\'"--')).to.eq(3);
-        expect(new Parser().findCommentStartInCurrentLine('"\'"\'--')).to.eq(-1);
-        expect(new Parser().findCommentStartInCurrentLine('""""--')).to.eq(4);
-        expect(new Parser().findCommentStartInCurrentLine('````--')).to.eq(4);
-        expect(new Parser().findCommentStartInCurrentLine("''''--")).to.eq(4);
-        expect(new Parser().findCommentStartInCurrentLine("'''''--")).to.eq(-1);
-        expect(new Parser().findCommentStartInCurrentLine("''''''--")).to.eq(6);
-        expect(new Parser().findCommentStartInCurrentLine('\n--')).to.eq(-1);
-        expect(new Parser().findCommentStartInCurrentLine('abc\n--')).to.eq(-1);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('--')).to.eq(0);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('123--')).to.eq(3);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('""--')).to.eq(2);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('"--')).to.eq(-1);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('"\'"--')).to.eq(3);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('"\'"\'--')).to.eq(-1);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('""""--')).to.eq(4);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('````--')).to.eq(4);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine("''''--")).to.eq(4);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine("'''''--")).to.eq(-1);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine("''''''--")).to.eq(6);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('\n--')).to.eq(-1);
+        expect(EasySQLContentFinder.findCommentStartInCurrentLine('abc\n--')).to.eq(-1);
     });
 
     it('should find open quote in the current line', () => {
-        expect(new Parser().findOpenQuoteInCurrentLine('')).to.eq(-1);
-        expect(new Parser().findOpenQuoteInCurrentLine('"')).to.eq(0);
-        expect(new Parser().findOpenQuoteInCurrentLine('""\'')).to.eq(2);
-        expect(new Parser().findOpenQuoteInCurrentLine('""\n\'')).to.eq(-1);
-        expect(new Parser().findOpenQuoteInCurrentLine('"\'"\'')).to.eq(3);
-        expect(new Parser().findOpenQuoteInCurrentLine("'''")).to.eq(2);
-        expect(new Parser().findOpenQuoteInCurrentLine("''''")).to.eq(-1);
-        expect(new Parser().findOpenQuoteInCurrentLine("''''\"")).to.eq(4);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine('')).to.eq(-1);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine('"')).to.eq(0);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine('""\'')).to.eq(2);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine('""\n\'')).to.eq(-1);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine('"\'"\'')).to.eq(3);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine("'''")).to.eq(2);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine("''''")).to.eq(-1);
+        expect(EasySQLContentFinder.findOpenQuoteInCurrentLine("''''\"")).to.eq(4);
     });
+});
 
+describe('SingleVarParser', () => {
     describe('should parse var reference', () => {
         it('var', () => {
             const parser = new Parser();
@@ -175,7 +190,9 @@ describe('parser', () => {
             );
         });
     });
+});
 
+describe('SinlgeFuncCallParser', () => {
     describe('should parse func call', () => {
         it('no parameters', () => {
             const parser = new Parser();
@@ -203,6 +220,20 @@ describe('parser', () => {
                     new Sentinel([t('(')]),
                     [new Lit(t('var', Tok.TYPES.nameWide))],
                     new Sentinel([t(')'), t('}')])
+                )
+            );
+        });
+
+        it.only('one parameter without curly bracket', () => {
+            const parser = new SinlgeFuncCallParser();
+            content = 'func(var)';
+            pos = 0;
+            expect(parser.parse(content, true)).to.deep.eq(
+                new FuncCall(
+                    new Name(t('func', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [new Lit(t('var', Tok.TYPES.nameWide))],
+                    new Sentinel([t(')')])
                 )
             );
         });
@@ -393,7 +424,48 @@ describe('parser', () => {
             );
         });
     });
+});
 
+describe.only('target parser', () => {
+    it('should parse simple variables target', () => {
+        const parser = new Parser();
+        content = '-- target=variables.a bc, if=bool()';
+        pos = 0;
+        expect(parser.parseTarget(content)).to.deep.eq(
+            new Variables(
+                new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]),
+                null,
+                new Sentinel([t('.a bc, if=bool()', Tok.TYPES.whiteSpace)]) // tolerant white-spaces.
+            )
+        );
+    });
+
+    it('should parse variables target with condition', () => {
+        const parser = new Parser();
+        content = '-- target=variables , if=bool()';
+        pos = 0;
+        expect(parser.parseTarget(content)).to.deep.eq(
+            new Variables(
+                new Sentinel([
+                    t('-- target'),
+                    t('='),
+                    t('variables', Tok.TYPES.name),
+                    t(' ', Tok.TYPES.whiteSpace),
+                    t(','),
+                    t(' ', Tok.TYPES.whiteSpace)
+                ]),
+                new Condition(
+                    new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                    new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([])
+                ),
+                new Sentinel([])
+            )
+        );
+    });
+});
+
+describe('body parser', () => {
     describe('should parse all', () => {
         it('ignore comment', () => {
             const parser = new Parser();
