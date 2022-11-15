@@ -27,7 +27,7 @@ export class HighlightTokenParser {
     parse(content: string): IParsedToken[] {
         let ast: EasySqlNode[] = [];
         try {
-            ast = new Parser().parse(content);
+            ast = new Parser().parseBody(content);
         } catch (err) {
             logger.error('Parse content to AST failed', err);
         }

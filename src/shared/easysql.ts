@@ -688,17 +688,17 @@ export class Parser {
             if (nextLineBreakIdx === -1) {
                 const target: EasySqlNode[] = this.targetParser.accept(targetContent)
                     ? [this.targetParser.parse(targetContent)]
-                    : this.parse(targetContent);
+                    : this.parseBody(targetContent);
                 const result = target.map((node) => node.resetTokFrom(targetStartPos + (i === 0 ? 0 : 1), content));
                 targetStartPos += targetContent.length + (i === 0 ? 0 : 1);
                 return startNodes.concat(result);
             } else {
                 const target: EasySqlNode[] = this.targetParser.accept(targetContent)
                     ? [this.targetParser.parse(targetContent.substring(0, nextLineBreakIdx))]
-                    : this.parse(targetContent.substring(0, nextLineBreakIdx));
+                    : this.parseBody(targetContent.substring(0, nextLineBreakIdx));
                 const bodyContent = targetContent.substring(nextLineBreakIdx);
                 const result = target
-                    .concat(this.parse(bodyContent).map((node) => node.resetTokFrom(nextLineBreakIdx, bodyContent)))
+                    .concat(this.parseBody(bodyContent).map((node) => node.resetTokFrom(nextLineBreakIdx, bodyContent)))
                     .map((node) => node.resetTokFrom(targetStartPos + (i === 0 ? 0 : 1), content));
                 targetStartPos += targetContent.length + (i === 0 ? 0 : 1);
                 return startNodes.concat(result);
@@ -706,7 +706,7 @@ export class Parser {
         });
     }
 
-    parse(content: string, ignoreComment?: boolean, ignoreQuote?: boolean): EasySqlNode[] {
+    parseBody(content: string, ignoreComment?: boolean, ignoreQuote?: boolean): EasySqlNode[] {
         i += 1;
         if (i > 50) {
             // throw new Error('stuck overflow');
@@ -767,7 +767,7 @@ export class Parser {
                 nextStartIndex = strEndIdx + 1;
                 nodes = nodes.concat(nodesFromStr);
             }
-            this.parse(content.substring(nextStartIndex), ignoreComment, ignoreQuote).forEach((node) =>
+            this.parseBody(content.substring(nextStartIndex), ignoreComment, ignoreQuote).forEach((node) =>
                 nodes.push(node.resetTokFrom(nextStartIndex, content))
             );
             return nodes;
@@ -780,7 +780,7 @@ export class Parser {
                     new Any(new Tok(0, nextLineBreakIdx === -1 ? content.length : nextLineBreakIdx + 1, content, Tok.TYPES.any))
                 ];
                 return nodes.concat(
-                    this.parse(content.substring(nextLineBreakIdx + 1)).map((node) => node.resetTokFrom(nextLineBreakIdx + 1, content))
+                    this.parseBody(content.substring(nextLineBreakIdx + 1)).map((node) => node.resetTokFrom(nextLineBreakIdx + 1, content))
                 );
             }
             return [new Any(new Tok(0, content.length, content, Tok.TYPES.any)) as EasySqlNode];
@@ -791,7 +791,7 @@ export class Parser {
 
     private parseContentWithOpenQuoteInCurrentLine(content: string, openQuoteIdx: number) {
         let nodes: EasySqlNode[] = [];
-        nodes = nodes.concat(this.parse(content.substring(0, openQuoteIdx), true).map((node) => node.resetTokFrom(0, content)));
+        nodes = nodes.concat(this.parseBody(content.substring(0, openQuoteIdx), true).map((node) => node.resetTokFrom(0, content)));
 
         const nextLineBreakIdx = content.indexOf('\n');
         const openStrLength = nextLineBreakIdx === -1 ? content.length - openQuoteIdx : nextLineBreakIdx - openQuoteIdx;
@@ -799,7 +799,7 @@ export class Parser {
 
         if (nextLineBreakIdx !== -1) {
             nodes.push(new Any(new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.any)));
-            this.parse(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
+            this.parseBody(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
         }
         return nodes;
     }
@@ -808,7 +808,7 @@ export class Parser {
         let nodes: EasySqlNode[] = [];
 
         const nextLineBreakIdx = content.indexOf('\n');
-        nodes = nodes.concat(this.parse(content.substring(0, commentStartIdx), true).map((node) => node.resetTokFrom(0, content)));
+        nodes = nodes.concat(this.parseBody(content.substring(0, commentStartIdx), true).map((node) => node.resetTokFrom(0, content)));
         nodes.push(
             new Comment(
                 new Sentinel([new Tok(commentStartIdx, 2, content, Tok.TYPES.commentStart)]),
@@ -823,7 +823,7 @@ export class Parser {
 
         if (nextLineBreakIdx !== -1) {
             nodes.push(new Any(new Tok(nextLineBreakIdx, 1, content, Tok.TYPES.any)));
-            this.parse(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
+            this.parseBody(content.substring(nextLineBreakIdx + 1)).forEach((node) => nodes.push(node.resetTokFrom(nextLineBreakIdx + 1, content)));
         }
         return nodes;
     }
@@ -842,7 +842,7 @@ export class Parser {
         }
 
         logger.debug('parsing string: ', stringContent);
-        const nodesInStr = this.parse(stringContent, true, true).map((node) => node.resetTokFrom(quoteStartIdx + 1, content));
+        const nodesInStr = this.parseBody(stringContent, true, true).map((node) => node.resetTokFrom(quoteStartIdx + 1, content));
 
         // change first any and add starting quote to str
         if (nodesInStr.length && nodesInStr[0] instanceof Any) {

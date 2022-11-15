@@ -939,7 +939,7 @@ describe('body parser', () => {
 
             content = '--abc${lit}';
             pos = 0;
-            expect(parser.parse(content, true)).to.deep.eq([
+            expect(parser.parseBody(content, true)).to.deep.eq([
                 new Any(t('--abc', Tok.TYPES.any)),
                 new VarReference(new Sentinel([t('${')]), new Name(t('lit', Tok.TYPES.name)), new Sentinel([t('}')]))
             ]);
@@ -950,7 +950,7 @@ describe('body parser', () => {
 
             content = '--abc@{tpl(a=lit,\nb=${abc})}';
             pos = 0;
-            expect(parser.parse(content, true)).to.deep.eq([
+            expect(parser.parseBody(content, true)).to.deep.eq([
                 new Any(t('--abc', Tok.TYPES.any)),
                 new TplFuncCall(
                     new Sentinel([t('@{')]),
@@ -983,7 +983,7 @@ describe('body parser', () => {
 
             content = '--abc@{tpl(a=lit,\nb=${abc})}  @{tpl(a=lit,\nb=${abc})}';
             pos = 0;
-            expect(parser.parse(content, true)).to.deep.eq([
+            expect(parser.parseBody(content, true)).to.deep.eq([
                 new Any(t('--abc', Tok.TYPES.any)),
                 new TplFuncCall(
                     new Sentinel([t('@{')]),
@@ -1039,7 +1039,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = "ab'c${lit(a, ${b})}--";
             pos = 0;
-            expect(parser.parse(content, true, true)).to.deep.eq([
+            expect(parser.parseBody(content, true, true)).to.deep.eq([
                 new Any(t("ab'c", Tok.TYPES.any)),
                 new VarFuncCall(
                     new Sentinel([t('${')]),
@@ -1060,13 +1060,13 @@ describe('body parser', () => {
             const parser = new Parser();
             content = '--abc$\\{lit(a, $\\{b})}';
             pos = 0;
-            expect(parser.parse(content, true)).to.deep.eq([new Any(t('--abc$\\{lit(a, $\\{b})}', Tok.TYPES.any))]);
+            expect(parser.parseBody(content, true)).to.deep.eq([new Any(t('--abc$\\{lit(a, $\\{b})}', Tok.TYPES.any))]);
         });
         it('comment at the head', () => {
             const parser = new Parser();
             content = '--abc${lit(a, ${b})}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit(a, ${b})}', Tok.TYPES.any))
             ]);
         });
@@ -1074,7 +1074,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx--abc${lit(a, ${b})}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit(a, ${b})}', Tok.TYPES.any))
             ]);
@@ -1083,7 +1083,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx---abc${lit(a, ${b})}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('-abc${lit(a, ${b})}', Tok.TYPES.any))
             ]);
@@ -1093,8 +1093,8 @@ describe('body parser', () => {
             const parser = new Parser();
             content = '\nc${lit}("a"\n\n';
             pos = 0;
-            console.log(parser.parse(content));
-            expect(parser.parse(content)).to.deep.eq([
+            console.log(parser.parseBody(content));
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('\n', Tok.TYPES.any)),
                 new Any(t('c', Tok.TYPES.any)),
                 new VarReference(new Sentinel([t('${')]), new Name(t('lit', Tok.TYPES.name)), new Sentinel([t('}')])),
@@ -1109,8 +1109,8 @@ describe('body parser', () => {
             const parser = new Parser();
             content = "select ' ${abc}' from 123 -- comment";
             pos = 0;
-            console.log(parser.parse(content));
-            expect(parser.parse(content)).to.deep.eq([
+            console.log(parser.parseBody(content));
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('select ', Tok.TYPES.any)),
                 new Str(t("' ", Tok.TYPES.any)),
                 new VarReference(new Sentinel([t('${')]), new Name(t('abc', Tok.TYPES.name)), new Sentinel([t('}')])),
@@ -1124,7 +1124,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx"", @{lib(--abc\na=3)}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Str(t('""', Tok.TYPES.any)),
                 new Any(t(', @{lib(', Tok.TYPES.any)),
@@ -1138,7 +1138,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx"", ---abc${\nlit("a", --${b})}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Str(t('""', Tok.TYPES.any)),
                 new Any(t(', ', Tok.TYPES.any)),
@@ -1155,7 +1155,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx"aa${a} ${f()}#{abc} @{t(a=1,"")}"\n`@{abc}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Str(t('"aa', Tok.TYPES.any)),
                 new VarReference(new Sentinel([t('${')]), new Name(t('a', Tok.TYPES.name)), new Sentinel([t('}')])),
@@ -1179,7 +1179,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = 'xx"", \'--${abc}\nlit("a", --${b})}\nabc';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t('xx', Tok.TYPES.any)),
                 new Str(t('""', Tok.TYPES.any)),
                 new Any(t(', ', Tok.TYPES.any)),
@@ -1198,8 +1198,8 @@ describe('body parser', () => {
             const parser = new Parser();
             content = '${f(a=1,asdf=,${f(x)})} as abcde -- com';
             pos = 0;
-            console.log(JSON.stringify(parser.parse(content), null, 2));
-            expect(parser.parse(content)).to.deep.eq([
+            console.log(JSON.stringify(parser.parseBody(content), null, 2));
+            expect(parser.parseBody(content)).to.deep.eq([
                 new VarFuncCall(
                     new Sentinel([t('${')]),
                     new Name(t('f', Tok.TYPES.name)),
@@ -1222,7 +1222,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = ', `${a,bc}d` as abcde';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 new Any(t(', ', Tok.TYPES.any)),
                 new Str(t('`', Tok.TYPES.quote)),
                 new VarReference(new Sentinel([t('${')]), new Name(t('a,bc', Tok.TYPES.name)), new Sentinel([t('}')])),
@@ -1235,7 +1235,7 @@ describe('body parser', () => {
             const parser = new Parser();
             content = '--abc$${lit(a, ${b})}';
             pos = 0;
-            expect(parser.parse(content)).to.deep.eq([
+            expect(parser.parseBody(content)).to.deep.eq([
                 t('--abc${lit(a, ', Tok.TYPES.any),
                 t('${'),
                 t('b', Tok.TYPES.name),
