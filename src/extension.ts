@@ -10,7 +10,7 @@ export function deactivate(): Thenable<void> | undefined {
 }
 
 import { LanguageClient, LanguageClientOptions, ServerOptions, TransportKind } from 'vscode-languageclient/node';
-import { logger } from './shared/logger';
+import { logger } from './logger';
 
 let client: LanguageClient;
 
