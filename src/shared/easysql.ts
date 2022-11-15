@@ -240,7 +240,7 @@ export class SinlgeFuncCallParser {
 
     private parseFuncStartNodes(funcCallContent: string, parenthesisStart: number): [Sentinel, Name, Sentinel] {
         const funcName = funcCallContent.substring(0, parenthesisStart + 1);
-        const matches = funcName.match(/^(\s*)([^\s]+)\($/);
+        const matches = funcName.match(/^(\s*)([^\s]*)\($/);
         if (!matches) {
             throw new Error('Must have a match, found nothing: ' + funcCallContent);
         }
@@ -420,7 +420,7 @@ export class SingleVarParser {
 
 export class ConditionParser {
     accept(content: string) {
-        return content.startsWith('if=');
+        return content.match(/^if=[^(]*\([^)]*\)/);
     }
     parse(content: string): Condition {
         const contentWithEndTrimed = content.trimEnd();
@@ -436,11 +436,11 @@ export class ConditionParser {
     }
 
     acceptWithSeparator(content: string) {
-        return !!content.match(/^(\s*),(\s*)if=/);
+        return !!content.match(/^(\s*),(\s*)if=[^(]*\([^)]*\)/);
     }
 
     parseWithSeparator(content: string): [Sentinel, Condition] {
-        const m = content.match(/^(\s*),(\s*)if=/);
+        const m = content.match(/^(\s*),(\s*)if=[^(]*\([^)]*\)/);
         if (!m) {
             throw new Error('should exist a match');
         }
@@ -490,6 +490,11 @@ class TargetParser {
                 case 'cache':
                 case 'broadcast':
                     return this.parseSimpleNamedTarget(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                case 'check':
+                    if (!m[4].match(/^[^,]*\([^)]*\)/)) {
+                        return this.parseSimpleNamedTarget('check', content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                    }
+                    return this.parseCheckWithFunc(content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                 case 'output':
                     return this.parseOutput(content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                 default:
@@ -505,6 +510,39 @@ class TargetParser {
         } else {
             throw new Error('should exist a match!');
         }
+    }
+    private parseCheckWithFunc(content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+        const separator = endBlock.startsWith('.')
+            ? new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)])
+            : new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]);
+        const funcCallStart = endBlock.startsWith('.') ? 1 : 0;
+        const m = endBlock.match(/^\.?([^(]*\([^)]*\))([^,]*)?(,.*)?$/);
+        if (!m) {
+            throw new Error('should exist a match');
+        }
+        const funcContent = m[1];
+        const funcCall = (new SinlgeFuncCallParser().parse(funcContent, true) as FuncCall).resetTokFrom(endBlockStart + funcCallStart, content);
+        let conditionSeparator = m[2]
+            ? new Sentinel([new Tok(endBlockStart + funcCallStart + funcContent.length, m[2].length, content, Tok.TYPES.whiteSpace)])
+            : new Sentinel([]);
+        if (m[3] && this.conditionParser.acceptWithSeparator(m[3])) {
+            const [_separator, condition] = this.conditionParser.parseWithSeparator(m[3]);
+            const conditionStart = endBlockStart + funcCallStart + funcContent.length + (m[2]?.length || 0);
+            return new Check(
+                startTok,
+                separator,
+                funcCall,
+                conditionSeparator.merge(_separator.resetTokFrom(conditionStart, content)),
+                condition.resetTokFrom(conditionStart, content),
+                new Sentinel([])
+            );
+        }
+        if (m[3]) {
+            conditionSeparator = new Sentinel([
+                new Tok(endBlockStart + funcCallStart + funcContent.length, (m[2]?.length || 0) + m[3].length, content, Tok.TYPES.whiteSpace)
+            ]);
+        }
+        return new Check(startTok, separator, funcCall, conditionSeparator, null, new Sentinel([]));
     }
     private parseOutput(content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
         const m = endBlock.match(/^(\.[^.,\s]*)?(\.[^.,\s]*)?(\.[^.,\s]*)?([^,]*)(,.*)?$/);
@@ -551,7 +589,6 @@ class TargetParser {
             conditionSeparatorStart = m[4] ? conditionSeparatorStart + m[4].length : conditionSeparatorStart;
             if (m[5]) {
                 const conditionContent = endBlock.substring(conditionSeparatorStart - endBlockStart);
-                console.log('conditionContent', conditionContent);
                 if (this.conditionParser.acceptWithSeparator(conditionContent)) {
                     const [separator, condition] = this.conditionParser.parseWithSeparator(conditionContent);
                     return new Output(
@@ -574,7 +611,7 @@ class TargetParser {
         throw new Error('should exist match');
     }
     private parseSimpleNamedTarget(
-        type: 'template' | 'log' | 'action' | 'temp' | 'cache' | 'broadcast',
+        type: 'template' | 'log' | 'action' | 'temp' | 'cache' | 'broadcast' | 'check',
         content: string,
         startTok: Sentinel,
         endBlockStart: number,
@@ -586,7 +623,8 @@ class TargetParser {
             action: Action,
             temp: Temp,
             cache: Cache,
-            broadcast: Broadcast
+            broadcast: Broadcast,
+            check: Check
         }[type];
         const m = endBlock.match(/^(\.[^\s,]*)?([^,]*)?(,.*)?$/);
         if (!m) {
@@ -1191,8 +1229,9 @@ export class Target extends EasySqlNode {
 export class Check extends Target {
     constructor(
         public start: Sentinel,
-        public content: Name | FuncCall,
         public separator: Sentinel,
+        public content: Name | FuncCall,
+        public conditionSeparator: Sentinel,
         public condition: Condition | null,
         public end: Sentinel
     ) {
@@ -1204,8 +1243,9 @@ export class Check extends Target {
     getToks(): Tok[] {
         return this.start
             .getToks()
-            .concat(this.content.getToks())
             .concat(this.separator.getToks())
+            .concat(this.content.getToks())
+            .concat(this.conditionSeparator.getToks())
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
@@ -1243,6 +1283,11 @@ export class SimpleNamedTarget extends Target {
     ) {
         super(start, separator, condition, end);
     }
+
+    getChildren(): EasySqlNode[] {
+        return this.condition ? [this.condition] : [];
+    }
+
     getToks(): Tok[] {
         return this.start
             .getToks()

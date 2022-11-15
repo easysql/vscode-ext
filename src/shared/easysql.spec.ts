@@ -748,6 +748,134 @@ describe.only('target parser', () => {
             );
         });
     });
+
+    describe('check', () => {
+        it('simple named check', () => {
+            const parser = new Parser();
+            content = '-- target=check.a bc';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new Name(t('a', Tok.TYPES.name)),
+                    new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('simple named check with no separator', () => {
+            const parser = new Parser();
+            content = '-- target=check a bc';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('', Tok.TYPES.point)]),
+                    new Name(t('', Tok.TYPES.name)),
+                    new Sentinel([t(' a bc', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('simple named check with condition', () => {
+            const parser = new Parser();
+            content = '-- target=check.a,if=bool()';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new Name(t('a', Tok.TYPES.name)),
+                    new Sentinel([t(',')]),
+                    new Condition(
+                        new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                        new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                        new Sentinel([])
+                    ),
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('func check', () => {
+            const parser = new Parser();
+            content = '-- target=check.a()';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('simple check with partial func', () => {
+            const parser = new Parser();
+            content = '-- target=check.a(, bc';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new Name(t('a(', Tok.TYPES.name)),
+                    new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('func check with end white space', () => {
+            const parser = new Parser();
+            content = '-- target=check.a(), bc';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('func check with condition', () => {
+            const parser = new Parser();
+            content = '-- target=check.a(), if=()';
+            pos = 0;
+            console.log(parser.parseTarget(content));
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                    new Condition(
+                        new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                        new FuncCall(
+                            new Name(t('', Tok.TYPES.name)),
+                            new Sentinel([t('(', Tok.TYPES.parenthesisStart)]),
+                            [],
+                            new Sentinel([t(')', Tok.TYPES.parenthesisEnd)])
+                        ),
+                        new Sentinel([])
+                    ),
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+    });
 });
 
 describe('body parser', () => {
