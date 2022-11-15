@@ -1252,8 +1252,7 @@ describe('full parser', () => {
 
         content = '-- target=variables\n-- target=variables\n--abc${lit}';
         pos = 0;
-        console.log(parser.parseWithTarget(content));
-        expect(parser.parseWithTarget(content)).to.deep.eq([
+        expect(parser.parse(content)).to.deep.eq([
             new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
             new Any(t('\n', Tok.TYPES.any)),
             new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
@@ -1267,7 +1266,7 @@ describe('full parser', () => {
 
         content = '--abc${lit}\n-- target=variables';
         pos = 0;
-        expect(parser.parseWithTarget(content)).to.deep.eq([
+        expect(parser.parse(content)).to.deep.eq([
             new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any)),
             new Any(t('\n', Tok.TYPES.any)),
             new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([]))

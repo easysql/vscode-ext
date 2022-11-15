@@ -115,7 +115,7 @@ export class CodeCompleter {
             logger.debug('reference inside target definition, will not complete: ', text);
             return [];
         }
-        const astReversed = this.parser.parse(line!, true).reverse();
+        const astReversed = this.parser.parseBody(line!, true).reverse();
         const outerFuncCallIndex = astReversed.findIndex((node) => {
             if (node instanceof VarFuncCall || node instanceof TplFuncCall) {
                 const [startPos, endPos] = [node.startPos, node.endPos];

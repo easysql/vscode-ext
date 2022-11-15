@@ -678,7 +678,7 @@ let i = 0;
 export class Parser {
     private targetParser = new TargetParser();
 
-    parseWithTarget(content: string): EasySqlNode[] {
+    parse(content: string): EasySqlNode[] {
         let targetStartPos = 0;
         return content.split('\n-- target=').flatMap((targetContent, i) => {
             console.log(targetStartPos, targetContent);
