@@ -23,14 +23,14 @@ select 1 as a, 2 as b
 -- 'xx xx' should be illegal word
 -- target=variables xx xx
 
--- ',' should be separator.if
+-- ',' should be separator.if, 'xx' should be illegal word
 -- 'if' should be keyword
 -- '=' should be operator
 -- 'func' should be function name
 -- 'a' should be a literal
 -- 'b' should be a literal
 -- '${cd}' should be variable reference, and 'ab' should be variable name
--- target=variables, if=func(a, b, ${cd})
+-- target=variables xx, if=func(a, b, ${cd})
 
 -- 'cd?abc' should be illegal
 -- 'xx abc' should be illegal
@@ -53,8 +53,8 @@ select 1 as a, 2 as b
 -- '.xx bb' should be illegal word
 -- target=template.abc.xx bb
 
--- should be the same as variables with if
--- target=template.abc, if=func(a, b, ${cd?abc}) xx abc
+-- should be the same as variables with if, 'xx' should be invalid
+-- target=template.abc xx, if=func(a, b, ${cd?abc}) xx abc
 
 -----------template|log|action end-----------
 
@@ -70,8 +70,8 @@ select 1 as a, 2 as b
 -- '.xx bb' should be illegal word
 -- target=temp.abc.xx bb
 
--- should be the same as variables with if
--- target=cache.abc, if=func(a, b, ${cd?abc}) xx abc
+-- should be the same as variables with if, 'xx' should be invalid
+-- target=cache.abc xx, if=func(a, b, ${cd?abc}) xx abc
 
 -----------temp|cache|broadcast end----------
 
