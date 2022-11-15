@@ -486,7 +486,12 @@ class TargetParser {
                 case 'template':
                 case 'log':
                 case 'action':
-                    return this.parseOther(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                case 'temp':
+                case 'cache':
+                case 'broadcast':
+                    return this.parseSimpleNamedTarget(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
+                case 'output':
+                    return this.parseOutput(content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                 default:
                     return new Target(
                         startTok,
@@ -501,38 +506,116 @@ class TargetParser {
             throw new Error('should exist a match!');
         }
     }
-
-    private parseOther(type: 'template' | 'log' | 'action', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
-        const cls = type === 'template' ? Template : type === 'log' ? Log : Action;
-        const m = endBlock.match(/^\.(\w*)([^\w].*)?$/);
-        if (!m) {
-            return new cls(
-                startTok,
-                new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)]),
-                new Name(new Tok(endBlockStart + 1, endBlock.length - 1, content, Tok.TYPES.name)),
-                new Sentinel([]),
-                null,
-                new Sentinel([])
-            );
+    private parseOutput(content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+        const m = endBlock.match(/^(\.[^.,\s]*)?(\.[^.,\s]*)?(\.[^.,\s]*)?([^,]*)(,.*)?$/);
+        if (m) {
+            const tableSeparator = m[1]
+                ? new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)])
+                : new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]);
+            let table: Table | FullTable;
+            let conditionSeparatorStart = 0;
+            if (m[1] && m[2] && m[3]) {
+                table = new FullTable(
+                    new Name(new Tok(endBlockStart + 1, m[1].length - 1, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart + m[1].length, 1, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart + m[1].length + 1, m[2].length - 1, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart + m[1].length + m[2].length, 1, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart + m[1].length + m[2].length + 1, m[3].length - 1, content, Tok.TYPES.name))
+                );
+                conditionSeparatorStart = endBlockStart + m[1].length + m[2].length + m[3].length;
+            } else if (m[1] && m[2]) {
+                table = new Table(
+                    new Name(new Tok(endBlockStart + 1, m[1].length - 1, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart + m[1].length, 1, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart + m[1].length + 1, m[2].length - 1, content, Tok.TYPES.name))
+                );
+                conditionSeparatorStart = endBlockStart + m[1].length + m[2].length;
+            } else if (m[1]) {
+                table = new Table(
+                    new Name(new Tok(endBlockStart + 1, m[1].length - 1, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart + m[1].length, 0, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart + m[1].length, 0, content, Tok.TYPES.name))
+                );
+                conditionSeparatorStart = endBlockStart + m[1].length;
+            } else {
+                table = new Table(
+                    new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name))
+                );
+                conditionSeparatorStart = endBlockStart;
+            }
+            let conditionSeparator = m[4]
+                ? new Sentinel([new Tok(conditionSeparatorStart, m[4].length, content, Tok.TYPES.whiteSpace)])
+                : new Sentinel([]);
+            conditionSeparatorStart = m[4] ? conditionSeparatorStart + m[4].length : conditionSeparatorStart;
+            if (m[5]) {
+                const conditionContent = endBlock.substring(conditionSeparatorStart - endBlockStart);
+                console.log('conditionContent', conditionContent);
+                if (this.conditionParser.acceptWithSeparator(conditionContent)) {
+                    const [separator, condition] = this.conditionParser.parseWithSeparator(conditionContent);
+                    return new Output(
+                        startTok,
+                        tableSeparator,
+                        table,
+                        conditionSeparator.merge(separator.resetTokFrom(conditionSeparatorStart, content)),
+                        condition.resetTokFrom(conditionSeparatorStart, content),
+                        new Sentinel([])
+                    );
+                } else {
+                    conditionSeparator = m[4]
+                        ? new Sentinel([new Tok(conditionSeparator.toks[0].start, m[4].length + m[5].length, content, Tok.TYPES.whiteSpace)])
+                        : new Sentinel([new Tok(conditionSeparatorStart, m[5].length, content, Tok.TYPES.whiteSpace)]);
+                    return new Output(startTok, tableSeparator, table, conditionSeparator, null, new Sentinel([]));
+                }
+            }
+            return new Output(startTok, tableSeparator, table, conditionSeparator, null, new Sentinel([]));
         }
-        const nameSep = new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)]);
-        const name = new Name(new Tok(endBlockStart + 1, m[1].length, content, Tok.TYPES.name));
-        endBlockStart = endBlockStart + 1 + m[1].length;
-        if (this.conditionParser.acceptWithSeparator(m[2])) {
-            const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock.substring(m[1].length + 1));
+        throw new Error('should exist match');
+    }
+    private parseSimpleNamedTarget(
+        type: 'template' | 'log' | 'action' | 'temp' | 'cache' | 'broadcast',
+        content: string,
+        startTok: Sentinel,
+        endBlockStart: number,
+        endBlock: string
+    ) {
+        const cls = {
+            template: Template,
+            log: Log,
+            action: Action,
+            temp: Temp,
+            cache: Cache,
+            broadcast: Broadcast
+        }[type];
+        const m = endBlock.match(/^(\.[^\s,]*)?([^,]*)?(,.*)?$/);
+        if (!m) {
+            throw new Error('should exist match');
+        }
+        const nameSep = m[1]
+            ? new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)])
+            : new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]);
+        const name = m[1]
+            ? new Name(new Tok(endBlockStart + 1, m[1].length - 1, content, Tok.TYPES.name))
+            : new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name));
+        const whiteSpaceStart = m[1] ? m[1].length : 0;
+        let whiteSpace = m[2]
+            ? new Tok(endBlockStart + whiteSpaceStart, m[2].length, content, Tok.TYPES.whiteSpace)
+            : new Tok(endBlockStart + whiteSpaceStart, 0, content, Tok.TYPES.whiteSpace);
+        const nextBlockStart = m[2] ? whiteSpaceStart + m[2].length : whiteSpaceStart;
+        if (m[3] && this.conditionParser.acceptWithSeparator(m[3])) {
+            const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock.substring(nextBlockStart));
             return new cls(
                 startTok,
                 nameSep,
                 name,
-                separator.resetTokFrom(endBlockStart, content),
-                condition.resetTokFrom(endBlockStart, content),
+                new Sentinel(whiteSpace.length ? [whiteSpace] : []).merge(separator.resetTokFrom(endBlockStart + nextBlockStart, content)),
+                condition.resetTokFrom(endBlockStart + nextBlockStart, content),
                 new Sentinel([])
             );
         }
-        const endTok = endBlock
-            ? new Sentinel([new Tok(endBlockStart, endBlock.length - 1 - m[1].length, content, Tok.TYPES.whiteSpace)])
-            : new Sentinel([]);
-        return new cls(startTok, nameSep, name, new Sentinel([]), null, endTok);
+        whiteSpace = new Tok(whiteSpace.start, whiteSpace.length + endBlock.length - nextBlockStart, content, Tok.TYPES.whiteSpace);
+        return new cls(startTok, nameSep, name, new Sentinel([whiteSpace]), null, new Sentinel([]));
     }
     private parseVariables(type: 'variables' | 'list_variables', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
         const cls = type === 'variables' ? Variables : ListVariables;
@@ -1149,7 +1232,7 @@ export class ListVariables extends Variables {
     }
 }
 
-export class TargetOther extends Target {
+export class SimpleNamedTarget extends Target {
     constructor(
         public start: Sentinel,
         public separator: Sentinel,
@@ -1164,7 +1247,6 @@ export class TargetOther extends Target {
         return this.start
             .getToks()
             .concat(this.separator.getToks())
-            .concat(this.separator.getToks())
             .concat(this.name.getToks())
             .concat(this.conditionSeparator.getToks())
             .concat(this.condition?.getToks() || [])
@@ -1172,41 +1254,65 @@ export class TargetOther extends Target {
     }
 }
 
-export class Template extends TargetOther {
-    constructor(
-        public start: Sentinel,
-        public separator: Sentinel,
-        public name: Name,
-        public conditionSeparator: Sentinel,
-        public condition: Condition | null,
-        public end: Sentinel
-    ) {
-        super(start, separator, name, conditionSeparator, condition, end);
+export class Template extends SimpleNamedTarget {}
+
+export class Log extends SimpleNamedTarget {}
+
+export class Action extends SimpleNamedTarget {}
+
+export class Temp extends SimpleNamedTarget {}
+
+export class Cache extends SimpleNamedTarget {}
+
+export class Broadcast extends SimpleNamedTarget {}
+
+export class Table extends EasySqlNode {
+    constructor(public db: Name, public separator: Sentinel, public table: Name) {
+        super();
+    }
+    getChildren(): EasySqlNode[] {
+        return [];
+    }
+    getToks(): Tok[] {
+        return this.db.getToks().concat(this.separator.getToks()).concat(this.table.getToks());
     }
 }
 
-export class Log extends TargetOther {
-    constructor(
-        public start: Sentinel,
-        public separator: Sentinel,
-        public name: Name,
-        public conditionSeparator: Sentinel,
-        public condition: Condition | null,
-        public end: Sentinel
-    ) {
-        super(start, separator, name, conditionSeparator, condition, end);
+export class FullTable extends EasySqlNode {
+    constructor(public db: Name, public dbSeparator: Sentinel, public schema: Name, public separator: Sentinel, public table: Name) {
+        super();
+    }
+    getChildren(): EasySqlNode[] {
+        return [];
+    }
+    getToks(): Tok[] {
+        return this.db
+            .getToks()
+            .concat(this.dbSeparator.getToks())
+            .concat(this.schema.getToks())
+            .concat(this.separator.getToks())
+            .concat(this.table.getToks());
     }
 }
 
-export class Action extends TargetOther {
+export class Output extends Target {
     constructor(
         public start: Sentinel,
         public separator: Sentinel,
-        public name: Name,
+        public table: Table | FullTable,
         public conditionSeparator: Sentinel,
         public condition: Condition | null,
         public end: Sentinel
     ) {
-        super(start, separator, name, conditionSeparator, condition, end);
+        super(start, separator, condition, end);
+    }
+    getToks(): Tok[] {
+        return this.start
+            .getToks()
+            .concat(this.separator.getToks())
+            .concat(this.table.getToks())
+            .concat(this.conditionSeparator.getToks())
+            .concat(this.condition?.getToks() || [])
+            .concat(this.end.getToks());
     }
 }
