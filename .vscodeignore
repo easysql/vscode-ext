@@ -13,6 +13,9 @@ src/
 server/src
 server/*.json
 server/out/*.map
+server/.nyc_output
+**/.gitignore
+server/coverage
 server/node_modules
 out/*.map
 resources/

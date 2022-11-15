@@ -8,3 +8,4 @@ out/
 coverage/
 .nyc_output/
 version
+test/t.sql
