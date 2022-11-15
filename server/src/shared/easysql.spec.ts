@@ -443,31 +443,66 @@ describe('target parser', () => {
             content = '-- target=variables';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
-                new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([]))
+                new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([]))
             );
         });
+
         it('should parse simple variables target with unrecognized white space', () => {
             const parser = new Parser();
-            content = '-- target=variables.a bc, if=bool()';
+            content = '-- target=variables a';
             pos = 0;
+            console.log(parser.parseTarget(content));
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Variables(
-                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]),
-                    new Sentinel([]),
+                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]),
+                    new Sentinel([t(' a', Tok.TYPES.whiteSpace)]),
                     null,
-                    new Sentinel([t('.a bc, if=bool()', Tok.TYPES.whiteSpace)]) // tolerant white-spaces.
+                    new Sentinel([])
+                )
+            );
+        });
+
+        it('should parse simple variables target with unrecognized white space', () => {
+            const parser = new Parser();
+            content = '-- target=variables.a bc, i f=bool()';
+            pos = 0;
+            console.log(parser.parseTarget(content));
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Variables(
+                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('.a bc, i f=bool()', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([])
                 )
             );
         });
 
         it('should parse variables target with condition', () => {
             const parser = new Parser();
-            content = '-- target=variables , if=bool()';
+            content = '-- target=variables , if=bool() xx';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Variables(
-                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]),
                     new Sentinel([t(' ', Tok.TYPES.whiteSpace), t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                    new Condition(
+                        new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                        new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                        new Sentinel([t(' xx', Tok.TYPES.whiteSpace)])
+                    ),
+                    new Sentinel([])
+                )
+            );
+        });
+
+        it('should parse variables target with condition and illegal word before', () => {
+            const parser = new Parser();
+            content = '-- target=variables xx, if=bool()';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Variables(
+                    new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]),
+                    new Sentinel([t(' xx', Tok.TYPES.whiteSpace), t(','), t(' ', Tok.TYPES.whiteSpace)]),
                     new Condition(
                         new Sentinel([t('if', Tok.TYPES.name), t('=')]),
                         new FuncCall(new Name(t('bool', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
@@ -479,13 +514,29 @@ describe('target parser', () => {
         });
     });
     describe('simple named target', () => {
+        it('should parse log target without name', () => {
+            const parser = new Parser();
+            content = '-- target=log';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Log(
+                    new Sentinel([t('-- target'), t('='), t('log', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('', Tok.TYPES.point)]),
+                    new Name(t('', Tok.TYPES.name)),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([])
+                )
+            );
+        });
+
         it('should parse log target', () => {
             const parser = new Parser();
             content = '-- target=log.a bc';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Log(
-                    new Sentinel([t('-- target'), t('='), t('log', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('log', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -501,7 +552,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Action(
-                    new Sentinel([t('-- target'), t('='), t('action', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('action', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -517,7 +568,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Temp(
-                    new Sentinel([t('-- target'), t('='), t('temp', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('temp', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -533,7 +584,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Cache(
-                    new Sentinel([t('-- target'), t('='), t('cache', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('cache', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -549,7 +600,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Broadcast(
-                    new Sentinel([t('-- target'), t('='), t('broadcast', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('broadcast', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -565,7 +616,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Template(
-                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('abc', Tok.TYPES.name)),
                     new Sentinel([t(' xx', Tok.TYPES.whiteSpace), t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -585,7 +636,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Template(
-                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('abc', Tok.TYPES.name)),
                     new Sentinel([t(' xx, i f=bool()', Tok.TYPES.whiteSpace)]),
@@ -601,7 +652,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Template(
-                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('template', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('abc', Tok.TYPES.name)),
                     new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -617,13 +668,29 @@ describe('target parser', () => {
     });
 
     describe('output', () => {
+        it('should parse output without name', () => {
+            const parser = new Parser();
+            content = '-- target=output';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Output(
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('', Tok.TYPES.point)]),
+                    new Table(new Name(t('', Tok.TYPES.name)), new Sentinel([t('', Tok.TYPES.point)]), new Name(t('', Tok.TYPES.name))),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([])
+                )
+            );
+        });
+
         it('should parse output target with unrecognized db', () => {
             const parser = new Parser();
             content = '-- target=output bc';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('', Tok.TYPES.point)]),
                     new Table(new Name(t('', Tok.TYPES.name)), new Sentinel([t('', Tok.TYPES.point)]), new Name(t('', Tok.TYPES.name))),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -638,7 +705,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Table(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('', Tok.TYPES.point)]), new Name(t('', Tok.TYPES.name))),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -653,7 +720,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Table(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('.', Tok.TYPES.point)]), new Name(t('bc', Tok.TYPES.name))),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -668,7 +735,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FullTable(
                         new Name(t('a', Tok.TYPES.name)),
@@ -689,7 +756,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FullTable(
                         new Name(t('a', Tok.TYPES.name)),
@@ -710,7 +777,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Table(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('.', Tok.TYPES.point)]), new Name(t('bc', Tok.TYPES.name))),
                     new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -729,7 +796,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Table(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('', Tok.TYPES.point)]), new Name(t('', Tok.TYPES.name))),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace), t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -748,7 +815,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Output(
-                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('output', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Table(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('', Tok.TYPES.point)]), new Name(t('', Tok.TYPES.name))),
                     new Sentinel([t(' bc, i f=bool()', Tok.TYPES.whiteSpace)]),
@@ -760,13 +827,29 @@ describe('target parser', () => {
     });
 
     describe('check', () => {
+        it('simple named check without name', () => {
+            const parser = new Parser();
+            content = '-- target=check';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Check(
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('', Tok.TYPES.point)]),
+                    new Name(t('', Tok.TYPES.name)),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
         it('simple named check', () => {
             const parser = new Parser();
             content = '-- target=check.a bc';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(' bc', Tok.TYPES.whiteSpace)]),
@@ -782,7 +865,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('', Tok.TYPES.point)]),
                     new Name(t('', Tok.TYPES.name)),
                     new Sentinel([t(' a bc', Tok.TYPES.whiteSpace)]),
@@ -798,7 +881,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a', Tok.TYPES.name)),
                     new Sentinel([t(',')]),
@@ -818,7 +901,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([]),
@@ -834,7 +917,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new Name(t('a(', Tok.TYPES.name)),
                     new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
@@ -850,7 +933,7 @@ describe('target parser', () => {
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
@@ -867,7 +950,7 @@ describe('target parser', () => {
             console.log(parser.parseTarget(content));
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
-                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -888,13 +971,55 @@ describe('target parser', () => {
     });
 
     describe('func', () => {
+        it('should parse func without name', () => {
+            const parser = new Parser();
+            content = '-- target=func';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Func(
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('', Tok.TYPES.point)]),
+                    new FuncCall(
+                        new Name(t('', Tok.TYPES.name)),
+                        new Sentinel([t('', Tok.TYPES.parenthesisStart)]),
+                        [],
+                        new Sentinel([t('', Tok.TYPES.parenthesisEnd)])
+                    ),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('should parse func without arg end', () => {
+            const parser = new Parser();
+            content = '-- target=func.abc(';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Func(
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.tartetName)]),
+                    new Sentinel([t('.', Tok.TYPES.point)]),
+                    new FuncCall(
+                        new Name(t('abc(', Tok.TYPES.name)),
+                        new Sentinel([t('', Tok.TYPES.parenthesisStart)]),
+                        [],
+                        new Sentinel([t('', Tok.TYPES.parenthesisEnd)])
+                    ),
+                    new Sentinel([]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
         it('func with end white space', () => {
             const parser = new Parser();
             content = '-- target=func.a(), bc';
             pos = 0;
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Func(
-                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
@@ -911,7 +1036,7 @@ describe('target parser', () => {
             console.log(parser.parseTarget(content));
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Func(
-                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.name)]),
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.tartetName)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
@@ -1247,15 +1372,15 @@ describe('body parser', () => {
 });
 
 describe('full parser', () => {
-    it.only('should parse target from start', () => {
+    it('should parse target from start', () => {
         const parser = new Parser();
 
         content = '-- target=variables\n-- target=variables\n--abc${lit}';
         pos = 0;
         expect(parser.parse(content)).to.deep.eq([
-            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([])),
             new Any(t('\n', Tok.TYPES.any)),
-            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([])),
             new Any(t('\n', Tok.TYPES.any)),
             new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any))
         ]);
@@ -1269,7 +1394,7 @@ describe('full parser', () => {
         expect(parser.parse(content)).to.deep.eq([
             new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any)),
             new Any(t('\n', Tok.TYPES.any)),
-            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([]))
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([]))
         ]);
     });
 });

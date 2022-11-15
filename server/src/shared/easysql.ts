@@ -28,6 +28,9 @@ export class TokType {
     get isComma() {
         return this.id === Tok.TYPES.comma.id;
     }
+    get isPoint() {
+        return this.id === Tok.TYPES.point.id;
+    }
     get isAssignment() {
         return this.id === Tok.TYPES.assignment.id;
     }
@@ -42,6 +45,9 @@ export class TokType {
     }
     get isAny() {
         return this.id === Tok.TYPES.any.id;
+    }
+    get isTargetName() {
+        return this.id === Tok.TYPES.tartetName.id;
     }
 }
 
@@ -62,7 +68,8 @@ export class Tok {
         nameWide: new TokType(21, 'nameWide'),
         commentStart: new TokType(22, 'commentStart'),
         whiteSpace: new TokType(23, 'whiteSpace'),
-        any: new TokType(24, 'any')
+        any: new TokType(24, 'any'),
+        tartetName: new TokType(25, 'targetName')
     };
     static typeId2Type = new Map<number, TokType>(Object.values(Tok.TYPES).map((type) => [type.id, type]));
 
@@ -95,6 +102,26 @@ export class Tok {
         if (this.tokeType.isNameWide) {
             return /^[^,()\n'"`]+$/.test(this.text);
         }
+        if (this.tokeType.isWhiteSpace) {
+            return /^\s*$/.test(this.text);
+        }
+        if (this.tokeType.isPoint) {
+            return this.text === '.';
+        }
+        if (this.tokeType.isComma) {
+            return this.text === ',';
+        }
+        if (this.tokeType.isParenthesisStart) {
+            return this.text === '(';
+        }
+        if (this.tokeType.isParenthesisEnd) {
+            return this.text === ')';
+        }
+        if (this.tokeType.isTargetName) {
+            return ['variables', 'list_variables', 'template', 'log', 'action', 'temp', 'cache', 'broadcast', 'check', 'func', 'output'].includes(
+                this.text
+            );
+        }
         return true;
     }
 
@@ -102,14 +129,32 @@ export class Tok {
         if (this.tokeType.isAssignment) {
             return 'Operator "=" required.';
         }
-        if (!this.text) {
-            return 'Must not be empty.';
-        }
         if (this.tokeType.isName) {
             return 'An identifier or keyword should match /^[a-zA-Z_]\\w*$/ .';
         }
         if (this.tokeType.isNameWide) {
             return 'A literal cannot contain characters of ,()\'"` . Please define a variable instead.';
+        }
+        if (this.tokeType.isPoint) {
+            return 'Should be `.` here.';
+        }
+        if (this.tokeType.isComma) {
+            return 'Should be `,` here.';
+        }
+        if (this.tokeType.isParenthesisStart) {
+            return 'Should be `(` here.';
+        }
+        if (this.tokeType.isParenthesisEnd) {
+            return 'Should be `)` here.';
+        }
+        if (this.tokeType.isTargetName) {
+            return 'Unrecognized target.';
+        }
+        if (!this.text) {
+            return 'Must not be empty.';
+        }
+        if (this.tokeType.isWhiteSpace) {
+            return 'Unrecognize text.';
         }
         return 'Unknown.';
     }
@@ -423,14 +468,18 @@ export class ConditionParser {
         return content.match(/^if=[^(]*\([^)]*\)/);
     }
     parse(content: string): Condition {
-        const contentWithEndTrimed = content.trimEnd();
+        const funcEndPos = content.indexOf(')');
+        if (funcEndPos === -1) {
+            throw new Error('func end parenthesis must exist');
+        }
+        const contentWithEndTrimed = content.substring(0, funcEndPos + 1);
         const end =
             contentWithEndTrimed.length === content.length
                 ? new Sentinel([])
                 : new Sentinel([new Tok(contentWithEndTrimed.length, content.length - contentWithEndTrimed.length, content, Tok.TYPES.whiteSpace)]);
         return new Condition(
             new Sentinel([new Tok(0, 2, content, Tok.TYPES.name), new Tok(2, 1, content, Tok.TYPES.assignment)]),
-            (new SinlgeFuncCallParser().parse(content.substring(3), true) as FuncCall).resetTokFrom(3, content),
+            (new SinlgeFuncCallParser().parse(content.substring(3, funcEndPos + 1), true) as FuncCall).resetTokFrom(3, content),
             end
         );
     }
@@ -476,7 +525,7 @@ class TargetParser {
             const startTok = new Sentinel([
                 new Tok(0, targetStartTokLen, content, Tok.TYPES.targetStart),
                 new Tok(targetStartTokLen, 1, content, Tok.TYPES.assignment),
-                new Tok(targetStartTokLen + 1, type.length, content, Tok.TYPES.name)
+                new Tok(targetStartTokLen + 1, type.length, content, Tok.TYPES.tartetName)
             ]);
 
             switch (type) {
@@ -491,7 +540,7 @@ class TargetParser {
                 case 'broadcast':
                     return this.parseSimpleNamedTarget(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                 case 'check':
-                    if (!m[4].match(/^[^,]*\([^)]*\)/)) {
+                    if (!m[4] || !m[4].match(/^[^,]*\([^)]*\)/)) {
                         return this.parseSimpleNamedTarget('check', content, startTok, targetStartTokLen + 1 + type.length, m[4]);
                     }
                     return this.parseFunc(type, content, startTok, targetStartTokLen + 1 + type.length, m[4]);
@@ -513,15 +562,43 @@ class TargetParser {
             throw new Error('should exist a match!');
         }
     }
-    private parseFunc(type: 'check' | 'func', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+    private parseFunc(type: 'check' | 'func', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string | undefined) {
         const cls = type === 'check' ? Check : Func;
+        if (!endBlock) {
+            return new cls(
+                startTok,
+                new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]),
+                new FuncCall(
+                    new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.parenthesisStart)]),
+                    [],
+                    new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.parenthesisEnd)])
+                ),
+                new Sentinel([]),
+                null,
+                new Sentinel([])
+            );
+        }
         const separator = endBlock.startsWith('.')
             ? new Sentinel([new Tok(endBlockStart, 1, content, Tok.TYPES.point)])
             : new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]);
         const funcCallStart = endBlock.startsWith('.') ? 1 : 0;
         const m = endBlock.match(/^\.?([^(]*\([^)]*\))([^,]*)?(,.*)?$/);
         if (!m) {
-            throw new Error('should exist a match');
+            const nameStartPos = endBlock.startsWith('.') ? 1 : 0;
+            return new cls(
+                startTok,
+                separator,
+                new FuncCall(
+                    new Name(new Tok(endBlockStart + nameStartPos, endBlock.length - nameStartPos, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart + endBlock.length, 0, content, Tok.TYPES.parenthesisStart)]),
+                    [],
+                    new Sentinel([new Tok(endBlockStart + endBlock.length, 0, content, Tok.TYPES.parenthesisEnd)])
+                ),
+                new Sentinel([]),
+                null,
+                new Sentinel([])
+            );
         }
         const funcContent = m[1];
         const funcCall = (new SinlgeFuncCallParser().parse(funcContent, true) as FuncCall).resetTokFrom(endBlockStart + funcCallStart, content);
@@ -547,7 +624,21 @@ class TargetParser {
         }
         return new cls(startTok, separator, funcCall, conditionSeparator, null, new Sentinel([]));
     }
-    private parseOutput(content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+    private parseOutput(content: string, startTok: Sentinel, endBlockStart: number, endBlock: string | undefined) {
+        if (!endBlock) {
+            return new Output(
+                startTok,
+                new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]),
+                new Table(
+                    new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name)),
+                    new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]),
+                    new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name))
+                ),
+                new Sentinel([]),
+                null,
+                new Sentinel([])
+            );
+        }
         const m = endBlock.match(/^(\.[^.,\s]*)?(\.[^.,\s]*)?(\.[^.,\s]*)?([^,]*)(,.*)?$/);
         if (m) {
             const tableSeparator = m[1]
@@ -618,7 +709,7 @@ class TargetParser {
         content: string,
         startTok: Sentinel,
         endBlockStart: number,
-        endBlock: string
+        endBlock: string | undefined
     ) {
         const cls = {
             template: Template,
@@ -629,6 +720,16 @@ class TargetParser {
             broadcast: Broadcast,
             check: Check
         }[type];
+        if (!endBlock) {
+            return new cls(
+                startTok,
+                new Sentinel([new Tok(endBlockStart, 0, content, Tok.TYPES.point)]),
+                new Name(new Tok(endBlockStart, 0, content, Tok.TYPES.name)),
+                new Sentinel([]),
+                null,
+                new Sentinel([])
+            );
+        }
         const m = endBlock.match(/^(\.[^\s,]*)?([^,]*)?(,.*)?$/);
         if (!m) {
             throw new Error('should exist match');
@@ -658,19 +759,35 @@ class TargetParser {
         whiteSpace = new Tok(whiteSpace.start, whiteSpace.length + endBlock.length - nextBlockStart, content, Tok.TYPES.whiteSpace);
         return new cls(startTok, nameSep, name, new Sentinel([whiteSpace]), null, new Sentinel([]));
     }
-    private parseVariables(type: 'variables' | 'list_variables', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
+    private parseVariables(
+        type: 'variables' | 'list_variables',
+        content: string,
+        startTok: Sentinel,
+        endBlockStart: number,
+        endBlock: string | undefined
+    ) {
         const cls = type === 'variables' ? Variables : ListVariables;
-        if (endBlock && this.conditionParser.acceptWithSeparator(endBlock)) {
-            const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock);
+        if (!endBlock) {
+            return new cls(startTok, new Sentinel([]), null, new Sentinel([]));
+        }
+        const m = endBlock.match(/^([^,]*)?(,.*)?$/);
+        if (!m) {
+            throw new Error('should exist a match');
+        }
+        let whiteSpace = m[1]
+            ? new Tok(endBlockStart, m[1].length, content, Tok.TYPES.whiteSpace)
+            : new Tok(endBlockStart, 0, content, Tok.TYPES.whiteSpace);
+        if (m[2] && this.conditionParser.acceptWithSeparator(m[2])) {
+            const [separator, condition] = this.conditionParser.parseWithSeparator(m[2]);
             return new cls(
                 startTok,
-                separator.resetTokFrom(endBlockStart, content),
-                condition.resetTokFrom(endBlockStart, content),
+                new Sentinel(whiteSpace.length ? [whiteSpace] : []).merge(separator.resetTokFrom(endBlockStart + (m[1]?.length || 0), content)),
+                condition.resetTokFrom(endBlockStart + (m[1]?.length || 0), content),
                 new Sentinel([])
             );
         }
-        const endTok = endBlock ? new Sentinel([new Tok(endBlockStart, endBlock.length, content, Tok.TYPES.whiteSpace)]) : new Sentinel([]);
-        return new cls(startTok, new Sentinel([]), null, endTok);
+        whiteSpace = new Tok(whiteSpace.start, whiteSpace.length + (m[2]?.length || 0), content, Tok.TYPES.whiteSpace);
+        return new cls(startTok, new Sentinel([whiteSpace]), null, new Sentinel([]));
     }
 }
 
@@ -681,7 +798,6 @@ export class Parser {
     parse(content: string): EasySqlNode[] {
         let targetStartPos = 0;
         return content.split('\n-- target=').flatMap((targetContent, i) => {
-            console.log(targetStartPos, targetContent);
             targetContent = i !== 0 ? '-- target=' + targetContent : targetContent;
             const startNodes: EasySqlNode[] = i !== 0 ? [new Any(new Tok(targetStartPos, 1, content, Tok.TYPES.any))] : [];
             const nextLineBreakIdx = targetContent.indexOf('\n');
@@ -1319,6 +1435,7 @@ export class Variables extends Target {
     getToks(): Tok[] {
         return this.start
             .getToks()
+            .concat(this.separator.getToks())
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
