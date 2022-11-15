@@ -5,7 +5,20 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "esbuild-watch",
+			"script": "watch",
+			"problemMatcher": "$tsc-watch",
+			"isBackground": true,
+			"presentation": {
+				"reveal": "never"
+			},
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			}
+		},
+		{
+			"type": "npm",
+			"script": "watch-server",
 			"problemMatcher": "$tsc-watch",
 			"isBackground": true,
 			"presentation": {

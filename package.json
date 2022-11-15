@@ -18,7 +18,7 @@
     "activationEvents": [
         "onLanguage:sql"
     ],
-    "main": "./out/main.js",
+    "main": "./out/extension.js",
     "contributes": {
         "grammars": [
             {
@@ -74,12 +74,14 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run client:vscode:prepublish && npm run server:vscode:prepublish",
-        "client:vscode:prepublish": "npm run esbuild-base -- --minify",
+        "client:vscode:prepublish": "rm -r out && npm run esbuild-base -- --minify",
         "server:vscode:prepublish": "cd server && npm run vscode:prepublish",
-        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/main.js --external:vscode --external:vscode --format=cjs --platform=node",
+        "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run client:esbuild && cd server && npm run esbuild",
         "client:esbuild": "npm run esbuild-base -- --sourcemap",
-        "esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
+        "watch-server": "cd server && npm run watch",
         "lint": "eslint . --ext .ts,.tsx",
         "unittest": "ts-mocha -p tsconfig.json src/**/*.spec.ts -w --watch-files '**/*.ts'",
         "coverage": "nyc --reporter=lcov --reporter=text-summary ts-mocha -p tsconfig.json src/**/*.spec.ts"

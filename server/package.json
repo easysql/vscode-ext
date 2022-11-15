@@ -34,7 +34,9 @@
         "typescript": "^4.7.4"
     },
 	"scripts": {
-		"vscode:prepublish": "npm run esbuild-base -- --minify",
+		"vscode:prepublish": "rm -r out && npm run esbuild-base -- --minify",
+        "compile": "tsc -p ./",
+        "watch": "tsc -watch -p ./",
 		"esbuild-base": "esbuild ./src/server.ts --bundle --outfile=out/server.js --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run esbuild-base -- --sourcemap",
         "unittest": "ts-mocha -p tsconfig.json src/**/*.spec.ts -w --watch-files 'src/**/*.ts'",
