@@ -29,7 +29,8 @@ import {
     Temp,
     Table,
     Output,
-    FullTable
+    FullTable,
+    Func
 } from './easysql';
 import { logger } from './logger';
 
@@ -434,7 +435,7 @@ describe('SinlgeFuncCallParser', () => {
     });
 });
 
-describe.only('target parser', () => {
+describe('target parser', () => {
     describe('variables', () => {
         it('should parse simple variables target', () => {
             const parser = new Parser();
@@ -858,6 +859,50 @@ describe.only('target parser', () => {
             expect(parser.parseTarget(content)).to.deep.eq(
                 new Check(
                     new Sentinel([t('-- target'), t('='), t('check', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
+                    new Condition(
+                        new Sentinel([t('if', Tok.TYPES.name), t('=')]),
+                        new FuncCall(
+                            new Name(t('', Tok.TYPES.name)),
+                            new Sentinel([t('(', Tok.TYPES.parenthesisStart)]),
+                            [],
+                            new Sentinel([t(')', Tok.TYPES.parenthesisEnd)])
+                        ),
+                        new Sentinel([])
+                    ),
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+    });
+
+    describe('func', () => {
+        it('func with end white space', () => {
+            const parser = new Parser();
+            content = '-- target=func.a(), bc';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Func(
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.name)]),
+                    new Sentinel([t('.')]),
+                    new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
+                    new Sentinel([t(', bc', Tok.TYPES.whiteSpace)]),
+                    null,
+                    new Sentinel([]) // tolerant white-spaces.
+                )
+            );
+        });
+
+        it('func with condition', () => {
+            const parser = new Parser();
+            content = '-- target=func.a(), if=()';
+            pos = 0;
+            console.log(parser.parseTarget(content));
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Func(
+                    new Sentinel([t('-- target'), t('='), t('func', Tok.TYPES.name)]),
                     new Sentinel([t('.')]),
                     new FuncCall(new Name(t('a', Tok.TYPES.name)), new Sentinel([t('(')]), [], new Sentinel([t(')')])),
                     new Sentinel([t(','), t(' ', Tok.TYPES.whiteSpace)]),
