@@ -2,7 +2,7 @@
     "name": "easysql",
     "displayName": "Easy SQL",
     "description": "Language support for ETLs developed in Easy SQL. Includes syntax highlighting, code completion, usage doc, file jumpping and so on.",
-    "version": "1.0.1",
+    "version": "1.1.0",
     "engines": {
         "vscode": "^1.68.0"
     },
