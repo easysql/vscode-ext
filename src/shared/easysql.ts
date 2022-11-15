@@ -660,7 +660,7 @@ class TargetParser {
     }
     private parseVariables(type: 'variables' | 'list_variables', content: string, startTok: Sentinel, endBlockStart: number, endBlock: string) {
         const cls = type === 'variables' ? Variables : ListVariables;
-        if (this.conditionParser.acceptWithSeparator(endBlock)) {
+        if (endBlock && this.conditionParser.acceptWithSeparator(endBlock)) {
             const [separator, condition] = this.conditionParser.parseWithSeparator(endBlock);
             return new cls(
                 startTok,
@@ -676,6 +676,36 @@ class TargetParser {
 
 let i = 0;
 export class Parser {
+    private targetParser = new TargetParser();
+
+    parseWithTarget(content: string): EasySqlNode[] {
+        let targetStartPos = 0;
+        return content.split('\n-- target=').flatMap((targetContent, i) => {
+            console.log(targetStartPos, targetContent);
+            targetContent = i !== 0 ? '-- target=' + targetContent : targetContent;
+            const startNodes: EasySqlNode[] = i !== 0 ? [new Any(new Tok(targetStartPos, 1, content, Tok.TYPES.any))] : [];
+            const nextLineBreakIdx = targetContent.indexOf('\n');
+            if (nextLineBreakIdx === -1) {
+                const target: EasySqlNode[] = this.targetParser.accept(targetContent)
+                    ? [this.targetParser.parse(targetContent)]
+                    : this.parse(targetContent);
+                const result = target.map((node) => node.resetTokFrom(targetStartPos + (i === 0 ? 0 : 1), content));
+                targetStartPos += targetContent.length + (i === 0 ? 0 : 1);
+                return startNodes.concat(result);
+            } else {
+                const target: EasySqlNode[] = this.targetParser.accept(targetContent)
+                    ? [this.targetParser.parse(targetContent.substring(0, nextLineBreakIdx))]
+                    : this.parse(targetContent.substring(0, nextLineBreakIdx));
+                const bodyContent = targetContent.substring(nextLineBreakIdx);
+                const result = target
+                    .concat(this.parse(bodyContent).map((node) => node.resetTokFrom(nextLineBreakIdx, bodyContent)))
+                    .map((node) => node.resetTokFrom(targetStartPos + (i === 0 ? 0 : 1), content));
+                targetStartPos += targetContent.length + (i === 0 ? 0 : 1);
+                return startNodes.concat(result);
+            }
+        });
+    }
+
     parse(content: string, ignoreComment?: boolean, ignoreQuote?: boolean): EasySqlNode[] {
         i += 1;
         if (i > 50) {

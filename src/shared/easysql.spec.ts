@@ -30,7 +30,8 @@ import {
     Table,
     Output,
     FullTable,
-    Func
+    Func,
+    Target
 } from './easysql';
 import { logger } from './logger';
 
@@ -438,6 +439,14 @@ describe('SinlgeFuncCallParser', () => {
 describe('target parser', () => {
     describe('variables', () => {
         it('should parse simple variables target', () => {
+            const parser = new Parser();
+            content = '-- target=variables';
+            pos = 0;
+            expect(parser.parseTarget(content)).to.deep.eq(
+                new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([]))
+            );
+        });
+        it('should parse simple variables target with unrecognized white space', () => {
             const parser = new Parser();
             content = '-- target=variables.a bc, if=bool()';
             pos = 0;
@@ -1234,5 +1243,34 @@ describe('body parser', () => {
                 t(')}', Tok.TYPES.any)
             ]);
         });
+    });
+});
+
+describe('full parser', () => {
+    it.only('should parse target from start', () => {
+        const parser = new Parser();
+
+        content = '-- target=variables\n-- target=variables\n--abc${lit}';
+        pos = 0;
+        console.log(parser.parseWithTarget(content));
+        expect(parser.parseWithTarget(content)).to.deep.eq([
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([])),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any))
+        ]);
+    });
+
+    it('should parse target', () => {
+        const parser = new Parser();
+
+        content = '--abc${lit}\n-- target=variables';
+        pos = 0;
+        expect(parser.parseWithTarget(content)).to.deep.eq([
+            new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any)),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.name)]), new Sentinel([]), null, new Sentinel([]))
+        ]);
     });
 });
