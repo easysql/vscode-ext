@@ -74,7 +74,7 @@
     },
     "scripts": {
         "vscode:prepublish": "npm run client:vscode:prepublish && npm run server:vscode:prepublish",
-        "client:vscode:prepublish": "rm -r out && npm run esbuild-base -- --minify",
+        "client:vscode:prepublish": "rm -r out; npm run esbuild-base -- --minify",
         "server:vscode:prepublish": "cd server && npm run vscode:prepublish",
         "esbuild-base": "esbuild ./src/extension.ts --bundle --outfile=out/extension.js --external:vscode --external:vscode --format=cjs --platform=node",
         "esbuild": "npm run client:esbuild && cd server && npm run esbuild",

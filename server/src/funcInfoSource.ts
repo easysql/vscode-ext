@@ -4,9 +4,15 @@
 'use strict';
 
 import { EOL } from 'os';
-import Char from 'typescript-char';
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
+
+const Char = {
+    Space: 0x20,
+    _0: 0x30,
+    _9: 0x39,
+    Underscore: 0x5f
+};
 
 export function isWhiteSpace(ch: number): boolean {
     return ch <= Char.Space || ch === 0x200b; // Unicode whitespace
