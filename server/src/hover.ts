@@ -2,6 +2,7 @@ import { Hover, HoverOptions, TextDocuments } from 'vscode-languageserver';
 import { Position, Range, TextDocument } from 'vscode-languageserver-textdocument';
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
+import { FuncInfoSource } from './funcInfoSource';
 
 interface TypedHover {
     accept: () => boolean;
@@ -9,7 +10,14 @@ interface TypedHover {
 }
 
 export class FunctionHover implements TypedHover {
-    constructor(private doc: TextDocument, private position: Position, private line: string, private leftText: string, private rightText: string) {}
+    constructor(
+        private funcInfoSource: FuncInfoSource,
+        private doc: TextDocument,
+        private position: Position,
+        private line: string,
+        private leftText: string,
+        private rightText: string
+    ) {}
     private funcNameLeft = this.leftText.match(/(?<=(\${|-- target=check.|-- target=func.|if=))([\w]+)$/);
     private funcNameRight = this.rightText.match(/^([\w]+)\(/);
 
@@ -22,12 +30,17 @@ export class FunctionHover implements TypedHover {
             throw new Error('Should check accept before call hover!');
         }
         const funcName = this.funcNameLeft[0] + this.funcNameRight[1];
+        const range = {
+            start: { line: this.position.line, character: this.funcNameLeft.index! },
+            end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
+        };
 
         const headerCode = this.doc.getText().substring(0, 500);
         const backendMatch = headerCode.match(/(^|\n)-- backend:\s*([\w]+)(\s|\n)/);
         const funcs = !backendMatch || backendMatch[1].toLowerCase() == 'spark' ? sparkFuncs : rdbFuncs;
         const func = funcs.funcs.find((func) => func.label.startsWith(funcName + '('));
         if (func) {
+            const itemInfo = this.funcInfoSource.getFuncInfo(!backendMatch || backendMatch[1].toLowerCase() == 'spark' ? 'spark' : 'rdb', funcName);
             const label = func.label
                 .replace(/\${[\d]+:/g, '{')
                 .replace(/\\\${__(\w+)__}/g, '$1')
@@ -36,19 +49,13 @@ export class FunctionHover implements TypedHover {
                 .replaceAll('}', '');
             const type = func.type === 'easysql' ? 'EasySQL' : 'Python system';
             return {
-                contents: { kind: 'plaintext', value: `(${type} function) ${label}` },
-                range: {
-                    start: { line: this.position.line, character: this.funcNameLeft.index! },
-                    end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
-                }
+                contents: { kind: 'markdown', value: `(${type} function) ${label}` + (itemInfo ? '\n' + itemInfo.tooltip : '') },
+                range: range
             };
         }
         return {
             contents: { kind: 'plaintext', value: '(User-defined function. Signature unknown.) ' + funcName },
-            range: {
-                start: { line: this.position.line, character: this.funcNameLeft.index! },
-                end: { line: this.position.line, character: this.position.character + this.funcNameRight[1].length }
-            }
+            range: range
         };
     }
 }
@@ -341,7 +348,7 @@ e.g.
 }
 
 export class HoverProvider {
-    constructor(private documents: TextDocuments<TextDocument>) {}
+    constructor(private funcInfoSource: FuncInfoSource, private documents: TextDocuments<TextDocument>) {}
 
     onHover(position: Position, docUri: string): Hover | null {
         const doc = this.documents.get(docUri);
@@ -349,7 +356,7 @@ export class HoverProvider {
             const range: Range = { start: { line: position.line, character: 0 }, end: { line: position.line, character: 1000 } };
             const line = doc.getText(range);
             const [leftText, rightText] = [line.substring(0, position.character), line.substring(position.character)];
-            const funcHover = new FunctionHover(doc, position, line, leftText, rightText);
+            const funcHover = new FunctionHover(this.funcInfoSource, doc, position, line, leftText, rightText);
             if (funcHover.accept()) {
                 return funcHover.hover();
             }

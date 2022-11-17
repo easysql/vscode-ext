@@ -2,663 +2,1643 @@
     "funcs": [
         {
             "label": "ensure_dwd_partition_exists(\\${__step__}, ${1:table_name}, ${2:partition_value}, ${3:*foreign_key_cols}, ${4:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_dwd_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_dwd_partition_exists(step: Step, table_name: str, partition_value: str, *foreign_key_cols)"
+            }
         },
         {
             "label": "ensure_partition_exists(\\${__step__}, ${1:*args}, ${2:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_partition_exists(step: Step, *args)"
+            }
         },
         {
             "label": "ensure_partition_or_first_partition_exists(\\${__step__}, ${1:*args}, ${2:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_partition_or_first_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_partition_or_first_partition_exists(step: Step, *args)"
+            }
         },
         {
             "label": "ensure_table_partition_exists(\\${__step__}, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_table_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_table_partition_exists(step: Step, partition_value: str, table: str, *tables: str)"
+            }
         },
         {
             "label": "ensure_table_partition_or_first_partition_exists(\\${__step__}, ${1:partition_value}, ${2:table}, ${3:*tables}, ${4:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_table_partition_or_first_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_table_partition_or_first_partition_exists(step: Step, partition_value: str, table: str, *tables: str)"
+            }
         },
         {
             "label": "get_first_partition(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_first_partition",
+                "description": "",
+                "docstring": "",
+                "signature": "get_first_partition(table_name: str)"
+            }
         },
         {
             "label": "get_first_partition_optional(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_first_partition_optional",
+                "description": "",
+                "docstring": "",
+                "signature": "get_first_partition_optional(table_name: str)"
+            }
         },
         {
             "label": "get_last_partition(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_last_partition",
+                "description": "",
+                "docstring": "",
+                "signature": "get_last_partition(table_name: str)"
+            }
         },
         {
             "label": "get_partition_col(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_partition_col",
+                "description": "",
+                "docstring": "",
+                "signature": "get_partition_col(table_name: str)"
+            }
         },
         {
             "label": "get_partition_cols(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_partition_cols",
+                "description": "",
+                "docstring": "",
+                "signature": "get_partition_cols(table_name: str)"
+            }
         },
         {
             "label": "get_partition_or_first_partition(${1:table_name}, ${2:partition_value})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_partition_or_first_partition",
+                "description": "",
+                "docstring": "",
+                "signature": "get_partition_or_first_partition(table_name: str, partition_value: str)"
+            }
         },
         {
             "label": "get_partition_values_as_joined_str(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "get_partition_values_as_joined_str",
+                "description": "",
+                "docstring": "",
+                "signature": "get_partition_values_as_joined_str(table_name: str)"
+            }
         },
         {
             "label": "has_partition_col(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "has_partition_col",
+                "description": "",
+                "docstring": "",
+                "signature": "has_partition_col(table_name: str)"
+            }
         },
         {
             "label": "is_first_partition(${1:table_name}, ${2:partition_value})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "is_first_partition",
+                "description": "",
+                "docstring": "",
+                "signature": "is_first_partition(table_name: str, partition_value: str)"
+            }
         },
         {
             "label": "is_not_first_partition(${1:table_name}, ${2:partition_value})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "is_not_first_partition",
+                "description": "",
+                "docstring": "",
+                "signature": "is_not_first_partition(table_name: str, partition_value: str)"
+            }
         },
         {
             "label": "partition_exists(${1:table_name}, ${2:partition_value})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "partition_exists(table_name: str, partition_value: str)"
+            }
         },
         {
             "label": "partition_not_exists(${1:table_name}, ${2:partition_value})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "partition_not_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "partition_not_exists(table_name: str, partition_value: str)"
+            }
         },
         {
             "label": "previous_partition_exists(${1:table_name}, ${2:curr_partition_value_as_dt})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "previous_partition_exists",
+                "description": "",
+                "docstring": "",
+                "signature": "previous_partition_exists(table_name: str, curr_partition_value_as_dt: str)"
+            }
         },
         {
             "label": "all_cols_prefixed_with_exclusion_expr(${1:table_name}, ${2:prefix}, ${3:*cols_to_exclude}, ${4:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "all_cols_prefixed_with_exclusion_expr",
+                "description": "",
+                "docstring": "",
+                "signature": "all_cols_prefixed_with_exclusion_expr(table_name: str, prefix: str, *cols_to_exclude: str)"
+            }
         },
         {
             "label": "all_cols_with_exclusion_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "all_cols_with_exclusion_expr",
+                "description": "",
+                "docstring": "",
+                "signature": "all_cols_with_exclusion_expr(table_name: str, *cols_to_exclude: str)"
+            }
         },
         {
             "label": "all_cols_without_one_expr(${1:table_name}, ${2:*cols_to_exclude}, ${3:...})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "all_cols_without_one_expr",
+                "description": "",
+                "docstring": "",
+                "signature": "all_cols_without_one_expr(table_name: str)"
+            }
         },
         {
             "label": "unpersist(${1:table_name})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "unpersist",
+                "description": "",
+                "docstring": "",
+                "signature": "unpersist(table_name: str)"
+            }
         },
         {
             "label": "coalesce(${1:table}, ${2:partitions})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "coalesce",
+                "description": "",
+                "docstring": "",
+                "signature": "coalesce(table: str, partitions: str)"
+            }
         },
         {
             "label": "repartition(${1:table}, ${2:partitions})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "repartition",
+                "description": "",
+                "docstring": "",
+                "signature": "repartition(table: str, partitions: str)"
+            }
         },
         {
             "label": "repartition_by_column(${1:table}, ${2:partitions})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "repartition_by_column",
+                "description": "",
+                "docstring": "",
+                "signature": "repartition_by_column(table: str, partitions: str)"
+            }
         },
         {
             "label": "set_shuffle_partitions(${1:partitions})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "set_shuffle_partitions",
+                "description": "",
+                "docstring": "",
+                "signature": "set_shuffle_partitions(partitions: str)"
+            }
         },
         {
             "label": "move_file(${1:source_file}, ${2:target_file})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "move_file",
+                "description": "",
+                "docstring": "",
+                "signature": "move_file(source_file: str, target_file: str)"
+            }
         },
         {
             "label": "rename_csv_output(${1:spark_output_path}, ${2:to_file})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "rename_csv_output",
+                "description": "",
+                "docstring": "",
+                "signature": "rename_csv_output(spark_output_path: str, to_file: str)"
+            }
         },
         {
             "label": "update_json_local(\\${__context__}, ${1:vars}, ${2:list_vars}, ${3:json_attr}, ${4:output_file})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "update_json_local",
+                "description": "",
+                "docstring": "",
+                "signature": "update_json_local(context: ProcessorContext, vars: str, list_vars: str, json_attr: str, output_file: str)"
+            }
         },
         {
             "label": "write_csv(${1:table}, ${2:output_file})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "write_csv",
+                "description": "",
+                "docstring": "",
+                "signature": "write_csv(table: str, output_file: str)"
+            }
         },
         {
             "label": "write_json_local(${1:table}, ${2:output_file})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "write_json_local",
+                "description": "",
+                "docstring": "",
+                "signature": "write_json_local(table: str, output_file: str)"
+            }
         },
         {
             "label": "alert(\\${__step__}, \\${__context__}, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "alert",
+                "description": "",
+                "docstring": "",
+                "signature": "alert(step: Step, context: ProcessorContext, rule_name: str, pass_condition: str, alert_template: str, mentioned_users: str)"
+            }
         },
         {
             "label": "alert_exception_handler(${1:rule_name}, ${2:mentioned_users})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "alert_exception_handler",
+                "description": "",
+                "docstring": "",
+                "signature": "alert_exception_handler(rule_name: str, mentioned_users: str)"
+            }
         },
         {
             "label": "alert_with_backend(\\${__backend__}, \\${__step__}, \\${__context__}, ${1:rule_name}, ${2:pass_condition}, ${3:alert_template}, ${4:mentioned_users})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "alert_with_backend",
+                "description": "",
+                "docstring": "",
+                "signature": "alert_with_backend(backend: Backend, step: Step, context: ProcessorContext, rule_name: str, pass_condition: str, alert_template: str, mentioned_users: str)"
+            }
         },
         {
             "label": "check_not_null_column_in_table(\\${__step__}, ${1:table_name}, ${2:not_null_column}, ${3:query})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "check_not_null_column_in_table",
+                "description": "",
+                "docstring": "",
+                "signature": "check_not_null_column_in_table(step: Step, table_name: str, not_null_column: str, query: Optional[str]=None)"
+            }
         },
         {
             "label": "ensure_no_null_data_in_table(\\${__step__}, ${1:table_name}, ${2:query})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "ensure_no_null_data_in_table",
+                "description": "",
+                "docstring": "",
+                "signature": "ensure_no_null_data_in_table(step: Step, table_name: str, query: Optional[str]=None)"
+            }
         },
         {
             "label": "model_predict(${1:model_save_path}, ${2:table_name}, ${3:feature_cols}, ${4:id_col}, ${5:output_ref_cols})",
-            "type": "easysql"
+            "type": "easysql",
+            "tooltip": {
+                "text": "model_predict",
+                "description": "",
+                "docstring": "",
+                "signature": "model_predict(model_save_path: str, table_name: str, feature_cols: str, id_col: str, output_ref_cols: str)"
+            }
         },
         {
             "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count})",
-            "type": "easysql"
-        },
-        {
-            "label": "abs(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "all(${1:iterable})",
-            "type": "system"
-        },
-        {
-            "label": "any(${1:iterable})",
-            "type": "system"
-        },
-        {
-            "label": "ascii(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "bin(${1:number})",
-            "type": "system"
-        },
-        {
-            "label": "bool()",
-            "type": "easysql"
-        },
-        {
-            "label": "breakpoint()",
-            "type": "easysql"
-        },
-        {
-            "label": "bytearray()",
-            "type": "easysql"
-        },
-        {
-            "label": "bytes()",
-            "type": "easysql"
-        },
-        {
-            "label": "callable(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "chr(${1:i})",
-            "type": "system"
-        },
-        {
-            "label": "classmethod()",
-            "type": "easysql"
-        },
-        {
-            "label": "compile(${1:source}, ${2:filename}, ${3:mode}, ${4:flags}, ${5:dont_inherit}, ${6:optimize}, ${7:_feature_version})",
-            "type": "system"
-        },
-        {
-            "label": "complex(${1:real}, ${2:imag})",
-            "type": "system"
-        },
-        {
-            "label": "copyright()",
-            "type": "system"
-        },
-        {
-            "label": "credits()",
-            "type": "system"
-        },
-        {
-            "label": "delattr(${1:obj}, ${2:name})",
-            "type": "system"
-        },
-        {
-            "label": "dict()",
-            "type": "easysql"
-        },
-        {
-            "label": "dir()",
-            "type": "easysql"
-        },
-        {
-            "label": "divmod(${1:x}, ${2:y})",
-            "type": "system"
-        },
-        {
-            "label": "enumerate(${1:iterable}, ${2:start})",
-            "type": "system"
-        },
-        {
-            "label": "eval(${1:source}, ${2:globals}, ${3:locals})",
-            "type": "system"
-        },
-        {
-            "label": "exec(${1:source}, ${2:globals}, ${3:locals})",
-            "type": "system"
-        },
-        {
-            "label": "exit(${1:code})",
-            "type": "system"
-        },
-        {
-            "label": "filter()",
-            "type": "easysql"
-        },
-        {
-            "label": "float(${1:x})",
-            "type": "system"
-        },
-        {
-            "label": "format(${1:value}, ${2:format_spec})",
-            "type": "system"
-        },
-        {
-            "label": "frozenset()",
-            "type": "easysql"
-        },
-        {
-            "label": "getattr()",
-            "type": "easysql"
-        },
-        {
-            "label": "globals()",
-            "type": "system"
-        },
-        {
-            "label": "hasattr(${1:obj}, ${2:name})",
-            "type": "system"
-        },
-        {
-            "label": "hash(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "hex(${1:number})",
-            "type": "system"
-        },
-        {
-            "label": "id(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "input(${1:prompt})",
-            "type": "system"
-        },
-        {
-            "label": "int()",
-            "type": "easysql"
-        },
-        {
-            "label": "isinstance(${1:obj}, ${2:class_or_tuple})",
-            "type": "system"
-        },
-        {
-            "label": "issubclass(${1:cls}, ${2:class_or_tuple})",
-            "type": "system"
-        },
-        {
-            "label": "iter()",
-            "type": "easysql"
-        },
-        {
-            "label": "len(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "license()",
-            "type": "system"
-        },
-        {
-            "label": "list(${1:iterable})",
-            "type": "system"
-        },
-        {
-            "label": "locals()",
-            "type": "system"
-        },
-        {
-            "label": "map()",
-            "type": "easysql"
-        },
-        {
-            "label": "max()",
-            "type": "easysql"
-        },
-        {
-            "label": "memoryview(${1:object})",
-            "type": "system"
-        },
-        {
-            "label": "min()",
-            "type": "easysql"
-        },
-        {
-            "label": "next()",
-            "type": "easysql"
-        },
-        {
-            "label": "object()",
-            "type": "system"
-        },
-        {
-            "label": "oct(${1:number})",
-            "type": "system"
-        },
-        {
-            "label": "open(${1:file}, ${2:mode}, ${3:buffering}, ${4:encoding}, ${5:errors}, ${6:newline}, ${7:closefd}, ${8:opener})",
-            "type": "system"
-        },
-        {
-            "label": "ord(${1:c})",
-            "type": "system"
-        },
-        {
-            "label": "pow(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "print()",
-            "type": "easysql"
-        },
-        {
-            "label": "property(${1:fget}, ${2:fset}, ${3:fdel}, ${4:doc})",
-            "type": "system"
-        },
-        {
-            "label": "quit(${1:code})",
-            "type": "system"
-        },
-        {
-            "label": "range()",
-            "type": "easysql"
-        },
-        {
-            "label": "repr(${1:obj})",
-            "type": "system"
-        },
-        {
-            "label": "reversed(${1:sequence})",
-            "type": "system"
-        },
-        {
-            "label": "round(${1:number}, ${2:ndigits})",
-            "type": "system"
-        },
-        {
-            "label": "set()",
-            "type": "easysql"
-        },
-        {
-            "label": "setattr(${1:obj}, ${2:name}, ${3:value})",
-            "type": "system"
-        },
-        {
-            "label": "slice()",
-            "type": "easysql"
-        },
-        {
-            "label": "sorted(${1:iterable}, ${2:key}, ${3:reverse})",
-            "type": "system"
-        },
-        {
-            "label": "staticmethod()",
-            "type": "easysql"
-        },
-        {
-            "label": "str()",
-            "type": "easysql"
-        },
-        {
-            "label": "sum(${1:iterable}, ${2:start})",
-            "type": "system"
-        },
-        {
-            "label": "super()",
-            "type": "easysql"
-        },
-        {
-            "label": "tuple(${1:iterable})",
-            "type": "system"
-        },
-        {
-            "label": "type()",
-            "type": "easysql"
-        },
-        {
-            "label": "vars()",
-            "type": "easysql"
-        },
-        {
-            "label": "zip()",
-            "type": "easysql"
-        },
-        {
-            "label": "add(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "and_(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "attrgetter()",
-            "type": "easysql"
-        },
-        {
-            "label": "concat(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "contains(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "countOf(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "delitem(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "eq(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "floordiv(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ge(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "getitem(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "gt(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "iadd(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "iand(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "iconcat(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ifloordiv(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ilshift(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "imatmul(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "imod(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "imul(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "index(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "indexOf(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "inv(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "invert(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "ior(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ipow(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "irshift(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "is_(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "is_not(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "isub(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "itemgetter()",
-            "type": "easysql"
-        },
-        {
-            "label": "itruediv(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ixor(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "le(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "length_hint(${1:obj}, ${2:default})",
-            "type": "system"
-        },
-        {
-            "label": "lshift(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "lt(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "matmul(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "methodcaller()",
-            "type": "easysql"
-        },
-        {
-            "label": "mod(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "mul(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "ne(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "neg(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "not_(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "or_(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "pos(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "rshift(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "setitem(${1:a}, ${2:b}, ${3:c})",
-            "type": "system"
-        },
-        {
-            "label": "sub(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "truediv(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "truth(${1:a})",
-            "type": "system"
-        },
-        {
-            "label": "xor(${1:a}, ${2:b})",
-            "type": "system"
-        },
-        {
-            "label": "equal(${1:a}, ${2:b})",
-            "type": "system"
+            "type": "easysql",
+            "tooltip": {
+                "text": "data_profiling_report",
+                "description": "",
+                "docstring": "",
+                "signature": "data_profiling_report(table: str, query: str, output_folder: str, max_count=50000)"
+            }
         },
         {
             "label": "is_greater_or_equal(${1:a}, ${2:b})",
-            "type": "system"
+            "type": "easysql",
+            "tooltip": {
+                "text": "<lambda>",
+                "description": "",
+                "docstring": "",
+                "signature": "<lambda>(a, b)"
+            }
         },
         {
             "label": "equal_ignore_case(${1:a}, ${2:b})",
-            "type": "system"
+            "type": "easysql",
+            "tooltip": {
+                "text": "<lambda>",
+                "description": "",
+                "docstring": "",
+                "signature": "<lambda>(a, b)"
+            }
+        },
+        {
+            "label": "abs(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "abs",
+                "description": "Return the absolute value of the argument.",
+                "docstring": "Return the absolute value of the argument.",
+                "signature": "abs(n: SupportsAbs[_T])"
+            }
+        },
+        {
+            "label": "all(${1:iterable})",
+            "type": "system",
+            "tooltip": {
+                "text": "all",
+                "description": "Return True if bool(x) is True for all values x in the iterable.\n\nIf the iterable is empty, return True.",
+                "docstring": "Return True if bool(x) is True for all values x in the iterable.\n\nIf the iterable is empty, return True.",
+                "signature": "all(i: Iterable[object])"
+            }
+        },
+        {
+            "label": "any(${1:iterable})",
+            "type": "system",
+            "tooltip": {
+                "text": "any",
+                "description": "Return True if bool(x) is True for any x in the iterable.\n\nIf the iterable is empty, return False.",
+                "docstring": "Return True if bool(x) is True for any x in the iterable.\n\nIf the iterable is empty, return False.",
+                "signature": "any(i: Iterable[object])"
+            }
+        },
+        {
+            "label": "ascii(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "ascii",
+                "description": "Return an ASCII-only representation of an object.\n\nAs repr(), return a string containing a printable representation of an\nobject, but escape the non-ASCII characters in the string returned by\nrepr() using \\\\x, \\\\u or \\\\U escapes. This generates a string similar\nto that returned by repr() in Python 2.",
+                "docstring": "Return an ASCII-only representation of an object.\n\nAs repr(), return a string containing a printable representation of an\nobject, but escape the non-ASCII characters in the string returned by\nrepr() using \\\\x, \\\\u or \\\\U escapes. This generates a string similar\nto that returned by repr() in Python 2.",
+                "signature": "ascii(o: object)"
+            }
+        },
+        {
+            "label": "bin(${1:number})",
+            "type": "system",
+            "tooltip": {
+                "text": "bin",
+                "description": "Return the binary representation of an integer.\n\n>>> bin(2796202)\n'0b1010101010101010101010'",
+                "docstring": "Return the binary representation of an integer.\n\n>>> bin(2796202)\n'0b1010101010101010101010'",
+                "signature": "bin(number: Union[int, _SupportsIndex])"
+            }
+        },
+        {
+            "label": "bool()",
+            "type": "system",
+            "tooltip": {
+                "text": "bool",
+                "description": "bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.",
+                "docstring": "bool(x) -> bool\n\nReturns True when the argument x is true, False otherwise.\nThe builtins True and False are the only two instances of the class bool.\nThe class bool is a subclass of the class int, and cannot be subclassed.",
+                "signature": "bool(o: object=...)"
+            }
+        },
+        {
+            "label": "breakpoint()",
+            "type": "system",
+            "tooltip": {
+                "text": "breakpoint",
+                "description": "breakpoint(*args, **kws)\n\nCall sys.breakpointhook(*args, **kws).  sys.breakpointhook() must accept\nwhatever arguments are passed.\n\nBy default, this drops you into the pdb debugger.",
+                "docstring": "breakpoint(*args, **kws)\n\nCall sys.breakpointhook(*args, **kws).  sys.breakpointhook() must accept\nwhatever arguments are passed.\n\nBy default, this drops you into the pdb debugger.",
+                "signature": "breakpoint(*args: Any, **kws: Any)"
+            }
+        },
+        {
+            "label": "bytearray()",
+            "type": "system",
+            "tooltip": {
+                "text": "bytearray",
+                "description": "bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct a mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer",
+                "docstring": "bytearray(iterable_of_ints) -> bytearray\nbytearray(string, encoding[, errors]) -> bytearray\nbytearray(bytes_or_buffer) -> mutable copy of bytes_or_buffer\nbytearray(int) -> bytes array of size given by the parameter initialized with null bytes\nbytearray() -> empty bytes array\n\nConstruct a mutable bytearray object from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - a bytes or a buffer object\n  - any object implementing the buffer API.\n  - an integer",
+                "signature": "bytearray()"
+            }
+        },
+        {
+            "label": "bytes()",
+            "type": "system",
+            "tooltip": {
+                "text": "bytes",
+                "description": "bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer",
+                "docstring": "bytes(iterable_of_ints) -> bytes\nbytes(string, encoding[, errors]) -> bytes\nbytes(bytes_or_buffer) -> immutable copy of bytes_or_buffer\nbytes(int) -> bytes object of size given by the parameter initialized with null bytes\nbytes() -> empty bytes object\n\nConstruct an immutable array of bytes from:\n  - an iterable yielding integers in range(256)\n  - a text string encoded using the specified encoding\n  - any object implementing the buffer API.\n  - an integer",
+                "signature": "bytes(ints: Iterable[int])"
+            }
+        },
+        {
+            "label": "callable(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "callable",
+                "description": "Return whether the object is callable (i.e., some kind of function).\n\nNote that classes are callable, as are instances of classes with a\n__call__() method.",
+                "docstring": "Return whether the object is callable (i.e., some kind of function).\n\nNote that classes are callable, as are instances of classes with a\n__call__() method.",
+                "signature": "callable(o: object)"
+            }
+        },
+        {
+            "label": "chr(${1:i})",
+            "type": "system",
+            "tooltip": {
+                "text": "chr",
+                "description": "Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.",
+                "docstring": "Return a Unicode string of one character with ordinal i; 0 <= i <= 0x10ffff.",
+                "signature": "chr(code: int)"
+            }
+        },
+        {
+            "label": "classmethod()",
+            "type": "system",
+            "tooltip": {
+                "text": "classmethod",
+                "description": "classmethod(function) -> method\n\nConvert a function to be a class method.\n\nA class method receives the class as implicit first argument,\njust like an instance method receives the instance.\nTo declare a class method, use this idiom:\n\n  class C:\n      @classmethod\n      def f(cls, arg1, arg2, ...):\n          ...\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()).  The instance is ignored except for its class.\nIf a class method is called for a derived class, the derived class\nobject is passed as the implied first argument.\n\nClass methods are different than C++ or Java static methods.\nIf you want those, see the staticmethod builtin.",
+                "docstring": "classmethod(function) -> method\n\nConvert a function to be a class method.\n\nA class method receives the class as implicit first argument,\njust like an instance method receives the instance.\nTo declare a class method, use this idiom:\n\n  class C:\n      @classmethod\n      def f(cls, arg1, arg2, ...):\n          ...\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()).  The instance is ignored except for its class.\nIf a class method is called for a derived class, the derived class\nobject is passed as the implied first argument.\n\nClass methods are different than C++ or Java static methods.\nIf you want those, see the staticmethod builtin.",
+                "signature": "classmethod(f: Callable[..., Any])"
+            }
+        },
+        {
+            "label": "compile(${1:source}, ${2:filename}, ${3:mode}, ${4:flags}, ${5:dont_inherit}, ${6:optimize}, ${7:_feature_version})",
+            "type": "system",
+            "tooltip": {
+                "text": "compile",
+                "description": "Compile source into a code object that can be executed by exec() or eval().\n\nThe source code may represent a Python module, statement or expression.\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if true, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or false these statements do influence the compilation,\nin addition to any features explicitly specified.",
+                "docstring": "Compile source into a code object that can be executed by exec() or eval().\n\nThe source code may represent a Python module, statement or expression.\nThe filename will be used for run-time error messages.\nThe mode must be 'exec' to compile a module, 'single' to compile a\nsingle (interactive) statement, or 'eval' to compile an expression.\nThe flags argument, if present, controls which future statements influence\nthe compilation of the code.\nThe dont_inherit argument, if true, stops the compilation inheriting\nthe effects of any future statements in effect in the code calling\ncompile; if absent or false these statements do influence the compilation,\nin addition to any features explicitly specified.",
+                "signature": "compile(source: Union[str, bytes, mod, AST], filename: Union[str, bytes], mode: str, flags: int=..., dont_inherit: int=..., optimize: int=...)"
+            }
+        },
+        {
+            "label": "complex(${1:real}, ${2:imag})",
+            "type": "system",
+            "tooltip": {
+                "text": "complex",
+                "description": "Create a complex number from a real part and an optional imaginary part.\n\nThis is equivalent to (real + imag*1j) where imag defaults to 0.",
+                "docstring": "Create a complex number from a real part and an optional imaginary part.\n\nThis is equivalent to (real + imag*1j) where imag defaults to 0.",
+                "signature": "complex(real: float=..., imag: float=...)"
+            }
+        },
+        {
+            "label": "copyright()",
+            "type": "system",
+            "tooltip": {
+                "text": "copyright",
+                "description": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "docstring": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "signature": "copyright()"
+            }
+        },
+        {
+            "label": "credits()",
+            "type": "system",
+            "tooltip": {
+                "text": "credits",
+                "description": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "docstring": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "signature": "credits()"
+            }
+        },
+        {
+            "label": "delattr(${1:obj}, ${2:name})",
+            "type": "system",
+            "tooltip": {
+                "text": "delattr",
+                "description": "Deletes the named attribute from the given object.\n\ndelattr(x, 'y') is equivalent to ``del x.y''",
+                "docstring": "Deletes the named attribute from the given object.\n\ndelattr(x, 'y') is equivalent to ``del x.y''",
+                "signature": "delattr(o: Any, name: Text)"
+            }
+        },
+        {
+            "label": "dict()",
+            "type": "system",
+            "tooltip": {
+                "text": "dict",
+                "description": "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)",
+                "docstring": "dict() -> new empty dictionary\ndict(mapping) -> new dictionary initialized from a mapping object's\n    (key, value) pairs\ndict(iterable) -> new dictionary initialized as if via:\n    d = {}\n    for k, v in iterable:\n        d[k] = v\ndict(**kwargs) -> new dictionary initialized with the name=value pairs\n    in the keyword argument list.  For example:  dict(one=1, two=2)",
+                "signature": "dict(**kwargs: _VT)"
+            }
+        },
+        {
+            "label": "dir()",
+            "type": "system",
+            "tooltip": {
+                "text": "dir",
+                "description": "dir([object]) -> list of strings\n\nIf called without an argument, return the names in the current scope.\nElse, return an alphabetized list of names comprising (some of) the attributes\nof the given object, and of attributes reachable from it.\nIf the object supplies a method named __dir__, it will be used; otherwise\nthe default dir() logic is used and returns:\n  for a module object: the module's attributes.\n  for a class object:  its attributes, and recursively the attributes\n    of its bases.\n  for any other object: its attributes, its class's attributes, and\n    recursively the attributes of its class's base classes.",
+                "docstring": "dir([object]) -> list of strings\n\nIf called without an argument, return the names in the current scope.\nElse, return an alphabetized list of names comprising (some of) the attributes\nof the given object, and of attributes reachable from it.\nIf the object supplies a method named __dir__, it will be used; otherwise\nthe default dir() logic is used and returns:\n  for a module object: the module's attributes.\n  for a class object:  its attributes, and recursively the attributes\n    of its bases.\n  for any other object: its attributes, its class's attributes, and\n    recursively the attributes of its class's base classes.",
+                "signature": "dir(o: object=...)"
+            }
+        },
+        {
+            "label": "divmod(${1:x}, ${2:y})",
+            "type": "system",
+            "tooltip": {
+                "text": "divmod",
+                "description": "Return the tuple (x//y, x%y).  Invariant: div*y + mod == x.",
+                "docstring": "Return the tuple (x//y, x%y).  Invariant: div*y + mod == x.",
+                "signature": "divmod(a: _N2, b: _N2)"
+            }
+        },
+        {
+            "label": "enumerate(${1:iterable}, ${2:start})",
+            "type": "system",
+            "tooltip": {
+                "text": "enumerate",
+                "description": "Return an enumerate object.\n\n  iterable\n    an object supporting iteration\n\nThe enumerate object yields pairs containing a count (from start, which\ndefaults to zero) and a value yielded by the iterable argument.\n\nenumerate is useful for obtaining an indexed list:\n    (0, seq[0]), (1, seq[1]), (2, seq[2]), ...",
+                "docstring": "Return an enumerate object.\n\n  iterable\n    an object supporting iteration\n\nThe enumerate object yields pairs containing a count (from start, which\ndefaults to zero) and a value yielded by the iterable argument.\n\nenumerate is useful for obtaining an indexed list:\n    (0, seq[0]), (1, seq[1]), (2, seq[2]), ...",
+                "signature": "enumerate(iterable: Iterable[_T], start: int=...)"
+            }
+        },
+        {
+            "label": "eval(${1:source}, ${2:globals}, ${3:locals})",
+            "type": "system",
+            "tooltip": {
+                "text": "eval",
+                "description": "Evaluate the given source in the context of globals and locals.\n\nThe source may be a string representing a Python expression\nor a code object as returned by compile().\nThe globals must be a dictionary and locals can be any mapping,\ndefaulting to the current globals and locals.\nIf only globals is given, locals defaults to it.",
+                "docstring": "Evaluate the given source in the context of globals and locals.\n\nThe source may be a string representing a Python expression\nor a code object as returned by compile().\nThe globals must be a dictionary and locals can be any mapping,\ndefaulting to the current globals and locals.\nIf only globals is given, locals defaults to it.",
+                "signature": "eval(source: Union[Text, bytes, CodeType], globals: Optional[Dict[str, Any]]=..., locals: Optional[Mapping[str, Any]]=...)"
+            }
+        },
+        {
+            "label": "exec(${1:source}, ${2:globals}, ${3:locals})",
+            "type": "system",
+            "tooltip": {
+                "text": "exec",
+                "description": "Execute the given source in the context of globals and locals.\n\nThe source may be a string representing one or more Python statements\nor a code object as returned by compile().\nThe globals must be a dictionary and locals can be any mapping,\ndefaulting to the current globals and locals.\nIf only globals is given, locals defaults to it.",
+                "docstring": "Execute the given source in the context of globals and locals.\n\nThe source may be a string representing one or more Python statements\nor a code object as returned by compile().\nThe globals must be a dictionary and locals can be any mapping,\ndefaulting to the current globals and locals.\nIf only globals is given, locals defaults to it.",
+                "signature": "exec(object: Union[str, bytes, CodeType], globals: Optional[Dict[str, Any]]=..., locals: Optional[Mapping[str, Any]]=...)"
+            }
+        },
+        {
+            "label": "exit(${1:code})",
+            "type": "system",
+            "tooltip": {
+                "text": "exit",
+                "description": "",
+                "docstring": "",
+                "signature": "exit(code: object=...)"
+            }
+        },
+        {
+            "label": "filter()",
+            "type": "system",
+            "tooltip": {
+                "text": "filter",
+                "description": "filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.",
+                "docstring": "filter(function or None, iterable) --> filter object\n\nReturn an iterator yielding those items of iterable for which function(item)\nis true. If function is None, return the items that are true.",
+                "signature": "filter(function: None, iterable: Iterable[Optional[_T]])"
+            }
+        },
+        {
+            "label": "float(${1:x})",
+            "type": "system",
+            "tooltip": {
+                "text": "float",
+                "description": "Convert a string or number to a floating point number, if possible.",
+                "docstring": "Convert a string or number to a floating point number, if possible.",
+                "signature": "float(x: Union[SupportsFloat, _SupportsIndex, Text, bytes, bytearray]=...)"
+            }
+        },
+        {
+            "label": "format(${1:value}, ${2:format_spec})",
+            "type": "system",
+            "tooltip": {
+                "text": "format",
+                "description": "Return value.__format__(format_spec)\n\nformat_spec defaults to the empty string.\nSee the Format Specification Mini-Language section of help('FORMATTING') for\ndetails.",
+                "docstring": "Return value.__format__(format_spec)\n\nformat_spec defaults to the empty string.\nSee the Format Specification Mini-Language section of help('FORMATTING') for\ndetails.",
+                "signature": "format(o: object, format_spec: str=...)"
+            }
+        },
+        {
+            "label": "frozenset()",
+            "type": "system",
+            "tooltip": {
+                "text": "frozenset",
+                "description": "frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.",
+                "docstring": "frozenset() -> empty frozenset object\nfrozenset(iterable) -> frozenset object\n\nBuild an immutable unordered collection of unique elements.",
+                "signature": "frozenset(iterable: Iterable[_T]=...)"
+            }
+        },
+        {
+            "label": "getattr()",
+            "type": "system",
+            "tooltip": {
+                "text": "getattr",
+                "description": "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case.",
+                "docstring": "getattr(object, name[, default]) -> value\n\nGet a named attribute from an object; getattr(x, 'y') is equivalent to x.y.\nWhen a default argument is given, it is returned when the attribute doesn't\nexist; without it, an exception is raised in that case.",
+                "signature": "getattr(o: Any, name: Text, default: Any=...)"
+            }
+        },
+        {
+            "label": "globals()",
+            "type": "system",
+            "tooltip": {
+                "text": "globals",
+                "description": "Return the dictionary containing the current scope's global variables.\n\nNOTE: Updates to this dictionary *will* affect name lookups in the current\nglobal scope and vice-versa.",
+                "docstring": "Return the dictionary containing the current scope's global variables.\n\nNOTE: Updates to this dictionary *will* affect name lookups in the current\nglobal scope and vice-versa.",
+                "signature": "globals()"
+            }
+        },
+        {
+            "label": "hasattr(${1:obj}, ${2:name})",
+            "type": "system",
+            "tooltip": {
+                "text": "hasattr",
+                "description": "Return whether the object has an attribute with the given name.\n\nThis is done by calling getattr(obj, name) and catching AttributeError.",
+                "docstring": "Return whether the object has an attribute with the given name.\n\nThis is done by calling getattr(obj, name) and catching AttributeError.",
+                "signature": "hasattr(o: Any, name: Text)"
+            }
+        },
+        {
+            "label": "hash(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "hash",
+                "description": "Return the hash value for the given object.\n\nTwo objects that compare equal must also have the same hash value, but the\nreverse is not necessarily true.",
+                "docstring": "Return the hash value for the given object.\n\nTwo objects that compare equal must also have the same hash value, but the\nreverse is not necessarily true.",
+                "signature": "hash(o: object)"
+            }
+        },
+        {
+            "label": "hex(${1:number})",
+            "type": "system",
+            "tooltip": {
+                "text": "hex",
+                "description": "Return the hexadecimal representation of an integer.\n\n>>> hex(12648430)\n'0xc0ffee'",
+                "docstring": "Return the hexadecimal representation of an integer.\n\n>>> hex(12648430)\n'0xc0ffee'",
+                "signature": "hex(i: Union[int, _SupportsIndex])"
+            }
+        },
+        {
+            "label": "id(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "id",
+                "description": "Return the identity of an object.\n\nThis is guaranteed to be unique among simultaneously existing objects.\n(CPython uses the object's memory address.)",
+                "docstring": "Return the identity of an object.\n\nThis is guaranteed to be unique among simultaneously existing objects.\n(CPython uses the object's memory address.)",
+                "signature": "id(o: object)"
+            }
+        },
+        {
+            "label": "input(${1:prompt})",
+            "type": "system",
+            "tooltip": {
+                "text": "input",
+                "description": "Read a string from standard input.  The trailing newline is stripped.\n\nThe prompt string, if given, is printed to standard output without a\ntrailing newline before reading input.\n\nIf the user hits EOF (*nix: Ctrl-D, Windows: Ctrl-Z+Return), raise EOFError.\nOn *nix systems, readline is used if available.",
+                "docstring": "Read a string from standard input.  The trailing newline is stripped.\n\nThe prompt string, if given, is printed to standard output without a\ntrailing newline before reading input.\n\nIf the user hits EOF (*nix: Ctrl-D, Windows: Ctrl-Z+Return), raise EOFError.\nOn *nix systems, readline is used if available.",
+                "signature": "input(prompt: Any=...)"
+            }
+        },
+        {
+            "label": "int()",
+            "type": "system",
+            "tooltip": {
+                "text": "int",
+                "description": "int([x]) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4",
+                "docstring": "int([x]) -> integer\nint(x, base=10) -> integer\n\nConvert a number or string to an integer, or return 0 if no arguments\nare given.  If x is a number, return x.__int__().  For floating point\nnumbers, this truncates towards zero.\n\nIf x is not a number or if base is given, then x must be a string,\nbytes, or bytearray instance representing an integer literal in the\ngiven base.  The literal can be preceded by '+' or '-' and be surrounded\nby whitespace.  The base defaults to 10.  Valid bases are 0 and 2-36.\nBase 0 means to interpret the base from the string as an integer literal.\n>>> int('0b100', base=0)\n4",
+                "signature": "int(x: Union[Text, bytes, SupportsInt, _SupportsIndex]=...)"
+            }
+        },
+        {
+            "label": "isinstance(${1:obj}, ${2:class_or_tuple})",
+            "type": "system",
+            "tooltip": {
+                "text": "isinstance",
+                "description": "Return whether an object is an instance of a class or of a subclass thereof.\n\nA tuple, as in ``isinstance(x, (A, B, ...))``, may be given as the target to\ncheck against. This is equivalent to ``isinstance(x, A) or isinstance(x, B)\nor ...`` etc.",
+                "docstring": "Return whether an object is an instance of a class or of a subclass thereof.\n\nA tuple, as in ``isinstance(x, (A, B, ...))``, may be given as the target to\ncheck against. This is equivalent to ``isinstance(x, A) or isinstance(x, B)\nor ...`` etc.",
+                "signature": "isinstance(o: object, t: Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]])"
+            }
+        },
+        {
+            "label": "issubclass(${1:cls}, ${2:class_or_tuple})",
+            "type": "system",
+            "tooltip": {
+                "text": "issubclass",
+                "description": "Return whether 'cls' is a derived from another class or is the same class.\n\nA tuple, as in ``issubclass(x, (A, B, ...))``, may be given as the target to\ncheck against. This is equivalent to ``issubclass(x, A) or issubclass(x, B)\nor ...`` etc.",
+                "docstring": "Return whether 'cls' is a derived from another class or is the same class.\n\nA tuple, as in ``issubclass(x, (A, B, ...))``, may be given as the target to\ncheck against. This is equivalent to ``issubclass(x, A) or issubclass(x, B)\nor ...`` etc.",
+                "signature": "issubclass(cls: type, classinfo: Union[type, Tuple[Union[type, Tuple[Any, ...]], ...]])"
+            }
+        },
+        {
+            "label": "iter()",
+            "type": "system",
+            "tooltip": {
+                "text": "iter",
+                "description": "iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.",
+                "docstring": "iter(iterable) -> iterator\niter(callable, sentinel) -> iterator\n\nGet an iterator from an object.  In the first form, the argument must\nsupply its own iterator, or be a sequence.\nIn the second form, the callable is called until it returns the sentinel.",
+                "signature": "iter(iterable: Iterable[_T])"
+            }
+        },
+        {
+            "label": "len(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "len",
+                "description": "Return the number of items in a container.",
+                "docstring": "Return the number of items in a container.",
+                "signature": "len(o: Sized)"
+            }
+        },
+        {
+            "label": "license()",
+            "type": "system",
+            "tooltip": {
+                "text": "license",
+                "description": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "docstring": "interactive prompt objects for printing the license text, a list of\ncontributors and the copyright notice.",
+                "signature": "license()"
+            }
+        },
+        {
+            "label": "list(${1:iterable})",
+            "type": "system",
+            "tooltip": {
+                "text": "list",
+                "description": "Built-in mutable sequence.\n\nIf no argument is given, the constructor creates a new empty list.\nThe argument must be an iterable if specified.",
+                "docstring": "Built-in mutable sequence.\n\nIf no argument is given, the constructor creates a new empty list.\nThe argument must be an iterable if specified.",
+                "signature": "list()"
+            }
+        },
+        {
+            "label": "locals()",
+            "type": "system",
+            "tooltip": {
+                "text": "locals",
+                "description": "Return a dictionary containing the current scope's local variables.\n\nNOTE: Whether or not updates to this dictionary will affect name lookups in\nthe local scope and vice-versa is *implementation dependent* and not\ncovered by any backwards compatibility guarantees.",
+                "docstring": "Return a dictionary containing the current scope's local variables.\n\nNOTE: Whether or not updates to this dictionary will affect name lookups in\nthe local scope and vice-versa is *implementation dependent* and not\ncovered by any backwards compatibility guarantees.",
+                "signature": "locals()"
+            }
+        },
+        {
+            "label": "map()",
+            "type": "system",
+            "tooltip": {
+                "text": "map",
+                "description": "map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.",
+                "docstring": "map(func, *iterables) --> map object\n\nMake an iterator that computes the function using arguments from\neach of the iterables.  Stops when the shortest iterable is exhausted.",
+                "signature": "map(func: Callable[[_T1], _S], iter1: Iterable[_T1])"
+            }
+        },
+        {
+            "label": "max()",
+            "type": "system",
+            "tooltip": {
+                "text": "max",
+                "description": "max(iterable, *[, default=obj, key=func]) -> value\nmax(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its biggest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the largest argument.",
+                "docstring": "max(iterable, *[, default=obj, key=func]) -> value\nmax(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its biggest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the largest argument.",
+                "signature": "max(arg1: _T, arg2: _T, *_args: _T, key: Callable[[_T], Any]=...)"
+            }
+        },
+        {
+            "label": "memoryview(${1:object})",
+            "type": "system",
+            "tooltip": {
+                "text": "memoryview",
+                "description": "Create a new memoryview object which references the given object.",
+                "docstring": "Create a new memoryview object which references the given object.",
+                "signature": "memoryview(obj: Union[bytes, bytearray, memoryview])"
+            }
+        },
+        {
+            "label": "min()",
+            "type": "system",
+            "tooltip": {
+                "text": "min",
+                "description": "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.",
+                "docstring": "min(iterable, *[, default=obj, key=func]) -> value\nmin(arg1, arg2, *args, *[, key=func]) -> value\n\nWith a single iterable argument, return its smallest item. The\ndefault keyword-only argument specifies an object to return if\nthe provided iterable is empty.\nWith two or more arguments, return the smallest argument.",
+                "signature": "min(arg1: _T, arg2: _T, *_args: _T, key: Callable[[_T], Any]=...)"
+            }
+        },
+        {
+            "label": "next()",
+            "type": "system",
+            "tooltip": {
+                "text": "next",
+                "description": "next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising StopIteration.",
+                "docstring": "next(iterator[, default])\n\nReturn the next item from the iterator. If default is given and the iterator\nis exhausted, it is returned instead of raising StopIteration.",
+                "signature": "next(i: Iterator[_T])"
+            }
+        },
+        {
+            "label": "object()",
+            "type": "system",
+            "tooltip": {
+                "text": "object",
+                "description": "The base class of the class hierarchy.\n\nWhen called, it accepts no arguments and returns a new featureless\ninstance that has no instance attributes and cannot be given any.",
+                "docstring": "The base class of the class hierarchy.\n\nWhen called, it accepts no arguments and returns a new featureless\ninstance that has no instance attributes and cannot be given any.",
+                "signature": "object()"
+            }
+        },
+        {
+            "label": "oct(${1:number})",
+            "type": "system",
+            "tooltip": {
+                "text": "oct",
+                "description": "Return the octal representation of an integer.\n\n>>> oct(342391)\n'0o1234567'",
+                "docstring": "Return the octal representation of an integer.\n\n>>> oct(342391)\n'0o1234567'",
+                "signature": "oct(i: Union[int, _SupportsIndex])"
+            }
+        },
+        {
+            "label": "open(${1:file}, ${2:mode}, ${3:buffering}, ${4:encoding}, ${5:errors}, ${6:newline}, ${7:closefd}, ${8:opener})",
+            "type": "system",
+            "tooltip": {
+                "text": "open",
+                "description": "Open file and return a stream.  Raise OSError upon failure.\n\nfile is either a text or byte string giving the name (and the path\nif the file isn't in the current working directory) of the file to\nbe opened or an integer file descriptor of the file to be\nwrapped. (If a file descriptor is given, it is closed when the\nreturned I/O object is closed, unless closefd is set to False.)\n\nmode is an optional string that specifies the mode in which the file\nis opened. It defaults to 'r' which means open for reading in text\nmode.  Other common values are 'w' for writing (truncating the file if\nit already exists), 'x' for creating and writing to a new file, and\n'a' for appending (which on some Unix systems, means that all writes\nappend to the end of the file regardless of the current seek position).\nIn text mode, if encoding is not specified the encoding used is platform\ndependent: locale.getpreferredencoding(False) is called to get the\ncurrent locale encoding. (For reading and writing raw bytes use binary\nmode and leave encoding unspecified.) The available modes are:\n\n========= ===============================================================\nCharacter Meaning\n--------- ---------------------------------------------------------------\n'r'       open for reading (default)\n'w'       open for writing, truncating the file first\n'x'       create a new file and open it for writing\n'a'       open for writing, appending to the end of the file if it exists\n'b'       binary mode\n't'       text mode (default)\n'+'       open a disk file for updating (reading and writing)\n'U'       universal newline mode (deprecated)\n========= ===============================================================\n\nThe default mode is 'rt' (open for reading text). For binary random\naccess, the mode 'w+b' opens and truncates the file to 0 bytes, while\n'r+b' opens the file without truncation. The 'x' mode implies 'w' and\nraises an `FileExistsError` if the file already exists.\n\nPython distinguishes between files opened in binary and text modes,\neven when the underlying operating system doesn't. Files opened in\nbinary mode (appending 'b' to the mode argument) return contents as\nbytes objects without any decoding. In text mode (the default, or when\n't' is appended to the mode argument), the contents of the file are\nreturned as strings, the bytes having been first decoded using a\nplatform-dependent encoding or using the specified encoding if given.\n\n'U' mode is deprecated and will raise an exception in future versions\nof Python.  It has no effect in Python 3.  Use newline to control\nuniversal newlines mode.\n\nbuffering is an optional integer used to set the buffering policy.\nPass 0 to switch buffering off (only allowed in binary mode), 1 to select\nline buffering (only usable in text mode), and an integer > 1 to indicate\nthe size of a fixed-size chunk buffer.  When no buffering argument is\ngiven, the default buffering policy works as follows:\n\n* Binary files are buffered in fixed-size chunks; the size of the buffer\n  is chosen using a heuristic trying to determine the underlying device's\n  \"block size\" and falling back on `io.DEFAULT_BUFFER_SIZE`.\n  On many systems, the buffer will typically be 4096 or 8192 bytes long.\n\n* \"Interactive\" text files (files for which isatty() returns True)\n  use line buffering.  Other text files use the policy described above\n  for binary files.\n\nencoding is the name of the encoding used to decode or encode the\nfile. This should only be used in text mode. The default encoding is\nplatform dependent, but any encoding supported by Python can be\npassed.  See the codecs module for the list of supported encodings.\n\nerrors is an optional string that specifies how encoding errors are to\nbe handled---this argument should not be used in binary mode. Pass\n'strict' to raise a ValueError exception if there is an encoding error\n(the default of None has the same effect), or pass 'ignore' to ignore\nerrors. (Note that ignoring encoding errors can lead to data loss.)\nSee the documentation for codecs.register or run 'help(codecs.Codec)'\nfor a list of the permitted encoding error strings.\n\nnewline controls how universal newlines works (it only applies to text\nmode). It can be None, '', '\\n', '\\r', and '\\r\\n'.  It works as\nfollows:\n\n* On input, if newline is None, universal newlines mode is\n  enabled. Lines in the input can end in '\\n', '\\r', or '\\r\\n', and\n  these are translated into '\\n' before being returned to the\n  caller. If it is '', universal newline mode is enabled, but line\n  endings are returned to the caller untranslated. If it has any of\n  the other legal values, input lines are only terminated by the given\n  string, and the line ending is returned to the caller untranslated.\n\n* On output, if newline is None, any '\\n' characters written are\n  translated to the system default line separator, os.linesep. If\n  newline is '' or '\\n', no translation takes place. If newline is any\n  of the other legal values, any '\\n' characters written are translated\n  to the given string.\n\nIf closefd is False, the underlying file descriptor will be kept open\nwhen the file is closed. This does not work when a file name is given\nand must be True in that case.\n\nA custom opener can be used by passing a callable as *opener*. The\nunderlying file descriptor for the file object is then obtained by\ncalling *opener* with (*file*, *flags*). *opener* must return an open\nfile descriptor (passing os.open as *opener* results in functionality\nsimilar to passing None).\n\nopen() returns a file object whose type depends on the mode, and\nthrough which the standard file operations such as reading and writing\nare performed. When open() is used to open a file in a text mode ('w',\n'r', 'wt', 'rt', etc.), it returns a TextIOWrapper. When used to open\na file in a binary mode, the returned class varies: in read binary\nmode, it returns a BufferedReader; in write binary and append binary\nmodes, it returns a BufferedWriter, and in read/write mode, it returns\na BufferedRandom.\n\nIt is also possible to use a string or bytearray as a file for both\nreading and writing. For strings StringIO can be used like a file\nopened in a text mode, and for bytes a BytesIO can be used like a file\nopened in a binary mode.",
+                "docstring": "Open file and return a stream.  Raise OSError upon failure.\n\nfile is either a text or byte string giving the name (and the path\nif the file isn't in the current working directory) of the file to\nbe opened or an integer file descriptor of the file to be\nwrapped. (If a file descriptor is given, it is closed when the\nreturned I/O object is closed, unless closefd is set to False.)\n\nmode is an optional string that specifies the mode in which the file\nis opened. It defaults to 'r' which means open for reading in text\nmode.  Other common values are 'w' for writing (truncating the file if\nit already exists), 'x' for creating and writing to a new file, and\n'a' for appending (which on some Unix systems, means that all writes\nappend to the end of the file regardless of the current seek position).\nIn text mode, if encoding is not specified the encoding used is platform\ndependent: locale.getpreferredencoding(False) is called to get the\ncurrent locale encoding. (For reading and writing raw bytes use binary\nmode and leave encoding unspecified.) The available modes are:\n\n========= ===============================================================\nCharacter Meaning\n--------- ---------------------------------------------------------------\n'r'       open for reading (default)\n'w'       open for writing, truncating the file first\n'x'       create a new file and open it for writing\n'a'       open for writing, appending to the end of the file if it exists\n'b'       binary mode\n't'       text mode (default)\n'+'       open a disk file for updating (reading and writing)\n'U'       universal newline mode (deprecated)\n========= ===============================================================\n\nThe default mode is 'rt' (open for reading text). For binary random\naccess, the mode 'w+b' opens and truncates the file to 0 bytes, while\n'r+b' opens the file without truncation. The 'x' mode implies 'w' and\nraises an `FileExistsError` if the file already exists.\n\nPython distinguishes between files opened in binary and text modes,\neven when the underlying operating system doesn't. Files opened in\nbinary mode (appending 'b' to the mode argument) return contents as\nbytes objects without any decoding. In text mode (the default, or when\n't' is appended to the mode argument), the contents of the file are\nreturned as strings, the bytes having been first decoded using a\nplatform-dependent encoding or using the specified encoding if given.\n\n'U' mode is deprecated and will raise an exception in future versions\nof Python.  It has no effect in Python 3.  Use newline to control\nuniversal newlines mode.\n\nbuffering is an optional integer used to set the buffering policy.\nPass 0 to switch buffering off (only allowed in binary mode), 1 to select\nline buffering (only usable in text mode), and an integer > 1 to indicate\nthe size of a fixed-size chunk buffer.  When no buffering argument is\ngiven, the default buffering policy works as follows:\n\n* Binary files are buffered in fixed-size chunks; the size of the buffer\n  is chosen using a heuristic trying to determine the underlying device's\n  \"block size\" and falling back on `io.DEFAULT_BUFFER_SIZE`.\n  On many systems, the buffer will typically be 4096 or 8192 bytes long.\n\n* \"Interactive\" text files (files for which isatty() returns True)\n  use line buffering.  Other text files use the policy described above\n  for binary files.\n\nencoding is the name of the encoding used to decode or encode the\nfile. This should only be used in text mode. The default encoding is\nplatform dependent, but any encoding supported by Python can be\npassed.  See the codecs module for the list of supported encodings.\n\nerrors is an optional string that specifies how encoding errors are to\nbe handled---this argument should not be used in binary mode. Pass\n'strict' to raise a ValueError exception if there is an encoding error\n(the default of None has the same effect), or pass 'ignore' to ignore\nerrors. (Note that ignoring encoding errors can lead to data loss.)\nSee the documentation for codecs.register or run 'help(codecs.Codec)'\nfor a list of the permitted encoding error strings.\n\nnewline controls how universal newlines works (it only applies to text\nmode). It can be None, '', '\\n', '\\r', and '\\r\\n'.  It works as\nfollows:\n\n* On input, if newline is None, universal newlines mode is\n  enabled. Lines in the input can end in '\\n', '\\r', or '\\r\\n', and\n  these are translated into '\\n' before being returned to the\n  caller. If it is '', universal newline mode is enabled, but line\n  endings are returned to the caller untranslated. If it has any of\n  the other legal values, input lines are only terminated by the given\n  string, and the line ending is returned to the caller untranslated.\n\n* On output, if newline is None, any '\\n' characters written are\n  translated to the system default line separator, os.linesep. If\n  newline is '' or '\\n', no translation takes place. If newline is any\n  of the other legal values, any '\\n' characters written are translated\n  to the given string.\n\nIf closefd is False, the underlying file descriptor will be kept open\nwhen the file is closed. This does not work when a file name is given\nand must be True in that case.\n\nA custom opener can be used by passing a callable as *opener*. The\nunderlying file descriptor for the file object is then obtained by\ncalling *opener* with (*file*, *flags*). *opener* must return an open\nfile descriptor (passing os.open as *opener* results in functionality\nsimilar to passing None).\n\nopen() returns a file object whose type depends on the mode, and\nthrough which the standard file operations such as reading and writing\nare performed. When open() is used to open a file in a text mode ('w',\n'r', 'wt', 'rt', etc.), it returns a TextIOWrapper. When used to open\na file in a binary mode, the returned class varies: in read binary\nmode, it returns a BufferedReader; in write binary and append binary\nmodes, it returns a BufferedWriter, and in read/write mode, it returns\na BufferedRandom.\n\nIt is also possible to use a string or bytearray as a file for both\nreading and writing. For strings StringIO can be used like a file\nopened in a text mode, and for bytes a BytesIO can be used like a file\nopened in a binary mode.",
+                "signature": "open(file: Union[str, bytes, int], mode: str=..., buffering: int=..., encoding: Optional[str]=..., errors: Optional[str]=..., newline: Optional[str]=..., closefd: bool=..., opener: Optional[Callable[[str, int], int]]=...)"
+            }
+        },
+        {
+            "label": "ord(${1:c})",
+            "type": "system",
+            "tooltip": {
+                "text": "ord",
+                "description": "Return the Unicode code point for a one-character string.",
+                "docstring": "Return the Unicode code point for a one-character string.",
+                "signature": "ord(c: Union[Text, bytes])"
+            }
+        },
+        {
+            "label": "pow(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "pow",
+                "description": "Equivalent to base**exp with 2 arguments or base**exp % mod with 3 arguments\n\nSome types, such as ints, are able to use a more efficient algorithm when\ninvoked using the three argument form.",
+                "docstring": "Equivalent to base**exp with 2 arguments or base**exp % mod with 3 arguments\n\nSome types, such as ints, are able to use a more efficient algorithm when\ninvoked using the three argument form.",
+                "signature": "pow(x: int, y: int)"
+            }
+        },
+        {
+            "label": "print()",
+            "type": "system",
+            "tooltip": {
+                "text": "print",
+                "description": "print(value, ..., sep=' ', end='\\n', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.\nOptional keyword arguments:\nfile:  a file-like object (stream); defaults to the current sys.stdout.\nsep:   string inserted between values, default a space.\nend:   string appended after the last value, default a newline.\nflush: whether to forcibly flush the stream.",
+                "docstring": "print(value, ..., sep=' ', end='\\n', file=sys.stdout, flush=False)\n\nPrints the values to a stream, or to sys.stdout by default.\nOptional keyword arguments:\nfile:  a file-like object (stream); defaults to the current sys.stdout.\nsep:   string inserted between values, default a space.\nend:   string appended after the last value, default a newline.\nflush: whether to forcibly flush the stream.",
+                "signature": "print(*values: object, sep: Optional[Text]=..., end: Optional[Text]=..., file: Optional[_Writer]=..., flush: bool=...)"
+            }
+        },
+        {
+            "label": "property(${1:fget}, ${2:fset}, ${3:fdel}, ${4:doc})",
+            "type": "system",
+            "tooltip": {
+                "text": "property",
+                "description": "Property attribute.\n\n  fget\n    function to be used for getting an attribute value\n  fset\n    function to be used for setting an attribute value\n  fdel\n    function to be used for del'ing an attribute\n  doc\n    docstring\n\nTypical use is to define a managed attribute x:\n\nclass C(object):\n    def getx(self): return self._x\n    def setx(self, value): self._x = value\n    def delx(self): del self._x\n    x = property(getx, setx, delx, \"I'm the 'x' property.\")\n\nDecorators make defining new properties or modifying existing ones easy:\n\nclass C(object):\n    @property\n    def x(self):\n        \"I am the 'x' property.\"\n        return self._x\n    @x.setter\n    def x(self, value):\n        self._x = value\n    @x.deleter\n    def x(self):\n        del self._x",
+                "docstring": "Property attribute.\n\n  fget\n    function to be used for getting an attribute value\n  fset\n    function to be used for setting an attribute value\n  fdel\n    function to be used for del'ing an attribute\n  doc\n    docstring\n\nTypical use is to define a managed attribute x:\n\nclass C(object):\n    def getx(self): return self._x\n    def setx(self, value): self._x = value\n    def delx(self): del self._x\n    x = property(getx, setx, delx, \"I'm the 'x' property.\")\n\nDecorators make defining new properties or modifying existing ones easy:\n\nclass C(object):\n    @property\n    def x(self):\n        \"I am the 'x' property.\"\n        return self._x\n    @x.setter\n    def x(self, value):\n        self._x = value\n    @x.deleter\n    def x(self):\n        del self._x",
+                "signature": "property(fget: Optional[Callable[[Any], Any]]=..., fset: Optional[Callable[[Any, Any], None]]=..., fdel: Optional[Callable[[Any], None]]=..., doc: Optional[str]=...)"
+            }
+        },
+        {
+            "label": "quit(${1:code})",
+            "type": "system",
+            "tooltip": {
+                "text": "quit",
+                "description": "",
+                "docstring": "",
+                "signature": "quit(code: object=...)"
+            }
+        },
+        {
+            "label": "range()",
+            "type": "system",
+            "tooltip": {
+                "text": "range",
+                "description": "range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn an object that produces a sequence of integers from start (inclusive)\nto stop (exclusive) by step.  range(i, j) produces i, i+1, i+2, ..., j-1.\nstart defaults to 0, and stop is omitted!  range(4) produces 0, 1, 2, 3.\nThese are exactly the valid indices for a list of 4 elements.\nWhen step is given, it specifies the increment (or decrement).",
+                "docstring": "range(stop) -> range object\nrange(start, stop[, step]) -> range object\n\nReturn an object that produces a sequence of integers from start (inclusive)\nto stop (exclusive) by step.  range(i, j) produces i, i+1, i+2, ..., j-1.\nstart defaults to 0, and stop is omitted!  range(4) produces 0, 1, 2, 3.\nThese are exactly the valid indices for a list of 4 elements.\nWhen step is given, it specifies the increment (or decrement).",
+                "signature": "range(stop: int)"
+            }
+        },
+        {
+            "label": "repr(${1:obj})",
+            "type": "system",
+            "tooltip": {
+                "text": "repr",
+                "description": "Return the canonical string representation of the object.\n\nFor many object types, including most builtins, eval(repr(obj)) == obj.",
+                "docstring": "Return the canonical string representation of the object.\n\nFor many object types, including most builtins, eval(repr(obj)) == obj.",
+                "signature": "repr(o: object)"
+            }
+        },
+        {
+            "label": "reversed(${1:sequence})",
+            "type": "system",
+            "tooltip": {
+                "text": "reversed",
+                "description": "Return a reverse iterator over the values of the given sequence.",
+                "docstring": "Return a reverse iterator over the values of the given sequence.",
+                "signature": "reversed(object: Sequence[_T])"
+            }
+        },
+        {
+            "label": "round(${1:number}, ${2:ndigits})",
+            "type": "system",
+            "tooltip": {
+                "text": "round",
+                "description": "Round a number to a given precision in decimal digits.\n\nThe return value is an integer if ndigits is omitted or None.  Otherwise\nthe return value has the same type as the number.  ndigits may be negative.",
+                "docstring": "Round a number to a given precision in decimal digits.\n\nThe return value is an integer if ndigits is omitted or None.  Otherwise\nthe return value has the same type as the number.  ndigits may be negative.",
+                "signature": "round(number: float)"
+            }
+        },
+        {
+            "label": "set()",
+            "type": "system",
+            "tooltip": {
+                "text": "set",
+                "description": "set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.",
+                "docstring": "set() -> new empty set object\nset(iterable) -> new set object\n\nBuild an unordered collection of unique elements.",
+                "signature": "set(iterable: Iterable[_T]=...)"
+            }
+        },
+        {
+            "label": "setattr(${1:obj}, ${2:name}, ${3:value})",
+            "type": "system",
+            "tooltip": {
+                "text": "setattr",
+                "description": "Sets the named attribute on the given object to the specified value.\n\nsetattr(x, 'y', v) is equivalent to ``x.y = v''",
+                "docstring": "Sets the named attribute on the given object to the specified value.\n\nsetattr(x, 'y', v) is equivalent to ``x.y = v''",
+                "signature": "setattr(object: Any, name: Text, value: Any)"
+            }
+        },
+        {
+            "label": "slice()",
+            "type": "system",
+            "tooltip": {
+                "text": "slice",
+                "description": "slice(stop)\nslice(start, stop[, step])\n\nCreate a slice object.  This is used for extended slicing (e.g. a[0:10:2]).",
+                "docstring": "slice(stop)\nslice(start, stop[, step])\n\nCreate a slice object.  This is used for extended slicing (e.g. a[0:10:2]).",
+                "signature": "slice(stop: Any)"
+            }
+        },
+        {
+            "label": "sorted(${1:iterable}, ${2:key}, ${3:reverse})",
+            "type": "system",
+            "tooltip": {
+                "text": "sorted",
+                "description": "Return a new list containing all items from the iterable in ascending order.\n\nA custom key function can be supplied to customize the sort order, and the\nreverse flag can be set to request the result in descending order.",
+                "docstring": "Return a new list containing all items from the iterable in ascending order.\n\nA custom key function can be supplied to customize the sort order, and the\nreverse flag can be set to request the result in descending order.",
+                "signature": "sorted(iterable: Iterable[_T], key: Optional[Callable[[_T], Any]]=..., reverse: bool=...)"
+            }
+        },
+        {
+            "label": "staticmethod()",
+            "type": "system",
+            "tooltip": {
+                "text": "staticmethod",
+                "description": "staticmethod(function) -> method\n\nConvert a function to be a static method.\n\nA static method does not receive an implicit first argument.\nTo declare a static method, use this idiom:\n\n     class C:\n         @staticmethod\n         def f(arg1, arg2, ...):\n             ...\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()). Both the class and the instance are ignored, and\nneither is passed implicitly as the first argument to the method.\n\nStatic methods in Python are similar to those found in Java or C++.\nFor a more advanced concept, see the classmethod builtin.",
+                "docstring": "staticmethod(function) -> method\n\nConvert a function to be a static method.\n\nA static method does not receive an implicit first argument.\nTo declare a static method, use this idiom:\n\n     class C:\n         @staticmethod\n         def f(arg1, arg2, ...):\n             ...\n\nIt can be called either on the class (e.g. C.f()) or on an instance\n(e.g. C().f()). Both the class and the instance are ignored, and\nneither is passed implicitly as the first argument to the method.\n\nStatic methods in Python are similar to those found in Java or C++.\nFor a more advanced concept, see the classmethod builtin.",
+                "signature": "staticmethod(f: Callable[..., Any])"
+            }
+        },
+        {
+            "label": "str()",
+            "type": "system",
+            "tooltip": {
+                "text": "str",
+                "description": "str(object='') -> str\nstr(bytes_or_buffer[, encoding[, errors]]) -> str\n\nCreate a new string object from the given object. If encoding or\nerrors is specified, then the object must expose a data buffer\nthat will be decoded using the given encoding and error handler.\nOtherwise, returns the result of object.__str__() (if defined)\nor repr(object).\nencoding defaults to sys.getdefaultencoding().\nerrors defaults to 'strict'.",
+                "docstring": "str(object='') -> str\nstr(bytes_or_buffer[, encoding[, errors]]) -> str\n\nCreate a new string object from the given object. If encoding or\nerrors is specified, then the object must expose a data buffer\nthat will be decoded using the given encoding and error handler.\nOtherwise, returns the result of object.__str__() (if defined)\nor repr(object).\nencoding defaults to sys.getdefaultencoding().\nerrors defaults to 'strict'.",
+                "signature": "str(o: object=...)"
+            }
+        },
+        {
+            "label": "sum(${1:iterable}, ${2:start})",
+            "type": "system",
+            "tooltip": {
+                "text": "sum",
+                "description": "Return the sum of a 'start' value (default: 0) plus an iterable of numbers\n\nWhen the iterable is empty, return the start value.\nThis function is intended specifically for use with numeric values and may\nreject non-numeric types.",
+                "docstring": "Return the sum of a 'start' value (default: 0) plus an iterable of numbers\n\nWhen the iterable is empty, return the start value.\nThis function is intended specifically for use with numeric values and may\nreject non-numeric types.",
+                "signature": "sum(iterable: Iterable[_T])"
+            }
+        },
+        {
+            "label": "super()",
+            "type": "system",
+            "tooltip": {
+                "text": "super",
+                "description": "super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)",
+                "docstring": "super() -> same as super(__class__, <first argument>)\nsuper(type) -> unbound super object\nsuper(type, obj) -> bound super object; requires isinstance(obj, type)\nsuper(type, type2) -> bound super object; requires issubclass(type2, type)\nTypical use to call a cooperative superclass method:\nclass C(B):\n    def meth(self, arg):\n        super().meth(arg)\nThis works for class methods too:\nclass C(B):\n    @classmethod\n    def cmeth(cls, arg):\n        super().cmeth(arg)",
+                "signature": "super(t: Any, obj: Any)"
+            }
+        },
+        {
+            "label": "tuple(${1:iterable})",
+            "type": "system",
+            "tooltip": {
+                "text": "tuple",
+                "description": "Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.",
+                "docstring": "Built-in immutable sequence.\n\nIf no argument is given, the constructor returns an empty tuple.\nIf iterable is specified the tuple is initialized from iterable's items.\n\nIf the argument is a tuple, the return value is the same object.",
+                "signature": "tuple(iterable: Iterable[_T_co]=...)"
+            }
+        },
+        {
+            "label": "type()",
+            "type": "system",
+            "tooltip": {
+                "text": "type",
+                "description": "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type",
+                "docstring": "type(object_or_name, bases, dict)\ntype(object) -> the object's type\ntype(name, bases, dict) -> a new type",
+                "signature": "type(o: object)"
+            }
+        },
+        {
+            "label": "vars()",
+            "type": "system",
+            "tooltip": {
+                "text": "vars",
+                "description": "vars([object]) -> dictionary\n\nWithout arguments, equivalent to locals().\nWith an argument, equivalent to object.__dict__.",
+                "docstring": "vars([object]) -> dictionary\n\nWithout arguments, equivalent to locals().\nWith an argument, equivalent to object.__dict__.",
+                "signature": "vars(object: Any=...)"
+            }
+        },
+        {
+            "label": "zip()",
+            "type": "system",
+            "tooltip": {
+                "text": "zip",
+                "description": "zip(*iterables) --> A zip object yielding tuples until an input is exhausted.\n\n   >>> list(zip('abcdefg', range(3), range(4)))\n   [('a', 0, 0), ('b', 1, 1), ('c', 2, 2)]\n\nThe zip object yields n-length tuples, where n is the number of iterables\npassed as positional arguments to zip().  The i-th element in every tuple\ncomes from the i-th iterable argument to zip().  This continues until the\nshortest argument is exhausted.",
+                "docstring": "zip(*iterables) --> A zip object yielding tuples until an input is exhausted.\n\n   >>> list(zip('abcdefg', range(3), range(4)))\n   [('a', 0, 0), ('b', 1, 1), ('c', 2, 2)]\n\nThe zip object yields n-length tuples, where n is the number of iterables\npassed as positional arguments to zip().  The i-th element in every tuple\ncomes from the i-th iterable argument to zip().  This continues until the\nshortest argument is exhausted.",
+                "signature": "zip(iter1: Iterable[_T1])"
+            }
+        },
+        {
+            "label": "add(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "add",
+                "description": "Same as a + b.",
+                "docstring": "Same as a + b.",
+                "signature": "add(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "and_(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "and_",
+                "description": "Same as a & b.",
+                "docstring": "Same as a & b.",
+                "signature": "and_(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "attrgetter()",
+            "type": "system",
+            "tooltip": {
+                "text": "attrgetter",
+                "description": "Return a callable object that fetches the given attribute(s) from its operand.\nAfter f = attrgetter('name'), the call f(r) returns r.name.\nAfter g = attrgetter('name', 'date'), the call g(r) returns (r.name, r.date).\nAfter h = attrgetter('name.first', 'name.last'), the call h(r) returns\n(r.name.first, r.name.last).",
+                "docstring": "Return a callable object that fetches the given attribute(s) from its operand.\nAfter f = attrgetter('name'), the call f(r) returns r.name.\nAfter g = attrgetter('name', 'date'), the call g(r) returns (r.name, r.date).\nAfter h = attrgetter('name.first', 'name.last'), the call h(r) returns\n(r.name.first, r.name.last).",
+                "signature": "attrgetter(attr: str)"
+            }
+        },
+        {
+            "label": "concat(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "concat",
+                "description": "Same as a + b, for a and b sequences.",
+                "docstring": "Same as a + b, for a and b sequences.",
+                "signature": "concat(a: Sequence[_T], b: Sequence[_T])"
+            }
+        },
+        {
+            "label": "contains(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "contains",
+                "description": "Same as b in a (note reversed operands).",
+                "docstring": "Same as b in a (note reversed operands).",
+                "signature": "contains(a: Container[Any], b: Any)"
+            }
+        },
+        {
+            "label": "countOf(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "countOf",
+                "description": "Return the number of times b occurs in a.",
+                "docstring": "Return the number of times b occurs in a.",
+                "signature": "countOf(a: Container[Any], b: Any)"
+            }
+        },
+        {
+            "label": "delitem(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "delitem",
+                "description": "Same as del a[b].",
+                "docstring": "Same as del a[b].",
+                "signature": "delitem(a: MutableSequence[_T], b: int)"
+            }
+        },
+        {
+            "label": "eq(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "eq",
+                "description": "Same as a == b.",
+                "docstring": "Same as a == b.",
+                "signature": "eq(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "floordiv(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "floordiv",
+                "description": "Same as a // b.",
+                "docstring": "Same as a // b.",
+                "signature": "floordiv(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ge(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ge",
+                "description": "Same as a >= b.",
+                "docstring": "Same as a >= b.",
+                "signature": "ge(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "getitem(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "getitem",
+                "description": "Same as a[b].",
+                "docstring": "Same as a[b].",
+                "signature": "getitem(a: Sequence[_T], b: int)"
+            }
+        },
+        {
+            "label": "gt(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "gt",
+                "description": "Same as a > b.",
+                "docstring": "Same as a > b.",
+                "signature": "gt(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "iadd(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "iadd",
+                "description": "Same as a += b.",
+                "docstring": "Same as a += b.",
+                "signature": "iadd(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "iand(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "iand",
+                "description": "Same as a &= b.",
+                "docstring": "Same as a &= b.",
+                "signature": "iand(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "iconcat(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "iconcat",
+                "description": "Same as a += b, for a and b sequences.",
+                "docstring": "Same as a += b, for a and b sequences.",
+                "signature": "iconcat(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ifloordiv(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ifloordiv",
+                "description": "Same as a //= b.",
+                "docstring": "Same as a //= b.",
+                "signature": "ifloordiv(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ilshift(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ilshift",
+                "description": "Same as a <<= b.",
+                "docstring": "Same as a <<= b.",
+                "signature": "ilshift(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "imatmul(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "imatmul",
+                "description": "Same as a @= b.",
+                "docstring": "Same as a @= b.",
+                "signature": "imatmul(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "imod(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "imod",
+                "description": "Same as a %= b.",
+                "docstring": "Same as a %= b.",
+                "signature": "imod(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "imul(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "imul",
+                "description": "Same as a *= b.",
+                "docstring": "Same as a *= b.",
+                "signature": "imul(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "index(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "index",
+                "description": "Same as a.__index__().",
+                "docstring": "Same as a.__index__().",
+                "signature": "index(a: Any)"
+            }
+        },
+        {
+            "label": "indexOf(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "indexOf",
+                "description": "Return the first index of b in a.",
+                "docstring": "Return the first index of b in a.",
+                "signature": "indexOf(a: Sequence[_T], b: _T)"
+            }
+        },
+        {
+            "label": "inv(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "inv",
+                "description": "Same as ~a.",
+                "docstring": "Same as ~a.",
+                "signature": "inv(obj: Any)"
+            }
+        },
+        {
+            "label": "invert(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "inv",
+                "description": "Same as ~a.",
+                "docstring": "Same as ~a.",
+                "signature": "inv(obj: Any)"
+            }
+        },
+        {
+            "label": "ior(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ior",
+                "description": "Same as a |= b.",
+                "docstring": "Same as a |= b.",
+                "signature": "ior(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ipow(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ipow",
+                "description": "Same as a **= b.",
+                "docstring": "Same as a **= b.",
+                "signature": "ipow(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "irshift(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "irshift",
+                "description": "Same as a >>= b.",
+                "docstring": "Same as a >>= b.",
+                "signature": "irshift(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "is_(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "is_",
+                "description": "Same as a is b.",
+                "docstring": "Same as a is b.",
+                "signature": "is_(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "is_not(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "is_not",
+                "description": "Same as a is not b.",
+                "docstring": "Same as a is not b.",
+                "signature": "is_not(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "isub(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "isub",
+                "description": "Same as a -= b.",
+                "docstring": "Same as a -= b.",
+                "signature": "isub(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "itemgetter()",
+            "type": "system",
+            "tooltip": {
+                "text": "itemgetter",
+                "description": "Return a callable object that fetches the given item(s) from its operand.\nAfter f = itemgetter(2), the call f(r) returns r[2].\nAfter g = itemgetter(2, 5, 3), the call g(r) returns (r[2], r[5], r[3])",
+                "docstring": "Return a callable object that fetches the given item(s) from its operand.\nAfter f = itemgetter(2), the call f(r) returns r[2].\nAfter g = itemgetter(2, 5, 3), the call g(r) returns (r[2], r[5], r[3])",
+                "signature": "itemgetter(item: Any)"
+            }
+        },
+        {
+            "label": "itruediv(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "itruediv",
+                "description": "Same as a /= b.",
+                "docstring": "Same as a /= b.",
+                "signature": "itruediv(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ixor(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ixor",
+                "description": "Same as a ^= b.",
+                "docstring": "Same as a ^= b.",
+                "signature": "ixor(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "le(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "le",
+                "description": "Same as a <= b.",
+                "docstring": "Same as a <= b.",
+                "signature": "le(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "length_hint(${1:obj}, ${2:default})",
+            "type": "system",
+            "tooltip": {
+                "text": "length_hint",
+                "description": "Return an estimate of the number of items in obj.\nThis is useful for presizing containers when building from an iterable.\n\nIf the object supports len(), the result will be exact. Otherwise, it may\nover- or under-estimate by an arbitrary amount. The result will be an\ninteger >= 0.",
+                "docstring": "Return an estimate of the number of items in obj.\nThis is useful for presizing containers when building from an iterable.\n\nIf the object supports len(), the result will be exact. Otherwise, it may\nover- or under-estimate by an arbitrary amount. The result will be an\ninteger >= 0.",
+                "signature": "length_hint(obj: Any, default: int=...)"
+            }
+        },
+        {
+            "label": "lshift(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "lshift",
+                "description": "Same as a << b.",
+                "docstring": "Same as a << b.",
+                "signature": "lshift(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "lt(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "lt",
+                "description": "Same as a < b.",
+                "docstring": "Same as a < b.",
+                "signature": "lt(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "matmul(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "matmul",
+                "description": "Same as a @ b.",
+                "docstring": "Same as a @ b.",
+                "signature": "matmul(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "methodcaller()",
+            "type": "system",
+            "tooltip": {
+                "text": "methodcaller",
+                "description": "Return a callable object that calls the given method on its operand.\nAfter f = methodcaller('name'), the call f(r) returns r.name().\nAfter g = methodcaller('name', 'date', foo=1), the call g(r) returns\nr.name('date', foo=1).",
+                "docstring": "Return a callable object that calls the given method on its operand.\nAfter f = methodcaller('name'), the call f(r) returns r.name().\nAfter g = methodcaller('name', 'date', foo=1), the call g(r) returns\nr.name('date', foo=1).",
+                "signature": "methodcaller(name: str, *args: Any, **kwargs: Any)"
+            }
+        },
+        {
+            "label": "mod(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "mod",
+                "description": "Same as a % b.",
+                "docstring": "Same as a % b.",
+                "signature": "mod(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "mul(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "mul",
+                "description": "Same as a * b.",
+                "docstring": "Same as a * b.",
+                "signature": "mul(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "ne(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "ne",
+                "description": "Same as a != b.",
+                "docstring": "Same as a != b.",
+                "signature": "ne(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "neg(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "neg",
+                "description": "Same as -a.",
+                "docstring": "Same as -a.",
+                "signature": "neg(obj: Any)"
+            }
+        },
+        {
+            "label": "not_(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "not_",
+                "description": "Same as not a.",
+                "docstring": "Same as not a.",
+                "signature": "not_(obj: Any)"
+            }
+        },
+        {
+            "label": "or_(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "or_",
+                "description": "Same as a | b.",
+                "docstring": "Same as a | b.",
+                "signature": "or_(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "pos(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "pos",
+                "description": "Same as +a.",
+                "docstring": "Same as +a.",
+                "signature": "pos(obj: Any)"
+            }
+        },
+        {
+            "label": "rshift(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "rshift",
+                "description": "Same as a >> b.",
+                "docstring": "Same as a >> b.",
+                "signature": "rshift(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "setitem(${1:a}, ${2:b}, ${3:c})",
+            "type": "system",
+            "tooltip": {
+                "text": "setitem",
+                "description": "Same as a[b] = c.",
+                "docstring": "Same as a[b] = c.",
+                "signature": "setitem(a: MutableSequence[_T], b: int, c: _T)"
+            }
+        },
+        {
+            "label": "sub(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "sub",
+                "description": "Same as a - b.",
+                "docstring": "Same as a - b.",
+                "signature": "sub(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "truediv(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "truediv",
+                "description": "Same as a / b.",
+                "docstring": "Same as a / b.",
+                "signature": "truediv(a: Any, b: Any)"
+            }
+        },
+        {
+            "label": "truth(${1:a})",
+            "type": "system",
+            "tooltip": {
+                "text": "truth",
+                "description": "Return True if a is true, False otherwise.",
+                "docstring": "Return True if a is true, False otherwise.",
+                "signature": "truth(x: Any)"
+            }
+        },
+        {
+            "label": "xor(${1:a}, ${2:b})",
+            "type": "system",
+            "tooltip": {
+                "text": "xor",
+                "description": "Same as a ^ b.",
+                "docstring": "Same as a ^ b.",
+                "signature": "xor(a: Any, b: Any)"
+            }
         }
     ]
 }

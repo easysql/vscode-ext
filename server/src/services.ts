@@ -11,6 +11,7 @@ import { Parser } from './shared/easysql';
 import { HighlightTokens as HighlightTokens } from './highlightTokens';
 import { HighlightTokenParser } from './shared/highlight';
 import { HoverProvider } from './hover';
+import { FuncInfoSource } from './funcInfoSource';
 
 // Create a simple text document manager.
 export class Services {
@@ -23,5 +24,6 @@ export class Services {
     public readonly highlightTokenParser = new HighlightTokenParser();
     public readonly diagnostic = new CodeDiagnosticProvider(this.settings, this.documentAsts);
     public readonly highlightTokens = new HighlightTokens(this.parser, this.documentAsts, this.highlightTokenParser);
-    public readonly hoverProvider = new HoverProvider(this.documents);
+    public readonly funcInfoSource = new FuncInfoSource();
+    public readonly hoverProvider = new HoverProvider(this.funcInfoSource, this.documents);
 }
