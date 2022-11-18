@@ -4,7 +4,7 @@ import { HoverProvider } from './hover';
 describe('hover', () => {
     let line = '';
     const doc = { getText: () => line } as any;
-    const hp = new HoverProvider({ get: () => doc } as any);
+    const hp = new HoverProvider({ getFuncInfo: () => undefined } as any, { get: () => doc } as any);
     it('should show check information', () => {
         line = '-- target=check.abc';
         expect(hp.onHover({ line: 0, character: '-- target=che'.length }, '')).to.not.be.null;

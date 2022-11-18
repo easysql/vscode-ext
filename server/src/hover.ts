@@ -9,6 +9,31 @@ interface TypedHover {
     hover: () => Hover | null;
 }
 
+export class TemplateHover implements TypedHover {
+    constructor(private position: Position, private leftText: string, private rightText: string) {}
+    private tplNameLeft = this.leftText.match(/@{([\w]+)$/);
+    private tplNameRight = this.rightText.match(/^([\w]+)([^\w]|$)/);
+
+    accept() {
+        return !!(this.tplNameLeft && this.tplNameRight);
+    }
+
+    hover(): Hover | null {
+        if (!this.tplNameLeft || !this.tplNameRight) {
+            throw new Error('Should check accept before call hover!');
+        }
+        const templateName = this.tplNameLeft[1] + this.tplNameRight[1];
+        const range = {
+            start: { line: this.position.line, character: this.tplNameLeft.index! },
+            end: { line: this.position.line, character: this.position.character + this.tplNameRight[1].length }
+        };
+        return {
+            contents: { kind: 'plaintext', value: '(Template.) ' + templateName },
+            range: range
+        };
+    }
+}
+
 export class FunctionHover implements TypedHover {
     constructor(
         private funcInfoSource: FuncInfoSource,
@@ -356,6 +381,10 @@ export class HoverProvider {
             const range: Range = { start: { line: position.line, character: 0 }, end: { line: position.line, character: 1000 } };
             const line = doc.getText(range);
             const [leftText, rightText] = [line.substring(0, position.character), line.substring(position.character)];
+            const tplHover = new TemplateHover(position, leftText, rightText);
+            if (tplHover.accept()) {
+                return tplHover.hover();
+            }
             const funcHover = new FunctionHover(this.funcInfoSource, doc, position, line, leftText, rightText);
             if (funcHover.accept()) {
                 return funcHover.hover();
