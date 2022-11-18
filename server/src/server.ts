@@ -80,7 +80,10 @@ connection.onInitialized(() => {
         connection.client.register(DidChangeConfigurationNotification.type, undefined);
     }
     if (services.settings.hasWorkspaceFolderCapability) {
+        connection.workspace.getWorkspaceFolders().then((folders) => folders && services.files.addWorkspaceFolders(folders.map((f) => f.uri)));
         connection.workspace.onDidChangeWorkspaceFolders((_event) => {
+            services.files.addWorkspaceFolders(_event.added.map((f) => f.uri));
+            services.files.removeWorkspaceFolder(_event.removed.map((f) => f.uri));
             connection.console.log('Workspace folder change event received.');
         });
     }
@@ -133,7 +136,7 @@ connection.onDefinition((param: DefinitionParams) => {
 
 connection.onDocumentSymbol((param) => {
     return services.symbolProvider.getSymbols(param.textDocument.uri);
-})
+});
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events

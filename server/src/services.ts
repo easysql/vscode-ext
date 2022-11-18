@@ -14,6 +14,7 @@ import { HoverProvider } from './hover';
 import { FuncInfoSource } from './funcInfoSource';
 import { DefinitionProvider } from './definition';
 import { SymbolProvider } from './symbol';
+import { Files } from './files';
 
 // Create a simple text document manager.
 export class Services {
@@ -28,6 +29,7 @@ export class Services {
     public readonly highlightTokens = new HighlightTokens(this.parser, this.documentAsts, this.highlightTokenParser);
     public readonly funcInfoSource = new FuncInfoSource();
     public readonly hoverProvider = new HoverProvider(this.funcInfoSource, this.documents);
-    public readonly definitionProvider = new DefinitionProvider(this.documentAsts, this.documents);
+    public readonly files = new Files();
+    public readonly definitionProvider = new DefinitionProvider(this.files, this.documentAsts, this.documents);
     public readonly symbolProvider = new SymbolProvider(this.documentAsts, this.documents);
 }

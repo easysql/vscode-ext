@@ -9,6 +9,54 @@ interface TypedHover {
     hover: () => Hover | null;
 }
 
+export class IncludeHover implements TypedHover {
+    constructor(private doc: TextDocument, private position: Position, private line: string, private leftText: string, private rightText: string) {}
+
+    accept() {
+        return (
+            this.line.startsWith('-- include=') &&
+            ((this.position.character >= '-- '.length && this.position.character < '-- include'.length) ||
+                (this.position.character >= '-- include='.length &&
+                    /[^\s]/.test(this.line.substring(this.position.character, this.position.character + 1))))
+        );
+    }
+
+    hover(): Hover | null {
+        const filePath = this.line.substring('-- include='.length).trim();
+        if (this.position.character >= '-- '.length && this.position.character < '-- include'.length) {
+            const range = {
+                start: { line: this.position.line, character: 2 },
+                end: { line: this.position.line, character: '-- include'.length }
+            };
+            return {
+                contents: { kind: 'plaintext', value: '(Include external file.) include=' + filePath },
+                range: range
+            };
+        } else {
+            let range;
+            if (filePath.length === 1) {
+                range = {
+                    start: { line: this.position.line, character: this.position.character },
+                    end: { line: this.position.line, character: this.position.character + 1 }
+                };
+            } else {
+                const m = this.line.match(/^(-- include=)(\s*)([^\s])(.*)([^\s])\s*$/);
+                if (!m) {
+                    throw new Error('should exist a match');
+                }
+                range = {
+                    start: { line: this.position.line, character: m[1].length + m[2].length },
+                    end: { line: this.position.line, character: m[1].length + m[2].length + m[3].length + m[4].length + m[5].length }
+                };
+            }
+            return {
+                contents: { kind: 'plaintext', value: '(Include external file.) include=' + filePath },
+                range: range
+            };
+        }
+    }
+}
+
 export class TemplateHover implements TypedHover {
     constructor(private position: Position, private leftText: string, private rightText: string) {}
     private tplNameLeft = this.leftText.match(/@{([\w]+)$/);
@@ -381,14 +429,17 @@ export class HoverProvider {
             const range: Range = { start: { line: position.line, character: 0 }, end: { line: position.line, character: 1000 } };
             const line = doc.getText(range);
             const [leftText, rightText] = [line.substring(0, position.character), line.substring(position.character)];
+
             const tplHover = new TemplateHover(position, leftText, rightText);
-            if (tplHover.accept()) {
-                return tplHover.hover();
-            }
+            const includeHover = new IncludeHover(doc, position, line, leftText, rightText);
             const funcHover = new FunctionHover(this.funcInfoSource, doc, position, line, leftText, rightText);
-            if (funcHover.accept()) {
-                return funcHover.hover();
+            const hovers = [tplHover, includeHover, funcHover];
+            for (const hover of hovers) {
+                if (hover.accept()) {
+                    return hover.hover();
+                }
             }
+
             const varHover = new VariableHover(doc, position, line, leftText, rightText);
             const targetHover = new TargetHover(doc, position, line, leftText, rightText);
             if (varHover.accept()) {
