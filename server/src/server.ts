@@ -40,6 +40,7 @@ connection.onInitialize((params: InitializeParams) => {
             },
             definitionProvider: true,
             hoverProvider: true,
+            documentSymbolProvider: true,
             semanticTokensProvider: { legend, full: true, range: true }
         }
     };
@@ -129,6 +130,10 @@ connection.onHover((param) => {
 connection.onDefinition((param: DefinitionParams) => {
     return services.definitionProvider.onDefinition(param.position, param.textDocument.uri);
 });
+
+connection.onDocumentSymbol((param) => {
+    return services.symbolProvider.getSymbols(param.textDocument.uri);
+})
 
 // Make the text document manager listen on the connection
 // for open, change and close text document events

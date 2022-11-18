@@ -1373,6 +1373,9 @@ export class Target extends EasySqlNode {
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
+    targetName() {
+        return 'unknown';
+    }
 }
 
 export class Check extends Target {
@@ -1397,6 +1400,9 @@ export class Check extends Target {
             .concat(this.conditionSeparator.getToks())
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
+    }
+    targetName() {
+        return 'check';
     }
 }
 
@@ -1423,6 +1429,9 @@ export class Func extends Target {
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
+    targetName() {
+        return 'function';
+    }
 }
 
 export class Variables extends Target {
@@ -1439,11 +1448,17 @@ export class Variables extends Target {
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
     }
+    targetName() {
+        return 'variables';
+    }
 }
 
 export class ListVariables extends Variables {
     constructor(public start: Sentinel, public separator: Sentinel, public condition: Condition | null, public end: Sentinel) {
         super(start, separator, condition, end);
+    }
+    targetName() {
+        return 'list_variables';
     }
 }
 
@@ -1474,17 +1489,41 @@ export class SimpleNamedTarget extends Target {
     }
 }
 
-export class Template extends SimpleNamedTarget {}
+export class Template extends SimpleNamedTarget {
+    targetName() {
+        return 'template';
+    }
+}
 
-export class Log extends SimpleNamedTarget {}
+export class Log extends SimpleNamedTarget {
+    targetName() {
+        return 'log';
+    }
+}
 
-export class Action extends SimpleNamedTarget {}
+export class Action extends SimpleNamedTarget {
+    targetName() {
+        return 'action';
+    }
+}
 
-export class Temp extends SimpleNamedTarget {}
+export class Temp extends SimpleNamedTarget {
+    targetName() {
+        return 'temp';
+    }
+}
 
-export class Cache extends SimpleNamedTarget {}
+export class Cache extends SimpleNamedTarget {
+    targetName() {
+        return 'cache';
+    }
+}
 
-export class Broadcast extends SimpleNamedTarget {}
+export class Broadcast extends SimpleNamedTarget {
+    targetName() {
+        return 'broadcast';
+    }
+}
 
 export class Table extends EasySqlNode {
     constructor(public db: Name, public separator: Sentinel, public table: Name) {
@@ -1534,5 +1573,8 @@ export class Output extends Target {
             .concat(this.conditionSeparator.getToks())
             .concat(this.condition?.getToks() || [])
             .concat(this.end.getToks());
+    }
+    targetName() {
+        return 'output';
     }
 }
