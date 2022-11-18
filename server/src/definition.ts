@@ -1,7 +1,8 @@
-import { Definition, Position, Range, Location, TextDocuments } from 'vscode-languageserver';
+import { Definition, Position, Range, Location, TextDocuments, DocumentLink } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentAsts } from './ast';
 import { Files } from './files';
+import { DocumentIncludes } from './include';
 import { LineNumberFinder } from './shared/document';
 import { Template } from './shared/easysql';
 
@@ -10,15 +11,14 @@ export class IncludeDefinition {
 
     accept() {
         return (
-            this.line.startsWith('-- include=') &&
-            ((this.position.character >= '-- '.length && this.position.character < '-- include'.length) ||
-                (this.position.character >= '-- include='.length &&
-                    /[^\s]/.test(this.line.substring(this.position.character, this.position.character + 1))))
+            DocumentIncludes.isInclude(this.line) &&
+            (DocumentIncludes.inIncludeContent(this.line, this.position.character) ||
+                DocumentIncludes.inIncludeKeyword(this.line, this.position.character))
         );
     }
 
     definition(): Definition | null {
-        const filePath = this.line.substring('-- include='.length).trim();
+        const filePath = DocumentIncludes.includeFilePath(this.line);
         if (this.position.character >= '-- '.length && this.position.character < '-- include'.length) {
             return null;
         } else {
@@ -65,5 +65,31 @@ export class DefinitionProvider {
             }
         }
         return null;
+    }
+
+    onDocumentLinks(docUri: string): DocumentLink[] {
+        const doc = this.documents.get(docUri);
+        if (doc) {
+            const lines = doc.getText().split('\n');
+            const links: (DocumentLink | null)[] = lines.map((line, i) => {
+                if (!line.startsWith('-- include=')) {
+                    return null;
+                }
+
+                const filePath = DocumentIncludes.includeFilePath(line);
+                const fileUri = this.files.findFile(docUri, filePath);
+                if (filePath && fileUri) {
+                    const m = line.match(/^(-- include=\s*)([^\s]).*/);
+                    if (!m) {
+                        throw new Error('should exist a match');
+                    }
+                    const pos = m[1].length;
+                    return { range: DocumentIncludes.toRange(line, i, pos) };
+                }
+                return null;
+            });
+            return links.filter((link) => !!link) as DocumentLink[];
+        }
+        return [];
     }
 }

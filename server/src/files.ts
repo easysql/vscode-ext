@@ -13,6 +13,9 @@ export class Files {
     }
 
     findFile(baseFileUri: string, filePath: string): string | null {
+        if (!filePath) {
+            return null;
+        }
         const folders = Array.from(this.folders.values());
         const folder = folders.find((folder) => baseFileUri.startsWith(folder.endsWith('/') ? folder : folder + '/'));
         if (!folder) {

@@ -41,6 +41,7 @@ connection.onInitialize((params: InitializeParams) => {
             definitionProvider: true,
             hoverProvider: true,
             documentSymbolProvider: true,
+            documentLinkProvider: { resolveProvider: false },
             semanticTokensProvider: { legend, full: true, range: true }
         }
     };
@@ -136,6 +137,10 @@ connection.onDefinition((param: DefinitionParams) => {
 
 connection.onDocumentSymbol((param) => {
     return services.symbolProvider.getSymbols(param.textDocument.uri);
+});
+
+connection.onDocumentLinks((param) => {
+    return services.definitionProvider.onDocumentLinks(param.textDocument.uri)
 });
 
 // Make the text document manager listen on the connection

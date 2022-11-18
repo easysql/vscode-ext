@@ -3,6 +3,7 @@ import { Position, Range, TextDocument } from 'vscode-languageserver-textdocumen
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
 import { FuncInfoSource } from './funcInfoSource';
+import { DocumentIncludes } from './include';
 
 interface TypedHover {
     accept: () => boolean;
@@ -14,46 +15,18 @@ export class IncludeHover implements TypedHover {
 
     accept() {
         return (
-            this.line.startsWith('-- include=') &&
-            ((this.position.character >= '-- '.length && this.position.character < '-- include'.length) ||
-                (this.position.character >= '-- include='.length &&
-                    /[^\s]/.test(this.line.substring(this.position.character, this.position.character + 1))))
+            DocumentIncludes.isInclude(this.line) &&
+            (DocumentIncludes.inIncludeContent(this.line, this.position.character) ||
+                DocumentIncludes.inIncludeKeyword(this.line, this.position.character))
         );
     }
 
     hover(): Hover | null {
         const filePath = this.line.substring('-- include='.length).trim();
-        if (this.position.character >= '-- '.length && this.position.character < '-- include'.length) {
-            const range = {
-                start: { line: this.position.line, character: 2 },
-                end: { line: this.position.line, character: '-- include'.length }
-            };
-            return {
-                contents: { kind: 'plaintext', value: '(Include external file.) include=' + filePath },
-                range: range
-            };
-        } else {
-            let range;
-            if (filePath.length === 1) {
-                range = {
-                    start: { line: this.position.line, character: this.position.character },
-                    end: { line: this.position.line, character: this.position.character + 1 }
-                };
-            } else {
-                const m = this.line.match(/^(-- include=)(\s*)([^\s])(.*)([^\s])\s*$/);
-                if (!m) {
-                    throw new Error('should exist a match');
-                }
-                range = {
-                    start: { line: this.position.line, character: m[1].length + m[2].length },
-                    end: { line: this.position.line, character: m[1].length + m[2].length + m[3].length + m[4].length + m[5].length }
-                };
-            }
-            return {
-                contents: { kind: 'plaintext', value: '(Include external file.) include=' + filePath },
-                range: range
-            };
-        }
+        return {
+            contents: { kind: 'plaintext', value: '(Include external file.) include=' + filePath },
+            range: DocumentIncludes.toRange(this.line, this.position.line, this.position.character)
+        };
     }
 }
 
