@@ -11,7 +11,9 @@ const Char = {
     Space: 0x20,
     _0: 0x30,
     _9: 0x39,
-    Underscore: 0x5f
+    Underscore: 0x5f,
+    Asterisk: 0x2a,
+    Hyphen: 0x2d
 };
 
 export function isWhiteSpace(ch: number): boolean {
