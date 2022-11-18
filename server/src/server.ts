@@ -5,6 +5,7 @@
 import {
     CompletionItem,
     createConnection,
+    DefinitionParams,
     DidChangeConfigurationNotification,
     InitializeParams,
     InitializeResult,
@@ -37,6 +38,7 @@ connection.onInitialize((params: InitializeParams) => {
                 resolveProvider: true,
                 triggerCharacters: ['{', '.', '=', ' ', '-']
             },
+            definitionProvider: true,
             hoverProvider: true,
             semanticTokensProvider: { legend, full: true, range: true }
         }
@@ -122,6 +124,10 @@ connection.onCompletionResolve((item: CompletionItem): CompletionItem => {
 
 connection.onHover((param) => {
     return services.hoverProvider.onHover(param.position, param.textDocument.uri);
+});
+
+connection.onDefinition((param: DefinitionParams) => {
+    return services.definitionProvider.onDefinition(param.position, param.textDocument.uri);
 });
 
 // Make the text document manager listen on the connection
