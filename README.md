@@ -80,6 +80,11 @@ Right now, keyword and function information are provided on hover.
 
 Language features for ETLs written in Easy SQL, including syntax highlight, code completion, syntax diagnostics, and hover for more information.
 
+### 1.3.x
+
+- Jump to template definition
+- Jump to file (for include target)
+
 ### 1.2.x
 
 Hover: provide more doc for python system functions
@@ -103,8 +108,8 @@ Syntax highlight.
 ## Roadmap
 
 - Completion: provide variable/template/template-variable completion
-- Jump to definition
-- Jump to file
+- Jump to definition: jump to template definition for included files
+- Jump to definition: jump to var definition in current file and in included files
 
 ## For more information
 
