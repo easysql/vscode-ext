@@ -80,6 +80,10 @@ Right now, keyword and function information are provided on hover.
 
 Language features for ETLs written in Easy SQL, including syntax highlight, code completion, syntax diagnostics, and hover for more information.
 
+### 1.4.x
+
+- provide template/template-variable completion
+
 ### 1.3.x
 
 - Jump to template definition
@@ -107,7 +111,8 @@ Syntax highlight.
 
 ## Roadmap
 
-- Completion: provide variable/template/template-variable completion
+- Completion: provide variable/include completion
+- Completion from included files: provide variable/template/template-variable/include completion
 - Jump to definition: jump to template definition for included files
 - Jump to definition: jump to var definition in current file and in included files
 

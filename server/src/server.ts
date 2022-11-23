@@ -140,7 +140,7 @@ connection.onDocumentSymbol((param) => {
 });
 
 connection.onDocumentLinks((param) => {
-    return services.definitionProvider.onDocumentLinks(param.textDocument.uri)
+    return services.definitionProvider.onDocumentLinks(param.textDocument.uri);
 });
 
 // Make the text document manager listen on the connection

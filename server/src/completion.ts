@@ -7,10 +7,12 @@ import {
     TextDocumentPositionParams,
     TextDocuments
 } from 'vscode-languageserver/node';
-import { EasySQLContentFinder, Parser, TplFuncCall, VarFuncCall } from './shared/easysql';
+import { EasySQLContentFinder, Parser, Target, Template, TplFuncCall, TplVarReference, VarFuncCall } from './shared/easysql';
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
 import { logger } from './shared/logger';
+import { DocumentAsts } from './ast';
+import { LineNumberFinder } from './shared/document';
 
 interface FuncDoc {
     label: string;
@@ -54,7 +56,7 @@ const keywordsWithParams = [
     'include=${1:file_path}'
 ];
 export class CodeCompleter {
-    constructor(private documents: TextDocuments<TextDocument>, private parser: Parser) {}
+    constructor(private documentAsts: DocumentAsts, private documents: TextDocuments<TextDocument>, private parser: Parser) {}
     public sparkFuncCompletionItems: CompletionItem[] = ((sparkFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     public rdbFuncCompletionItems: CompletionItem[] = ((rdbFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     private keywordItems: CompletionItem[] = simpleKeywords
@@ -105,12 +107,12 @@ export class CodeCompleter {
                 return this.backendCompletionItems;
             }
             text = text.trimEnd();
-            return this.completeFunctions(line!, text, doc!, params.position);
+            return this.completeFunctionsAndTemplates(line!, text, doc!, params.position);
         }
         return [];
     }
 
-    completeFunctions(line: string, text: string, doc: TextDocument, position: Position) {
+    completeFunctionsAndTemplates(line: string, text: string, doc: TextDocument, position: Position) {
         if (line.startsWith('-- target=') && text.endsWith('${')) {
             logger.debug('reference inside target definition, will not complete: ', text);
             return [];
@@ -143,6 +145,62 @@ export class CodeCompleter {
             }
             return items;
         }
+
+        if (text.endsWith('@{') && !line.startsWith('-- target=')) {
+            const items = this.findDefinedTemplates(doc)
+                .filter((tpl) => tpl.endLineNumber < position.line)
+                .map((tpl) => tpl.toCompletionItem());
+            return items;
+        }
         return [];
+    }
+
+    private findDefinedTemplates(doc: TextDocument) {
+        const ast = this.documentAsts.getOrParse(doc);
+        const definedTemplates: DefinedTemplate[] = [];
+        const targetNodes: [Target, number][] = ast
+            .map((node, i) => (node instanceof Target ? [node, i] : [null, i]))
+            .filter(([node, i]) => node !== null) as [Target, number][];
+        const docContent = doc.getText();
+        const lineNumberFinder = new LineNumberFinder(docContent);
+        targetNodes.forEach(([node, nodeIdx], i) => {
+            if (node instanceof Template) {
+                const templateBody = ast.slice(nodeIdx + 1, i === targetNodes.length - 1 ? ast.length : targetNodes[i + 1][1]);
+                const templateArgs = Array.from(
+                    new Set(
+                        templateBody.filter((node) => node instanceof TplVarReference).map((node) => (node as TplVarReference).var_.name)
+                    ).values()
+                ).sort();
+                const nextTarget = i === targetNodes.length - 1 ? null : targetNodes[i + 1];
+                const endLineNumber = nextTarget ? lineNumberFinder.findLineNumber(nextTarget[0].startPos)[0] - 1 : lineNumberFinder.lastLineNum;
+                definedTemplates.push(new DefinedTemplate(node.name.name, templateArgs, endLineNumber));
+            }
+        });
+        return definedTemplates;
+    }
+}
+
+class DefinedTemplate {
+    constructor(public name: string, public args: string[], public endLineNumber: number) {}
+
+    get hasArgs() {
+        return this.args.length > 0;
+    }
+
+    private argsInsertText() {
+        return this.args.map((arg, i) => `${arg}=\${${i + 1}:${arg}}`).join(', ');
+    }
+
+    private argsLabel() {
+        return this.args.map((arg, i) => `${arg}`).join(', ');
+    }
+
+    toCompletionItem(): CompletionItem {
+        return {
+            label: this.hasArgs ? `${this.name}(${this.argsLabel()})` : this.name,
+            kind: CompletionItemKind.Function,
+            insertText: this.hasArgs ? `${this.name}(${this.argsInsertText()})` : this.name,
+            insertTextFormat: InsertTextFormat.Snippet
+        };
     }
 }
