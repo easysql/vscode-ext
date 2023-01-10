@@ -13,6 +13,10 @@ export class StringFound {
         public openQuoteStart?: number
     ) {}
 
+    containsPositionInStr(pos: number) {
+        return this.findInStrs(pos) !== undefined;
+    }
+
     findInStrs(pos: number): StringPos | undefined {
         return this.strings.find((strPos) => pos >= strPos.start && pos <= strPos.end);
     }

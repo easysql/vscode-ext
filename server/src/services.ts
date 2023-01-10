@@ -30,6 +30,6 @@ export class Services {
     public readonly funcInfoSource = new FuncInfoSource();
     public readonly hoverProvider = new HoverProvider(this.funcInfoSource, this.documents);
     public readonly files = new Files();
-    public readonly definitionProvider = new DefinitionProvider(this.files, this.documentAsts, this.documents);
+    public readonly definitionProvider = new DefinitionProvider(this.files, this.documentAsts, this.documents, this.parser);
     public readonly symbolProvider = new SymbolProvider(this.documentAsts, this.documents);
 }

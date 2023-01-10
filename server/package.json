@@ -39,7 +39,7 @@
 		"watch": "tsc -watch -p ./",
 		"esbuild-base": "esbuild ./src/server.ts --bundle --outfile=out/server.js --external:vscode  --external:fs --format=cjs --platform=node",
 		"esbuild": "npm run esbuild-base -- --sourcemap",
-		"unittest": "ts-mocha -p tsconfig.json src/**/*.spec.ts -w --watch-files 'src/**/*.ts'",
+		"unittest": "ts-mocha -p tsconfig.json src/*.spec.ts src/**/*.spec.ts -w --watch-files 'src/**/*.ts'",
 		"esbuild-watch": "npm run esbuild-base -- --sourcemap --watch",
 		"coverage": "nyc --reporter=lcov --reporter=text-summary ts-mocha -p tsconfig.json src/**/*.spec.ts"
 	}
