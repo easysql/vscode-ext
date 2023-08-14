@@ -433,6 +433,21 @@ describe('SinlgeFuncCallParser', () => {
                 )
             );
         });
+
+        it('space in func name', () => {
+            const parser = new Parser();
+            content = '@{f f() }';
+            pos = 0;
+            expect(parser.parseSingleFuncCall(content)).to.deep.eq(
+                new TplFuncCall(
+                    new Sentinel([t('@{')]),
+                    new Name(t('f f', Tok.TYPES.name)),
+                    new Sentinel([t('(')]),
+                    [],
+                    new Sentinel([t(')'), t(' ', Tok.TYPES.whiteSpace), t('}')])
+                )
+            );
+        });
     });
 });
 

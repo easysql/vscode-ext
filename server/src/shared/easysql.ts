@@ -285,7 +285,7 @@ export class SinlgeFuncCallParser {
 
     private parseFuncStartNodes(funcCallContent: string, parenthesisStart: number): [Sentinel, Name, Sentinel] {
         const funcName = funcCallContent.substring(0, parenthesisStart + 1);
-        const matches = funcName.match(/^(\s*)([^\s]*)\($/);
+        const matches = funcName.match(/^(\s*)([^\s]?.*)\($/);
         if (!matches) {
             throw new Error('Must have a match, found nothing: ' + funcCallContent);
         }
