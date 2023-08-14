@@ -135,10 +135,10 @@ export class TempTableDefinition {
             const { includeFilePath } = includes[i];
             const fileUri = this.files.findFile(this.docUri, includeFilePath);
             if (fileUri) {
-                const textDoc = this.documents.get(fileUri!);
+                const textDoc = this.documents.get(fileUri!)?.getText() || this.files.readFile(fileUri!);
                 if (textDoc) {
-                    const lineNumberFinder = new LineNumberFinder(textDoc.getText());
-                    const includeDocAst = this.documentAsts.getOrParse(textDoc);
+                    const lineNumberFinder = new LineNumberFinder(textDoc);
+                    const includeDocAst = this.documentAsts.getOrParseByTextAndUri(textDoc, fileUri);
                     const tempTable = includeDocAst.filter(isTempTableDef(lineNumberFinder)).reverse()[0] as Template;
                     if (tempTable) {
                         const tempTableLocInIncludeFile = this.toDefinitionLocation(lineNumberFinder, tempTable, fileUri!);
@@ -186,7 +186,7 @@ export class TemplateDefinition {
         const template = ast.filter((node) => node instanceof Template && node.name.name === templateName).reverse()[0] as Template;
         let templateLocInFile: Location | null = null;
         if (template) {
-            templateLocInFile = this.toDefinitionLocation(template, this.doc, this.docUri);
+            templateLocInFile = this.toDefinitionLocation(template, this.doc.getText(), this.docUri);
         }
 
         const includes = DocumentIncludes.findAllIncludes(
@@ -199,9 +199,9 @@ export class TemplateDefinition {
             const { includeFilePath } = includes[i];
             const fileUri = this.files.findFile(this.docUri, includeFilePath);
             if (fileUri) {
-                const textDoc = this.documents.get(fileUri!);
+                const textDoc = this.documents.get(fileUri!)?.getText() || this.files.readFile(fileUri!);
                 if (textDoc) {
-                    const includeDocAst = this.documentAsts.getOrParse(textDoc);
+                    const includeDocAst = this.documentAsts.getOrParseByTextAndUri(textDoc, fileUri!);
                     const template = includeDocAst
                         .filter((node) => node instanceof Template && node.name.name === templateName)
                         .reverse()[0] as Template;
@@ -217,8 +217,8 @@ export class TemplateDefinition {
         return templateLocInFile;
     }
 
-    private toDefinitionLocation(template: Template, doc: TextDocument, docUri: string) {
-        const lineNumberFinder = new LineNumberFinder(doc.getText());
+    private toDefinitionLocation(template: Template, doc: string, docUri: string) {
+        const lineNumberFinder = new LineNumberFinder(doc);
         const startPos = lineNumberFinder.findLineNumber(template.name.tok.start);
         const endPos = [startPos[0], startPos[1] + template.name.tok.length];
         return Location.create(docUri, Range.create(Position.create(startPos[0], startPos[1]), Position.create(endPos[0], endPos[1])));

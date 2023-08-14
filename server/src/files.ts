@@ -27,4 +27,8 @@ export class Files {
         found = found ? found.replace('file:/', 'file:///') : undefined;
         return found ? found : null;
     }
+
+    readFile(fileUri: string): string | null {
+        return fs.readFileSync(fileUri.replace(/^file:\/\/?\/?/, '/'), 'utf8');
+    }
 }

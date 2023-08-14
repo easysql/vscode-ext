@@ -7,17 +7,17 @@ export class DocumentAsts {
     private cachedAsts = new Map<string, EasySqlNode[]>();
     private cachedUris: string[] = [];
 
-    getOrParse(doc: TextDocument): EasySqlNode[] {
-        const indexFound = this.cachedUris.findIndex((path) => doc.uri === path);
+    getOrParseByTextAndUri(doc: string, uri: string): EasySqlNode[] {
+        const indexFound = this.cachedUris.findIndex((path) => uri === path);
         if (indexFound !== -1) {
-            if (!this.cachedAsts.has(doc.uri)) {
+            if (!this.cachedAsts.has(uri)) {
                 throw new Error('No cached ast found, but cached uris found. This should not happen!');
             }
-            return this.cachedAsts.get(doc.uri)!;
+            return this.cachedAsts.get(uri)!;
         }
-        const ast = logger.timed(() => this.parser.parse(doc.getText()), 'DEBUG', 'create ast for doc: ', doc.uri);
-        this.cachedAsts.set(doc.uri, ast);
-        this.cachedUris.push(doc.uri);
+        const ast = logger.timed(() => this.parser.parse(doc), 'DEBUG', 'create ast for doc: ', uri);
+        this.cachedAsts.set(uri, ast);
+        this.cachedUris.push(uri);
         if (this.cachedUris.length > this.maxCacheCount) {
             const docToRemove = this.cachedUris.splice(0, 1)[0];
             if (docToRemove) {
@@ -25,6 +25,9 @@ export class DocumentAsts {
             }
         }
         return ast;
+    }
+    getOrParse(doc: TextDocument): EasySqlNode[] {
+        return this.getOrParseByTextAndUri(doc.getText(), doc.uri);
     }
 
     remove(doc: TextDocument) {
