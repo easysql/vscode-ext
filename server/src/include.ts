@@ -1,6 +1,16 @@
 import { Range } from 'vscode-languageserver';
 
 export class DocumentIncludes {
+    static findAllIncludes(docLines: string[]): { includeFilePath: string; lineNum: number }[] {
+        const includes: { includeFilePath: string; lineNum: number }[] = [];
+        docLines.forEach((line, i) => {
+            if (DocumentIncludes.isInclude(line)) {
+                includes.push({ includeFilePath: DocumentIncludes.includeFilePath(line), lineNum: i });
+            }
+        });
+        return includes;
+    }
+
     static isInclude(line: string): boolean {
         return line.startsWith('-- include=');
     }

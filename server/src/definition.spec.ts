@@ -9,7 +9,16 @@ logger.setLevel('DEBUG');
 
 describe('definition', () => {
     function newTempTableDefinition(line: string, textLeft: string) {
-        return new TempTableDefinition(null as any, null as any, line, Position.create(0, textLeft.length), null as any, new Parser());
+        return new TempTableDefinition(
+            null as any,
+            null as any,
+            line,
+            Position.create(0, textLeft.length),
+            null as any,
+            new Parser(),
+            null as any,
+            null as any
+        );
     }
 
     describe('TempTableDefinition', () => {
