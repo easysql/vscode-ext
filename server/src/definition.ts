@@ -96,10 +96,10 @@ export class TempTableDefinition {
                 }
             }
 
-            const leftMatch = leftText.match(/from\s+(\w*)$/i);
+            const leftMatch = leftText.match(/(from|join)\s+(\w*)$/i);
             const rightMatch = rightText.match(/^(\w*)([^\w]|$)/);
             if (leftMatch && rightMatch) {
-                const tableName = leftMatch[1] + rightMatch[1];
+                const tableName = leftMatch[2] + rightMatch[1];
                 if (tableName !== '') {
                     this.tempTableName = tableName;
                     return true;

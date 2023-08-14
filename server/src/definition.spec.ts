@@ -50,6 +50,23 @@ describe('definition', () => {
 
             d = newTempTableDefinition('from -- table_a" a', 'from -- ta');
             expect(d.accept()).to.eq(false);
+
+            d = newTempTableDefinition('JOIN table_a a', 'JOIN ');
+            expect(d.accept()).to.eq(true);
+            expect(d.tempTableName).to.eq('table_a');
+
+            d = newTempTableDefinition('join table_a a', 'join table_a');
+            expect(d.accept()).to.eq(true);
+            expect(d.tempTableName).to.eq('table_a');
+
+            d = newTempTableDefinition('join  ', 'join ');
+            expect(d.accept()).to.eq(false);
+
+            d = newTempTableDefinition('join "table_a" a', 'join "table_a');
+            expect(d.accept()).to.eq(false);
+
+            d = newTempTableDefinition('join -- table_a" a', 'join -- ta');
+            expect(d.accept()).to.eq(false);
         });
     });
 });
