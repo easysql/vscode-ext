@@ -23,13 +23,13 @@ export class Services {
     public readonly documents: TextDocuments<TextDocument> = new TextDocuments(TextDocument);
     public readonly parser = new Parser();
     public readonly documentAsts = new DocumentAsts(this.parser);
-    public readonly completer = new CodeCompleter(this.documentAsts, this.documents, this.parser);
+    public readonly files = new Files();
+    public readonly completer = new CodeCompleter(this.documentAsts, this.documents, this.parser, this.files);
     public readonly highlightTokenParser = new HighlightTokenParser();
     public readonly diagnostic = new CodeDiagnosticProvider(this.settings, this.documentAsts);
     public readonly highlightTokens = new HighlightTokens(this.parser, this.documentAsts, this.highlightTokenParser);
     public readonly funcInfoSource = new FuncInfoSource();
     public readonly hoverProvider = new HoverProvider(this.funcInfoSource, this.documents);
-    public readonly files = new Files();
     public readonly definitionProvider = new DefinitionProvider(this.files, this.documentAsts, this.documents, this.parser);
     public readonly symbolProvider = new SymbolProvider(this.documentAsts, this.documents);
 }

@@ -7,12 +7,14 @@ import {
     TextDocumentPositionParams,
     TextDocuments
 } from 'vscode-languageserver/node';
-import { EasySQLContentFinder, Parser, Target, Template, TplFuncCall, TplVarReference, VarFuncCall } from './shared/easysql';
+import { EasySQLContentFinder, EasySqlNode, Parser, Target, Template, TplFuncCall, TplVarReference, VarFuncCall } from './shared/easysql';
 import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
 import { logger } from './shared/logger';
 import { DocumentAsts } from './ast';
 import { LineNumberFinder } from './shared/document';
+import { DocumentIncludes } from './include';
+import { Files } from './files';
 
 interface FuncDoc {
     label: string;
@@ -56,7 +58,7 @@ const keywordsWithParams = [
     'include=${1:file_path}'
 ];
 export class CodeCompleter {
-    constructor(private documentAsts: DocumentAsts, private documents: TextDocuments<TextDocument>, private parser: Parser) {}
+    constructor(private documentAsts: DocumentAsts, private documents: TextDocuments<TextDocument>, private parser: Parser, private files: Files) {}
     public sparkFuncCompletionItems: CompletionItem[] = ((sparkFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     public rdbFuncCompletionItems: CompletionItem[] = ((rdbFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     private keywordItems: CompletionItem[] = simpleKeywords
@@ -157,11 +159,29 @@ export class CodeCompleter {
 
     private findDefinedTemplates(doc: TextDocument) {
         const ast = this.documentAsts.getOrParse(doc);
+        const definedTemplates: DefinedTemplate[] = this.findDefinedTemplatesForAst(ast, doc.getText());
+
+        const includes = DocumentIncludes.findAllIncludes(doc.getText().split('\n')).reverse();
+        for (let i = 0; i < includes.length; i++) {
+            const { includeFilePath } = includes[i];
+            const fileUri = this.files.findFile(doc.uri, includeFilePath);
+            if (fileUri) {
+                const docText = this.documents.get(fileUri!)?.getText() || this.files.readFile(fileUri!);
+                if (docText) {
+                    const includeDocAst = this.documentAsts.getOrParseByTextAndUri(docText, fileUri!);
+                    definedTemplates.push(...this.findDefinedTemplatesForAst(includeDocAst, docText));
+                }
+            }
+        }
+
+        return definedTemplates;
+    }
+
+    private findDefinedTemplatesForAst(ast: EasySqlNode[], docContent: string) {
         const definedTemplates: DefinedTemplate[] = [];
         const targetNodes: [Target, number][] = ast
             .map((node, i) => (node instanceof Target ? [node, i] : [null, i]))
             .filter(([node, i]) => node !== null) as [Target, number][];
-        const docContent = doc.getText();
         const lineNumberFinder = new LineNumberFinder(docContent);
         targetNodes.forEach(([node, nodeIdx], i) => {
             if (node instanceof Template) {
