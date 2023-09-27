@@ -1,10 +1,9 @@
-import { Definition, Position, Range, Location, TextDocuments, DocumentLink } from 'vscode-languageserver';
+import { Definition, DocumentLink, Location, Position, Range, TextDocuments } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { DocumentAsts } from './ast';
 import { Files } from './files';
 import { DocumentIncludes } from './include';
-import { LineNumberFinder } from './shared/document';
-import { Broadcast, Cache, EasySqlNode, Parser, SimpleNamedTarget, Temp, Template } from './shared/easysql';
+import { Parser } from './shared/easysql';
 import { SqlExprStringFinder } from './shared/sql_expr';
 
 export class IncludeDefinition {
@@ -18,10 +17,10 @@ export class IncludeDefinition {
         );
     }
 
-    definition(): Definition | null {
+    definition(): Definition | undefined {
         const filePath = DocumentIncludes.includeFilePath(this.line);
         if (this.position.character >= '-- '.length && this.position.character < '-- include'.length) {
-            return null;
+            return undefined;
         } else {
             const fileUri = this.files.findFile(this.docUri, filePath);
             if (fileUri) {
@@ -31,7 +30,7 @@ export class IncludeDefinition {
                 };
                 return Location.create(fileUri, range);
             }
-            return null;
+            return undefined;
         }
     }
 }
@@ -111,67 +110,18 @@ export class TempTableDefinition {
         }
     }
 
-    definition(): Definition | null {
-        const ast = this.documentAsts.getOrParse(this.doc);
-        const lineNumberFinder = new LineNumberFinder(this.doc.getText());
-        const isTempTableDef = (lineNumberFinder: LineNumberFinder) => (node: EasySqlNode) =>
-            node instanceof SimpleNamedTarget &&
-            (node instanceof Temp || node instanceof Cache || node instanceof Broadcast) &&
-            node.name.name === this.tempTableName &&
-            lineNumberFinder.findLineNumber(node.name.tok.start)[0] < this.position.line;
-        const tempTable = ast.filter(isTempTableDef(lineNumberFinder)).reverse()[0] as SimpleNamedTarget;
-        let tempTableLocInFile: Location | null = null;
-        if (tempTable) {
-            tempTableLocInFile = this.toDefinitionLocation(lineNumberFinder, tempTable, this.docUri);
+    definition(): Definition | undefined {
+        if (!this.tempTableName) {
+            return undefined;
         }
-
-        const includes = DocumentIncludes.findAllIncludes(
-            this.doc
-                .getText()
-                .split('\n')
-                .slice(0, this.position.line + 1)
-        ).reverse();
-        for (let i = 0; i < includes.length; i++) {
-            const { includeFilePath } = includes[i];
-            const fileUri = this.files.findFile(this.docUri, includeFilePath);
-            if (fileUri) {
-                const textDoc = this.documents.get(fileUri!)?.getText() || this.files.readFile(fileUri!);
-                if (textDoc) {
-                    const lineNumberFinder = new LineNumberFinder(textDoc);
-                    const includeDocAst = this.documentAsts.getOrParseByTextAndUri(textDoc, fileUri);
-                    const tempTable = includeDocAst.filter(isTempTableDef(lineNumberFinder)).reverse()[0] as Template;
-                    if (tempTable) {
-                        const tempTableLocInIncludeFile = this.toDefinitionLocation(lineNumberFinder, tempTable, fileUri!);
-                        return tempTableLocInFile && tempTableLocInFile.range.start > tempTableLocInIncludeFile.range.start
-                            ? tempTableLocInFile
-                            : tempTableLocInIncludeFile;
-                    }
-                }
-            }
-        }
-
-        return tempTableLocInFile;
-    }
-
-    private toDefinitionLocation(lineNumberFinder: LineNumberFinder, tempTable: SimpleNamedTarget, docUri: string) {
-        const startPos = lineNumberFinder.findLineNumber(tempTable.name.tok.start);
-        const endPos = [startPos[0], startPos[1] + tempTable.name.tok.length];
-        return Location.create(docUri, Range.create(Position.create(startPos[0], startPos[1]), Position.create(endPos[0], endPos[1])));
+        return this.documentAsts.findTempTableDefinition(this.doc, this.position.line, this.tempTableName)?.toDefinition();
     }
 }
 
 export class TemplateDefinition {
     private leftMatch: RegExpMatchArray | null = null;
     private rightMatch: RegExpMatchArray | null = null;
-    constructor(
-        private doc: TextDocument,
-        private docUri: string,
-        private line: string,
-        private position: Position,
-        private documentAsts: DocumentAsts,
-        private files: Files,
-        private documents: TextDocuments<TextDocument>
-    ) {}
+    constructor(private doc: TextDocument, private line: string, private position: Position, private documentAsts: DocumentAsts) {}
 
     accept(): boolean {
         const [leftText, rightText] = [this.line.substring(0, this.position.character), this.line.substring(this.position.character)];
@@ -180,55 +130,16 @@ export class TemplateDefinition {
         return !!(this.leftMatch && this.rightMatch);
     }
 
-    definition(): Definition | null {
+    definition(): Definition | undefined {
         const templateName = this.leftMatch![1] + this.rightMatch![1];
-        const ast = this.documentAsts.getOrParse(this.doc).slice();
-        const template = ast.filter((node) => node instanceof Template && node.name.name === templateName).reverse()[0] as Template;
-        let templateLocInFile: Location | null = null;
-        if (template) {
-            templateLocInFile = this.toDefinitionLocation(template, this.doc.getText(), this.docUri);
-        }
-
-        const includes = DocumentIncludes.findAllIncludes(
-            this.doc
-                .getText()
-                .split('\n')
-                .slice(0, this.position.line + 1)
-        ).reverse();
-        for (let i = 0; i < includes.length; i++) {
-            const { includeFilePath } = includes[i];
-            const fileUri = this.files.findFile(this.docUri, includeFilePath);
-            if (fileUri) {
-                const textDoc = this.documents.get(fileUri!)?.getText() || this.files.readFile(fileUri!);
-                if (textDoc) {
-                    const includeDocAst = this.documentAsts.getOrParseByTextAndUri(textDoc, fileUri!);
-                    const template = includeDocAst
-                        .filter((node) => node instanceof Template && node.name.name === templateName)
-                        .reverse()[0] as Template;
-                    if (template) {
-                        const templateLocInIncludeFile = this.toDefinitionLocation(template, textDoc, fileUri!);
-                        return templateLocInFile && templateLocInFile.range.start > templateLocInIncludeFile.range.start
-                            ? templateLocInFile
-                            : templateLocInIncludeFile;
-                    }
-                }
-            }
-        }
-        return templateLocInFile;
-    }
-
-    private toDefinitionLocation(template: Template, doc: string, docUri: string) {
-        const lineNumberFinder = new LineNumberFinder(doc);
-        const startPos = lineNumberFinder.findLineNumber(template.name.tok.start);
-        const endPos = [startPos[0], startPos[1] + template.name.tok.length];
-        return Location.create(docUri, Range.create(Position.create(startPos[0], startPos[1]), Position.create(endPos[0], endPos[1])));
+        return this.documentAsts.findTemplateDefinition(this.doc, this.position.line, templateName)?.toDefinition();
     }
 }
 
 export class DefinitionProvider {
     constructor(private files: Files, private documentAsts: DocumentAsts, private documents: TextDocuments<TextDocument>, private parser: Parser) {}
 
-    onDefinition(position: Position, docUri: string): Definition | null {
+    onDefinition(position: Position, docUri: string): Definition | undefined {
         const doc = this.documents.get(docUri);
         if (doc) {
             const range: Range = { start: { line: position.line, character: 0 }, end: { line: position.line, character: 1000 } };
@@ -253,12 +164,12 @@ export class DefinitionProvider {
                 return tempTableDefinition.definition();
             }
 
-            const templateDefinition = new TemplateDefinition(doc, docUri, line, position, this.documentAsts, this.files, this.documents);
+            const templateDefinition = new TemplateDefinition(doc, line, position, this.documentAsts);
             if (templateDefinition.accept()) {
                 return templateDefinition.definition();
             }
         }
-        return null;
+        return undefined;
     }
 
     onDocumentLinks(docUri: string): DocumentLink[] {
