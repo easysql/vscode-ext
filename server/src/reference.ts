@@ -2,6 +2,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 import { Files } from './files';
 import { Position, TextDocuments, Location } from 'vscode-languageserver';
 import { Settings } from './types';
+import path from 'path';
 
 export class ReferenceProvider {
     constructor(public files: Files, public documents: TextDocuments<TextDocument>, public settings: Settings) {}
@@ -17,21 +18,43 @@ export class ReferenceProvider {
         if (!line.startsWith('-- target=template.') || pos.character < '-- target=template.'.length - 1) {
             return null;
         }
+
         let templateName = line.substring('-- target=template.'.length).trim();
-        templateName = templateName.substring(0, templateName.indexOf(' ') === -1 ? templateName.length : templateName.indexOf(' '));
-        if (!templateName || !/^[0-9a-zA-Z_]+$/.test(templateName) || pos.character > '-- target=template.'.length + templateName.length) {
+        const m = templateName.match(/^([0-9a-zA-Z_]+)[^0-9a-zA-Z_]*/);
+        if (!m) {
             return null;
         }
+        templateName = m[1];
+
+        if (pos.character > '-- target=template.'.length + templateName.length) {
+            return null;
+        }
+
         const files = this.files.findFiles(docUri, settings.filePatternToSearchForReferences || '**/*.sql');
         if (!files) {
             return null;
         }
+
         return files.flatMap((file) => {
             const content = this.files.readFile(file);
             if (!content) {
                 return [];
             }
             const lines = content.split('\n');
+            const docPath = docUri.replace(/^file:\/\/?\/?/, '/');
+            const relativePath = path.relative(file, docPath);
+            const workspaceFolder = this.files.findWorkspaceFolder(docUri)!.replace(/^file:\/\/?\/?/, '/');
+            const workspaceFolderRelativePath = path.relative(workspaceFolder, docPath);
+            const workspaceWorkflowFolderRelativePath = path.relative(path.join(workspaceFolder, 'workflow'), docPath);
+            const possibleIncludes = [
+                `-- include=${relativePath}`,
+                `-- include=${workspaceFolderRelativePath}`,
+                `-- include=${workspaceWorkflowFolderRelativePath}`
+            ];
+
+            if (docPath !== file && !lines.some((line) => possibleIncludes.includes(line.trim()))) {
+                return [];
+            }
             return lines.flatMap((line, i) => {
                 return Array.from(line.matchAll(new RegExp(`@{\\s*(${templateName})\\s*[(}]`, 'g'))).map((m) => {
                     return Location.create(`${file.replace(/^file:\/\/?\/?/, 'file:///')}`, {
