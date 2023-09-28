@@ -1,8 +1,9 @@
 import { Range } from 'vscode-languageserver';
 
 export class DocumentIncludes {
-    static findAllIncludes(docLines: string[]): { includeFilePath: string; lineNum: number }[] {
+    static findAllIncludes(docLines: string[] | string): { includeFilePath: string; lineNum: number }[] {
         const includes: { includeFilePath: string; lineNum: number }[] = [];
+        docLines = typeof docLines === 'string' ? docLines.split('\n') : docLines;
         docLines.forEach((line, i) => {
             if (DocumentIncludes.isInclude(line)) {
                 includes.push({ includeFilePath: DocumentIncludes.includeFilePath(line), lineNum: i });

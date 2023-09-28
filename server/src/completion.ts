@@ -161,7 +161,7 @@ export class CodeCompleter {
         const ast = this.documentAsts.getOrParse(doc);
         const definedTemplates: DefinedTemplate[] = this.findDefinedTemplatesForAst(ast, doc.getText());
 
-        const includes = DocumentIncludes.findAllIncludes(doc.getText().split('\n')).reverse();
+        const includes = DocumentIncludes.findAllIncludes(doc.getText()).reverse();
         for (let i = 0; i < includes.length; i++) {
             const { includeFilePath } = includes[i];
             const fileUri = this.files.findFile(doc.uri, includeFilePath);

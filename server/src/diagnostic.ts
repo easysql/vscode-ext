@@ -23,7 +23,6 @@ export class CodeDiagnosticProvider {
 
         return ast
             .flatMap((node) => node.getToks().filter((tok) => !tok.isValid))
-            .slice(0, settings.maxNumberOfProblems)
             .map((tok) => {
                 const diagnostic: Diagnostic = {
                     severity: DiagnosticSeverity.Error,
@@ -37,7 +36,8 @@ export class CodeDiagnosticProvider {
                 return diagnostic;
             })
             .concat(semanticErrors)
-            .concat(includeErrors);
+            .concat(includeErrors)
+            .slice(0, settings.maxNumberOfProblems);
     }
 
     private extractIncludeErrors(textDocument: TextDocument): Diagnostic[] {
@@ -91,7 +91,7 @@ export class CodeDiagnosticProvider {
                     source: '(EasySQL)'
                 });
             } else {
-                const templateContentLines = textDocument.getText().substring(templateDef.node.startPos).split('\n').slice(1);
+                const templateContentLines = this.files.readFile(templateDef.uri)!.substring(templateDef.node.startPos).split('\n').slice(1);
                 const nextTargetIndex = templateContentLines.findIndex((line) => line.startsWith('-- target='));
                 const templateContent = templateContentLines.slice(0, nextTargetIndex === -1 ? undefined : nextTargetIndex).join('\n');
                 let allDefinedArgs = Array.from(templateContent.matchAll(/#{\s*([0-9a-zA-Z_]+)\s*}/g)).map((m) => m[1]);
