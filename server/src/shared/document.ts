@@ -6,7 +6,8 @@ export class LineNumberFinder {
         if (!this.lineBreakIndices.length) {
             return [0, pos];
         }
-        const lineNum = this.lineBreakIndices.findIndex((idx) => pos <= idx);
+        let lineNum = this.lineBreakIndices.findIndex((idx) => pos <= idx);
+        lineNum = lineNum === -1 ? this.lineBreakIndices.length : lineNum;
         return [lineNum, lineNum === 0 ? pos : pos - this.lineBreakIndices[lineNum - 1] - 1];
     }
 

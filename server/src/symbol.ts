@@ -17,6 +17,7 @@ export class SymbolProvider {
                 const line = lineNumberFinder.findLineNumber(target.startPos)[0];
                 const targetStr = target.join();
                 const range = Range.create(Position.create(line, 0), Position.create(line, targetStr.length));
+
                 const kind = SymbolKind.Constant;
                 const detail = `${(target as Target).targetName()} target`;
 
