@@ -1,9 +1,10 @@
 // The example settings
-export interface ExampleSettings {
+export interface EasySQLSettings {
     maxNumberOfProblems: number;
+    filePatternToSearchForReferences: string;
 }
 
 export interface Settings {
-    getDocumentSettings: (resource: string) => Thenable<ExampleSettings>;
+    getDocumentSettings: (resource: string) => Thenable<EasySQLSettings>;
     hasDiagnosticRelatedInformationCapability: boolean;
 }

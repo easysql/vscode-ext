@@ -1,5 +1,5 @@
 import { ClientCapabilities, Connection } from 'vscode-languageserver/node';
-import { ExampleSettings, Settings } from './types';
+import { EasySQLSettings, Settings } from './types';
 
 export class SettingsImpl implements Settings {
     public hasConfigurationCapability = false;
@@ -7,10 +7,10 @@ export class SettingsImpl implements Settings {
     public hasDiagnosticRelatedInformationCapability = false;
     public hasSemanticTokenCapability = false;
 
-    private globalSettings: ExampleSettings;
+    private globalSettings: EasySQLSettings;
     // Cache the settings of all open documents
-    private documentSettings: Map<string, Thenable<ExampleSettings>> = new Map();
-    private readonly defaultSettings: ExampleSettings = { maxNumberOfProblems: 1000 };
+    private documentSettings: Map<string, Thenable<EasySQLSettings>> = new Map();
+    private readonly defaultSettings: EasySQLSettings = { maxNumberOfProblems: 1000, filePatternToSearchForReferences: '**/*.sql' };
 
     constructor(private connection: Connection) {
         // The global settings, used when the `workspace/configuration` request is not supported by the client.
@@ -32,7 +32,7 @@ export class SettingsImpl implements Settings {
         this.hasSemanticTokenCapability = !!(capabilities.textDocument && capabilities.textDocument.semanticTokens);
     }
 
-    getDocumentSettings(resource: string): Thenable<ExampleSettings> {
+    getDocumentSettings(resource: string): Thenable<EasySQLSettings> {
         if (!this.hasConfigurationCapability) {
             return Promise.resolve(this.globalSettings);
         }
@@ -52,7 +52,7 @@ export class SettingsImpl implements Settings {
             // Reset all cached document settings
             this.documentSettings.clear();
         } else {
-            this.globalSettings = <ExampleSettings>(change.settings.languageServerEasySQL || this.defaultSettings);
+            this.globalSettings = <EasySQLSettings>(change.settings.languageServerEasySQL || this.defaultSettings);
         }
     }
 

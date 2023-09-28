@@ -42,7 +42,8 @@ connection.onInitialize((params: InitializeParams) => {
             hoverProvider: true,
             documentSymbolProvider: true,
             documentLinkProvider: { resolveProvider: false },
-            semanticTokensProvider: { legend, full: true, range: true }
+            semanticTokensProvider: { legend, full: true, range: true },
+            referencesProvider: true
         }
     };
     if (services.settings.hasWorkspaceFolderCapability) {
@@ -141,6 +142,10 @@ connection.onDocumentSymbol((param) => {
 
 connection.onDocumentLinks((param) => {
     return services.definitionProvider.onDocumentLinks(param.textDocument.uri);
+});
+
+connection.onReferences((param) => {
+    return services.referenceProvider.onReferences(param.position, param.textDocument.uri);
 });
 
 // Make the text document manager listen on the connection
