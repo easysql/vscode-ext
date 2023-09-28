@@ -80,6 +80,12 @@ Right now, keyword and function information are provided on hover.
 
 Language features for ETLs written in Easy SQL, including syntax highlight, code completion, syntax diagnostics, and hover for more information.
 
+### 1.6.x
+
+- Diagnostic: Report error when template cannot be found from current file and including files
+- Diagnostic: Report error when including files cannot be found
+- References: Find references of some template
+
 ### 1.5.x
 - Jump to definition: jump to temp table definition (with support for included files)
 - provide template/template-variable completion with support for included files
@@ -115,11 +121,17 @@ Syntax highlight.
 
 ## Roadmap
 
-- Completion: provide variable/include completion
 - [√] Completion from included files: provide template/template-variable completion
-- Completion from included files: provide variable/include completion
 - [√] Jump to definition: jump to template definition in included files
 - [√] Jump to definition: jump to temp table definition in included files
+- [√] Report error when template cannot be found from current file and including files
+- [√] Report error when including files cannot be found
+- [√] Find references of some template
+- Completion: provide include completion
+- Refactor: renaming of template name
+- Refactor: renaming of template args
+- Completion: provide variable completion
+- Completion from included files: provide variable completion
 - Jump to definition: jump to var definition in current file and in included files
 ## For more information
 
