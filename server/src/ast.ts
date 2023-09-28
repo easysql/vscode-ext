@@ -1,5 +1,5 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { Broadcast, EasySqlNode, Parser, SimpleNamedTarget, Temp, Template } from './shared/easysql';
+import { Broadcast, EasySqlNode, Parser, SimpleNamedTarget, Cache, Temp, Template } from './shared/easysql';
 import { logger } from './shared/logger';
 import { LineNumberFinder } from './shared/document';
 import { DocumentIncludes } from './include';
