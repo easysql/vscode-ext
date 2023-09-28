@@ -371,13 +371,33 @@
             }
         },
         {
-            "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count})",
+            "label": "data_profiling_report(${1:table}, ${2:query}, ${3:output_folder}, ${4:max_count}, ${5:include_correlations}, ${6:types})",
             "type": "easysql",
             "tooltip": {
                 "text": "data_profiling_report",
                 "description": "",
                 "docstring": "",
-                "signature": "data_profiling_report(table: str, query: str, output_folder: str, max_count=50000)"
+                "signature": "data_profiling_report(table: str, query: str, output_folder: str, max_count: str=\"50000\", include_correlations: str=\"true\", types: Union[str, List[str]]=\"html\")"
+            }
+        },
+        {
+            "label": "call_java(${1:cls}, ${2:func_name}, ${3:*args}, ${4:...})",
+            "type": "easysql",
+            "tooltip": {
+                "text": "call_java",
+                "description": "",
+                "docstring": "",
+                "signature": "call_java(cls: str, func_name: str, *args)"
+            }
+        },
+        {
+            "label": "sleep(${1:secs})",
+            "type": "easysql",
+            "tooltip": {
+                "text": "sleep",
+                "description": "",
+                "docstring": "",
+                "signature": "sleep(secs: str)"
             }
         },
         {
