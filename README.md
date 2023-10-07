@@ -80,6 +80,10 @@ Right now, keyword and function information are provided on hover.
 
 Language features for ETLs written in Easy SQL, including syntax highlight, code completion, syntax diagnostics, and hover for more information.
 
+### 1.7.x
+
+- Completion: Complete for include command
+
 ### 1.6.x
 
 - Diagnostic: Report error when template cannot be found from current file and including files
@@ -127,7 +131,7 @@ Syntax highlight.
 - [√] Report error when template cannot be found from current file and including files
 - [√] Report error when including files cannot be found
 - [√] Find references of some template
-- Completion: provide include completion
+- [√] Completion: provide include completion
 - Refactor: renaming of template name
 - Refactor: renaming of template args
 - Completion: provide variable completion

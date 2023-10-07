@@ -126,7 +126,7 @@ export class CodeCompleter {
         return [];
     }
     async completeIncludes(docUri: string, text: string): Promise<CompletionItem[]> {
-        if (text === '-- include=' || text === '-- include=file_path' || text.endsWith('/')) {
+        if (text === '-- include=' || text === '-- include=file_path' || text.endsWith('/') || text.endsWith('.')) {
             const filePrefix = DocumentIncludes.includeFilePath(text);
             let files;
             if (this.cachedFileReferences && this.cacheTime && Date.now() - this.cacheTime < 10000) {
@@ -141,7 +141,7 @@ export class CodeCompleter {
             if (!files) {
                 return [];
             }
-            const isStartingChar = filePrefix === '' || filePrefix === '/' || filePrefix === 'file_path';
+            const isStartingChar = filePrefix === '' || filePrefix === '/' || filePrefix === '.' || filePrefix === 'file_path';
             const result = files
                 .map((file) => file.replace(/^workflow\//, ''))
                 .filter((file) => (isStartingChar ? true : file.startsWith(filePrefix)))
@@ -149,7 +149,7 @@ export class CodeCompleter {
                     label: isStartingChar ? file : file.substring(filePrefix.length),
                     kind: CompletionItemKind.File,
                     insertText: isStartingChar ? file : file.substring(filePrefix.length),
-                    insertTextFormat: InsertTextFormat.Snippet
+                    insertTextFormat: InsertTextFormat.PlainText
                 }));
             return result;
         }
