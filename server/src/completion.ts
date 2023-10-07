@@ -15,6 +15,7 @@ import { DocumentAsts } from './ast';
 import { LineNumberFinder } from './shared/document';
 import { DocumentIncludes } from './include';
 import { Files } from './files';
+import { Settings } from './types';
 
 interface FuncDoc {
     label: string;
@@ -58,7 +59,13 @@ const keywordsWithParams = [
     'include=${1:file_path}'
 ];
 export class CodeCompleter {
-    constructor(private documentAsts: DocumentAsts, private documents: TextDocuments<TextDocument>, private parser: Parser, private files: Files) {}
+    constructor(
+        private documentAsts: DocumentAsts,
+        private documents: TextDocuments<TextDocument>,
+        private parser: Parser,
+        private files: Files,
+        private settings: Settings
+    ) {}
     public sparkFuncCompletionItems: CompletionItem[] = ((sparkFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     public rdbFuncCompletionItems: CompletionItem[] = ((rdbFuncs as any).funcs as FuncDoc[]).map(funcDocAsCompletionItem);
     private keywordItems: CompletionItem[] = simpleKeywords
@@ -76,13 +83,15 @@ export class CodeCompleter {
         insertText: backend,
         kind: CompletionItemKind.Unit
     }));
+    private cachedFileReferences?: string[] = [];
+    private cacheTime = 0;
 
     resolveInformation(item: CompletionItem): CompletionItem {
         item.detail = item.label;
         return item;
     }
 
-    complete(params: TextDocumentPositionParams): CompletionItem[] {
+    async complete(params: TextDocumentPositionParams): Promise<CompletionItem[]> {
         const doc = this.documents.get(params.textDocument.uri);
         const range: Range = { start: { line: params.position.line, character: 0 }, end: { line: params.position.line, character: 1000 } };
         const line = doc?.getText(range);
@@ -108,8 +117,41 @@ export class CodeCompleter {
             if (text === '-- backend: ') {
                 return this.backendCompletionItems;
             }
+            if (text.startsWith('-- include=')) {
+                return this.completeIncludes(params.textDocument.uri, text);
+            }
             text = text.trimEnd();
             return this.completeFunctionsAndTemplates(line!, text, doc!, params.position);
+        }
+        return [];
+    }
+    async completeIncludes(docUri: string, text: string): Promise<CompletionItem[]> {
+        if (text === '-- include=' || text === '-- include=file_path' || text.endsWith('/')) {
+            const filePrefix = DocumentIncludes.includeFilePath(text);
+            let files;
+            if (this.cachedFileReferences && this.cacheTime && Date.now() - this.cacheTime < 10000) {
+                files = this.cachedFileReferences;
+                this.cacheTime = Date.now();
+            } else {
+                const referenceFilesPattern = (await this.settings.getDocumentSettings(docUri)).filePatternToSearchForReferences;
+                files = this.files.findFiles(docUri, referenceFilesPattern || '**/*.sql', false);
+                this.cachedFileReferences = files;
+                this.cacheTime = Date.now();
+            }
+            if (!files) {
+                return [];
+            }
+            const isStartingChar = filePrefix === '' || filePrefix === '/' || filePrefix === 'file_path';
+            const result = files
+                .map((file) => file.replace(/^workflow\//, ''))
+                .filter((file) => (isStartingChar ? true : file.startsWith(filePrefix)))
+                .map((file) => ({
+                    label: isStartingChar ? file : file.substring(filePrefix.length),
+                    kind: CompletionItemKind.File,
+                    insertText: isStartingChar ? file : file.substring(filePrefix.length),
+                    insertTextFormat: InsertTextFormat.Snippet
+                }));
+            return result;
         }
         return [];
     }

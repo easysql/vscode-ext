@@ -118,7 +118,7 @@ connection.onDidChangeWatchedFiles((_change) => {
 });
 
 // This handler provides the initial list of the completion items.
-connection.onCompletion((_textDocumentPosition: TextDocumentPositionParams): CompletionItem[] => {
+connection.onCompletion((_textDocumentPosition: TextDocumentPositionParams): Promise<CompletionItem[]> => {
     return services.completer.complete(_textDocumentPosition);
 });
 

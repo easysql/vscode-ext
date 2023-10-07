@@ -32,7 +32,7 @@ export class Files {
         return Array.from(this.folders.values()).find((folder) => fileUri.startsWith(folder.endsWith('/') ? folder : folder + '/'));
     }
 
-    findFiles(baseFileUri: string, filePattern: string): string[] {
+    findFiles(baseFileUri: string, filePattern: string, keepWorkspaceFolder = true): string[] {
         if (!filePattern) {
             return [];
         }
@@ -44,11 +44,17 @@ export class Files {
         }
 
         const _folder = folder.replace(/^file:\/\/?\/?/, '/');
-        return globSync(filePattern, { cwd: folder.replace(/^file:\/\/?\/?/, '/') }).map((file) => path.join(_folder, file));
+        return globSync(filePattern, { cwd: folder.replace(/^file:\/\/?\/?/, '/') }).map((file) =>
+            keepWorkspaceFolder ? path.join(_folder, file) : file
+        );
     }
 
     readFile(fileUri: string): string | null {
-        return fs.readFileSync(fileUri.replace(/^file:\/\/?\/?/, '/'), 'utf8');
+        const filePath = fileUri.replace(/^file:\/\/?\/?/, '/');
+        if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
+            return null;
+        }
+        return fs.readFileSync(filePath, 'utf8');
     }
 }
 

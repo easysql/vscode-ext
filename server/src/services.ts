@@ -25,7 +25,7 @@ export class Services {
     public readonly parser = new Parser();
     public readonly files = new Files();
     public readonly documentAsts = new DocumentAsts(this.files, this.documents, this.parser);
-    public readonly completer = new CodeCompleter(this.documentAsts, this.documents, this.parser, this.files);
+    public readonly completer = new CodeCompleter(this.documentAsts, this.documents, this.parser, this.files, this.settings);
     public readonly highlightTokenParser = new HighlightTokenParser();
     public readonly diagnostic = new CodeDiagnosticProvider(this.settings, this.files, this.documentAsts);
     public readonly highlightTokens = new HighlightTokens(this.parser, this.documentAsts, this.highlightTokenParser);
