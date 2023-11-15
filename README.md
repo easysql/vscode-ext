@@ -83,6 +83,7 @@ Language features for ETLs written in Easy SQL, including syntax highlight, code
 ### 1.7.x
 
 - Completion: Complete for include command
+- Folding support
 
 ### 1.6.x
 
@@ -91,6 +92,7 @@ Language features for ETLs written in Easy SQL, including syntax highlight, code
 - References: Find references of some template
 
 ### 1.5.x
+
 - Jump to definition: jump to temp table definition (with support for included files)
 - provide template/template-variable completion with support for included files
 
