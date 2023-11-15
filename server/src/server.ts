@@ -43,7 +43,8 @@ connection.onInitialize((params: InitializeParams) => {
             documentSymbolProvider: true,
             documentLinkProvider: { resolveProvider: false },
             semanticTokensProvider: { legend, full: true, range: true },
-            referencesProvider: true
+            referencesProvider: true,
+            foldingRangeProvider: true
         }
     };
     if (services.settings.hasWorkspaceFolderCapability) {
@@ -146,6 +147,10 @@ connection.onDocumentLinks((param) => {
 
 connection.onReferences((param) => {
     return services.referenceProvider.onReferences(param.position, param.textDocument.uri);
+});
+
+connection.onFoldingRanges((param) => {
+    return services.foldingRangeProvider.onFoldingRanges(param.textDocument.uri);
 });
 
 // Make the text document manager listen on the connection

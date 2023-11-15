@@ -16,6 +16,7 @@ import { DefinitionProvider } from './definition';
 import { SymbolProvider } from './symbol';
 import { Files } from './files';
 import { ReferenceProvider } from './reference';
+import { FoldingRangeProvider } from './folding';
 
 // Create a simple text document manager.
 export class Services {
@@ -34,4 +35,5 @@ export class Services {
     public readonly definitionProvider = new DefinitionProvider(this.files, this.documentAsts, this.documents, this.parser);
     public readonly symbolProvider = new SymbolProvider(this.documentAsts, this.documents);
     public readonly referenceProvider = new ReferenceProvider(this.files, this.documents, this.settings);
+    public readonly foldingRangeProvider = new FoldingRangeProvider(this.documentAsts, this.documents);
 }
