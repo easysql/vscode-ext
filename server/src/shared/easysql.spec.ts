@@ -31,7 +31,8 @@ import {
     Output,
     FullTable,
     Func,
-    Target
+    Target,
+    TargetParser
 } from './easysql';
 import { logger } from './logger';
 
@@ -82,7 +83,7 @@ const t = (text: string, type?: TokType) => {
     return tok;
 };
 
-logger.setLevel('DEBUG');
+logger.setLevel('INFO');
 
 describe('tok', () => {
     it('check valid', () => {
@@ -1394,6 +1395,21 @@ describe('full parser', () => {
         pos = 0;
         expect(parser.parse(content)).to.deep.eq([
             new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([])),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([])),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t('abc${lit}', Tok.TYPES.any))
+        ]);
+    });
+    it('should not parse target when target is not completed', () => {
+        const parser = new Parser();
+
+        content = '-- target=\n-- target= \n-- target=variables\n--abc${lit}';
+        pos = 0;
+        expect(parser.parse(content)).to.deep.eq([
+            new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t(' target=', Tok.TYPES.any)),
+            new Any(t('\n', Tok.TYPES.any)),
+            new Comment(new Sentinel([t('--', Tok.TYPES.commentStart)]), t(' target= ', Tok.TYPES.any)),
             new Any(t('\n', Tok.TYPES.any)),
             new Variables(new Sentinel([t('-- target'), t('='), t('variables', Tok.TYPES.tartetName)]), new Sentinel([]), null, new Sentinel([])),
             new Any(t('\n', Tok.TYPES.any)),

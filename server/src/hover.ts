@@ -4,6 +4,7 @@ import * as sparkFuncs from './generated/spark.json';
 import * as rdbFuncs from './generated/rdb.json';
 import { FuncInfoSource } from './funcInfoSource';
 import { DocumentIncludes } from './include';
+import { TargetParser } from './shared/easysql';
 
 interface TypedHover {
     accept: () => boolean;
@@ -375,7 +376,7 @@ e.g.
             start: { line: this.position.line, character: this.nameLeft.index! },
             end: { line: this.position.line, character: this.position.character + this.nameRight[1].length }
         };
-        if (targetDescriptions[name] && this.leftText.substring(0, this.nameLeft.index!) === '-- target=') {
+        if (targetDescriptions[name] && new TargetParser().accept(this.leftText.substring(0, this.nameLeft.index!))) {
             return {
                 contents: { kind: 'markdown', value: '(EasySQL target) ' + targetDescriptions[name] },
                 range: range

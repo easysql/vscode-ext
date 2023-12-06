@@ -54,7 +54,7 @@ export class TempTableDefinition {
 
     accept(): boolean {
         const [leftText, rightText] = [this.line.substring(0, this.position.character), this.line.substring(this.position.character)];
-        if (leftText.startsWith('-- target=')) {
+        if (this.parser.acceptTarget(leftText)) {
             const target = this.parser.parseTarget(this.line);
             if (!target.condition) {
                 return false;
@@ -189,7 +189,7 @@ export class DefinitionProvider {
                         throw new Error('should exist a match');
                     }
                     const pos = m[1].length;
-                    return { range: DocumentIncludes.toRange(line, i, pos) };
+                    return { range: DocumentIncludes.toRange(line, i, pos), target: fileUri };
                 }
                 return null;
             });

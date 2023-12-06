@@ -512,10 +512,10 @@ export class ConditionParser {
     }
 }
 
-class TargetParser {
+export class TargetParser {
     private conditionParser = new ConditionParser();
-    accept(content: string) {
-        return content.startsWith('-- target=');
+    accept(content: string): boolean {
+        return !!content.match(/^-- target=\w+/);
     }
     parse(content: string): Target {
         const m = content.match(/^(-- target)(=)(\w*)([^\w].*)?$/);
@@ -797,7 +797,7 @@ export class Parser {
 
     parse(content: string): EasySqlNode[] {
         let targetStartPos = 0;
-        return content.split('\n-- target=').flatMap((targetContent, i) => {
+        return content.split(new RegExp('\\n-- target=(?=\\w)')).flatMap((targetContent, i) => {
             targetContent = i !== 0 ? '-- target=' + targetContent : targetContent;
             const startNodes: EasySqlNode[] = i !== 0 ? [new Any(new Tok(targetStartPos, 1, content, Tok.TYPES.any))] : [];
             const nextLineBreakIdx = targetContent.indexOf('\n');
@@ -1014,6 +1014,10 @@ export class Parser {
 
     public parseTarget(content: string): Target {
         return new TargetParser().parse(content);
+    }
+
+    public acceptTarget(content: string): boolean {
+        return new TargetParser().accept(content);
     }
 
     public parseSingleVar(content: string): VarReference | TplReference | TplVarReference {

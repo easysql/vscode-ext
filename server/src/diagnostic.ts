@@ -4,7 +4,7 @@ import { TextDocument } from 'vscode-languageserver-textdocument';
 
 import { DocumentAsts } from './ast';
 import { Settings } from './types';
-import { EasySqlNode, TplFuncArg, TplFuncCall, TplReference } from './shared/easysql';
+import { EasySqlNode, TplFuncArg, TplFuncCall, TplReference, TargetParser } from './shared/easysql';
 import { LineNumberFinder } from './shared/document';
 import { DocumentIncludes } from './include';
 import { Files } from './files';
@@ -92,7 +92,7 @@ export class CodeDiagnosticProvider {
                 });
             } else {
                 const templateContentLines = this.files.readFile(templateDef.uri)!.substring(templateDef.node.startPos).split('\n').slice(1);
-                const nextTargetIndex = templateContentLines.findIndex((line) => line.startsWith('-- target='));
+                const nextTargetIndex = templateContentLines.findIndex((line) => new TargetParser().accept(line));
                 const templateContent = templateContentLines.slice(0, nextTargetIndex === -1 ? undefined : nextTargetIndex).join('\n');
                 let allDefinedArgs = Array.from(templateContent.matchAll(/#{\s*([0-9a-zA-Z_]+)\s*}/g)).map((m) => m[1]);
                 allDefinedArgs = Array.from(new Set(allDefinedArgs));

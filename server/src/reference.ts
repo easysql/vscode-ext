@@ -1,5 +1,5 @@
 import { TextDocument } from 'vscode-languageserver-textdocument';
-import { Files } from './files';
+import { Files, toFsPath } from './files';
 import { Position, TextDocuments, Location } from 'vscode-languageserver';
 import { Settings } from './types';
 import path from 'path';
@@ -41,15 +41,15 @@ export class ReferenceProvider {
                 return [];
             }
             const lines = content.split('\n');
-            const docPath = docUri.replace(/^file:\/\/?\/?/, '/');
+            const docPath = toFsPath(docUri);
             const relativePath = path.relative(file, docPath);
-            const workspaceFolder = this.files.findWorkspaceFolder(docUri)!.replace(/^file:\/\/?\/?/, '/');
+            const workspaceFolder = toFsPath(this.files.findWorkspaceFolder(docUri)!);
             const workspaceFolderRelativePath = path.relative(workspaceFolder, docPath);
             const workspaceWorkflowFolderRelativePath = path.relative(path.join(workspaceFolder, 'workflow'), docPath);
             const possibleIncludes = [
-                `-- include=${relativePath}`,
-                `-- include=${workspaceFolderRelativePath}`,
-                `-- include=${workspaceWorkflowFolderRelativePath}`
+                `-- include=${relativePath.replace('\\', '/')}`,
+                `-- include=${workspaceFolderRelativePath.replace('\\', '/')}`,
+                `-- include=${workspaceWorkflowFolderRelativePath.replace('\\', '/')}`
             ];
 
             if (docPath !== file && !lines.some((line) => possibleIncludes.includes(line.trim()))) {
@@ -57,7 +57,7 @@ export class ReferenceProvider {
             }
             return lines.flatMap((line, i) => {
                 return Array.from(line.matchAll(new RegExp(`@{\\s*(${templateName})\\s*[(}]`, 'g'))).map((m) => {
-                    return Location.create(`${file.replace(/^file:\/\/?\/?/, 'file:///')}`, {
+                    return Location.create(`${file.replace(/^file:\/\/?\/?/, 'file:///').replace(/^file:\\\\?\\?/, 'file:\\\\\\')}`, {
                         start: { line: i, character: m.index! },
                         end: { line: i, character: m.index! + m[0].length }
                     });

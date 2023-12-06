@@ -1,6 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 import { logger } from './shared/logger';
+import Os from 'os';
+
+function isWindows() {
+    return Os.platform() === 'win32';
+}
+
+export function toFsPath(uri: string): string {
+    if (isWindows()) {
+        return uri
+            .replace(/^file:\/\/?\/?/, '')
+            .replace(/^file:\\\\?\\?/, '')
+            .replace('%3A/', ':/')
+            .replace('%3A\\', ':\\');
+    } else {
+        return uri.replace(/^file:\/\/?\/?/, '/');
+    }
+}
 
 export class Files {
     private folders: Set<string> = new Set();
@@ -23,8 +40,8 @@ export class Files {
             return null;
         }
         const candidates = [path.join(folder, filePath), path.join(folder, 'workflow', filePath), path.join(path.dirname(baseFileUri), filePath)];
-        let found = candidates.find((cand) => fs.existsSync(cand.replace(/^file:\/\/?\/?/, '/')));
-        found = found ? found.replace('file:/', 'file:///') : undefined;
+        let found = candidates.find((cand) => fs.existsSync(toFsPath(cand)));
+        found = found ? found.replace('file:/', 'file:///').replace('file:\\', 'file:\\\\\\') : undefined;
         return found ? found : null;
     }
 
@@ -43,14 +60,12 @@ export class Files {
             return [];
         }
 
-        const _folder = folder.replace(/^file:\/\/?\/?/, '/');
-        return globSync(filePattern, { cwd: folder.replace(/^file:\/\/?\/?/, '/') }).map((file) =>
-            keepWorkspaceFolder ? path.join(_folder, file) : file
-        );
+        const _folder = toFsPath(folder);
+        return globSync(filePattern, { cwd: toFsPath(folder) }).map((file) => (keepWorkspaceFolder ? path.join(_folder, file) : file));
     }
 
     readFile(fileUri: string): string | null {
-        const filePath = fileUri.replace(/^file:\/\/?\/?/, '/');
+        const filePath = toFsPath(fileUri);
         if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
             return null;
         }
